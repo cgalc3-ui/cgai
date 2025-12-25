@@ -1,0 +1,1133 @@
+{
+	"info": {
+		"_postman_id": "cgai-api-collection",
+		"name": "CGAI API Collection",
+		"description": "Complete API collection for testing all endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://192.168.1.153:8000/api",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "phone",
+			"value": "0501234567",
+			"type": "string"
+		},
+		{
+			"key": "verification_code",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "temp_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "1. Send Verification Code (Registration)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success) {",
+									"        pm.environment.set('verification_code', '123456'); // Replace with actual code from SMS",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"{{phone}}\",\n    \"type\": \"registration\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/send-verification-code",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"send-verification-code"
+							]
+						},
+						"description": "إرسال كود التحقق للتسجيل. يجب أن يكون رقم الهاتف غير مسجل."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Send Verification Code (Login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success) {",
+									"        pm.environment.set('verification_code', '123456'); // Replace with actual code from SMS",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"{{phone}}\",\n    \"type\": \"login\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/send-verification-code",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"send-verification-code"
+							]
+						},
+						"description": "إرسال كود التحقق لتسجيل الدخول. يجب أن يكون رقم الهاتف مسجل."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Verify Registration Code (Step 1)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.temp_token) {",
+									"        pm.environment.set('temp_token', jsonData.temp_token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"{{phone}}\",\n    \"code\": \"{{verification_code}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/verify-registration-code",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"verify-registration-code"
+							]
+						},
+						"description": "الخطوة الأولى: التحقق من كود التحقق. لا يتم إنشاء الحساب في هذه الخطوة."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Complete Registration (Step 2)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.token) {",
+									"        pm.environment.set('token', jsonData.token);",
+									"        pm.environment.set('user_id', jsonData.user.id);",
+									"        pm.environment.unset('temp_token');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"temp_token\": \"{{temp_token}}\",\n    \"name\": \"أحمد محمد\",\n    \"email\": \"ahmed@example.com\",\n    \"date_of_birth\": \"1990-01-01\",\n    \"gender\": \"male\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							},
+							"description": "الخطوة الثانية: إكمال البيانات وإنشاء الحساب. name, email, date_of_birth, gender اختياريين."
+						},
+						"url": {
+							"raw": "{{base_url}}/complete-registration",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"complete-registration"
+							]
+						},
+						"description": "إكمال التسجيل وإنشاء الحساب. يتطلب temp_token من الخطوة السابقة."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Login Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.token) {",
+									"        pm.environment.set('token', jsonData.token);",
+									"        pm.environment.set('user_id', jsonData.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"{{phone}}\",\n    \"code\": \"{{verification_code}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "تسجيل دخول العميل. يتطلب كود التحقق من الخطوة السابقة."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Get Authenticated User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "الحصول على بيانات المستخدم المصادق عليه. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "تسجيل الخروج وحذف Token."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints المصادقة"
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "1. Get Customer Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"profile"
+							]
+						},
+						"description": "الحصول على ملف العميل الشخصي. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Update Customer Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"أحمد محمد علي\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"profile"
+							]
+						},
+						"description": "تحديث ملف العميل الشخصي. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Customer Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"dashboard"
+							]
+						},
+						"description": "الحصول على بيانات Dashboard العميل. يتطلب Token."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالعميل"
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "Public - Categories",
+					"item": [
+						{
+							"name": "1. Get All Categories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"categories"
+									]
+								},
+								"description": "الحصول على جميع الفئات النشطة"
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get Category by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/categories/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"categories",
+										"1"
+									]
+								},
+								"description": "الحصول على فئة معينة مع الفئات الفرعية"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Public - Sub Categories",
+					"item": [
+						{
+							"name": "1. Get All Sub Categories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/sub-categories?category_id=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"sub-categories"
+									],
+									"query": [
+										{
+											"key": "category_id",
+											"value": "1",
+											"description": "معرف الفئة الرئيسية (اختياري)"
+										}
+									]
+								},
+								"description": "الحصول على جميع الفئات الفرعية النشطة"
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get Sub Category by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/sub-categories/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"sub-categories",
+										"1"
+									]
+								},
+								"description": "الحصول على فئة فرعية معينة مع الخدمات"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Public - Services",
+					"item": [
+						{
+							"name": "1. Get All Services",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/services?sub_category_id=1&specialization_id=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"services"
+									],
+									"query": [
+										{
+											"key": "sub_category_id",
+											"value": "1",
+											"description": "معرف الفئة الفرعية (اختياري)"
+										},
+										{
+											"key": "specialization_id",
+											"value": "1",
+											"description": "معرف التخصص (اختياري)"
+										}
+									]
+								},
+								"description": "الحصول على جميع الخدمات النشطة"
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get Service by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/services/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"services",
+										"1"
+									]
+								},
+								"description": "الحصول على خدمة معينة مع مدة الخدمات"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Public - Service Durations",
+					"item": [
+						{
+							"name": "1. Get All Service Durations",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/durations?service_id=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"durations"
+									],
+									"query": [
+										{
+											"key": "service_id",
+											"value": "1",
+											"description": "معرف الخدمة (اختياري)"
+										}
+									]
+								},
+								"description": "الحصول على جميع مدة الخدمات النشطة"
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get Service Duration by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/services/durations/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"services",
+										"durations",
+										"1"
+									]
+								},
+								"description": "الحصول على مدة خدمة معينة"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "جميع endpoints الخاصة بالخدمات"
+		},
+		{
+			"name": "Time Slots",
+			"item": [
+				{
+					"name": "Get Time Slots for Employee",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employees/1/time-slots?date=2025-12-25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"1",
+								"time-slots"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2025-12-25",
+									"description": "التاريخ المطلوب (YYYY-MM-DD)"
+								}
+							]
+						},
+						"description": "الحصول على الأوقات المتاحة لموظف في تاريخ معين"
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالأوقات المتاحة"
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "1. Get Available Time Slots",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/available-time-slots?specialization_id=1&date=2025-12-26&service_duration_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"available-time-slots"
+							],
+							"query": [
+								{
+									"key": "specialization_id",
+									"value": "1",
+									"description": "معرف التخصص"
+								},
+								{
+									"key": "date",
+									"value": "2025-12-26",
+									"description": "التاريخ المطلوب (YYYY-MM-DD)"
+								},
+								{
+									"key": "service_duration_id",
+									"value": "1",
+									"description": "معرف مدة الخدمة"
+								}
+							]
+						},
+						"description": "الحصول على الأوقات المتاحة بناءً على التخصص والتاريخ ومدة الخدمة. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get All Bookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/bookings?status=pending&payment_status=unpaid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "حالة الحجز (pending, confirmed, cancelled, completed) - اختياري"
+								},
+								{
+									"key": "payment_status",
+									"value": "unpaid",
+									"description": "حالة الدفع (paid, unpaid) - اختياري"
+								}
+							]
+						},
+						"description": "الحصول على جميع حجوزات العميل. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Create Booking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"service_id\": 1,\n    \"service_duration_id\": 1,\n    \"booking_date\": \"2025-12-26\",\n    \"start_time\": \"09:00\",\n    \"notes\": \"ملاحظات إضافية (اختياري)\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings"
+							]
+						},
+						"description": "إنشاء حجز جديد. النظام يختار الموظف تلقائياً بناءً على التخصص. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get Booking by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"1"
+							]
+						},
+						"description": "الحصول على تفاصيل حجز معين. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Update Booking",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"notes\": \"ملاحظات محدثة\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"1"
+							]
+						},
+						"description": "تحديث حجز (مثل الملاحظات). يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Cancel Booking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"سبب الإلغاء (اختياري)\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/1/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"1",
+								"cancel"
+							]
+						},
+						"description": "إلغاء حجز. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Process Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payment_method\": \"credit_card\",\n    \"transaction_id\": \"TXN123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/1/payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"1",
+								"payment"
+							]
+						},
+						"description": "معالجة الدفع للحجز. يتطلب Token."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالحجوزات"
+		},
+		{
+			"name": "Time Slots",
+			"item": [
+				{
+					"name": "Get Time Slots for Employee",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employees/1/time-slots?date=2025-12-25",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employees",
+								"1",
+								"time-slots"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2025-12-25",
+									"description": "التاريخ المطلوب (YYYY-MM-DD)"
+								}
+							]
+						},
+						"description": "الحصول على الأوقات المتاحة لموظف في تاريخ معين"
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالأوقات المتاحة"
+		}
+	]
+}
+

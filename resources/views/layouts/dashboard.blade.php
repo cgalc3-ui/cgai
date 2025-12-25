@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'لوحة التحكم') - {{ config('app.name') }}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    @stack('styles')
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="logo">{{ config('app.name') }}</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i>
+                        <span>لوحة التحكم</span>
+                    </a>
+                    <div class="nav-group">
+                        <div class="nav-group-header {{ request()->routeIs('admin.users*') ? 'active' : '' }}" onclick="toggleNavGroup(this)">
+                            <i class="fas fa-users"></i>
+                            <span>المستخدمين</span>
+                            <i class="fas fa-chevron-down nav-arrow"></i>
+                        </div>
+                        <div class="nav-group-items {{ request()->routeIs('admin.users*') ? 'expanded' : '' }}">
+                            <a href="{{ route('admin.users.admins') }}" class="nav-item {{ request()->routeIs('admin.users.admins*') ? 'active' : '' }}">
+                                <i class="fas fa-user-shield"></i>
+                                <span>الأدمن</span>
+                            </a>
+                            <a href="{{ route('admin.users.staff') }}" class="nav-item {{ request()->routeIs('admin.users.staff*') ? 'active' : '' }}">
+                                <i class="fas fa-user-tie"></i>
+                                <span>الموظفين</span>
+                            </a>
+                            <a href="{{ route('admin.users.customers') }}" class="nav-item {{ request()->routeIs('admin.users.customers*') ? 'active' : '' }}">
+                                <i class="fas fa-user"></i>
+                                <span>العملاء</span>
+                            </a>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.time-slots') }}" class="nav-item {{ request()->routeIs('admin.time-slots*') ? 'active' : '' }}">
+                        <i class="fas fa-clock"></i>
+                        <span>الأوقات المتاحة</span>
+                    </a>
+                    <a href="{{ route('admin.bookings') }}" class="nav-item {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>الحجوزات</span>
+                    </a>
+                    <a href="{{ route('admin.specializations') }}" class="nav-item {{ request()->routeIs('admin.specializations*') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i>
+                        <span>التخصصات</span>
+                    </a>
+                    <div class="nav-group">
+                        <div class="nav-group-header {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') || request()->routeIs('admin.service-durations*') ? 'active' : '' }}" onclick="toggleNavGroup(this)">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>الخدمات</span>
+                            <i class="fas fa-chevron-down nav-arrow"></i>
+                        </div>
+                        <div class="nav-group-items {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') || request()->routeIs('admin.service-durations*') ? 'expanded' : '' }}">
+                            <a href="{{ route('admin.categories.index') }}" class="nav-item {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
+                                <i class="fas fa-folder"></i>
+                                <span>الفئات</span>
+                            </a>
+                            <a href="{{ route('admin.sub-categories.index') }}" class="nav-item {{ request()->routeIs('admin.sub-categories*') ? 'active' : '' }}">
+                                <i class="fas fa-folder-open"></i>
+                                <span>الفئات الفرعية</span>
+                            </a>
+                            <a href="{{ route('admin.services.index') }}" class="nav-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}">
+                                <i class="fas fa-cog"></i>
+                                <span>الخدمات</span>
+                            </a>
+                            <a href="{{ route('admin.service-durations.index') }}" class="nav-item {{ request()->routeIs('admin.service-durations*') ? 'active' : '' }}">
+                                <i class="fas fa-clock"></i>
+                                <span>مدة الخدمات</span>
+                            </a>
+                        </div>
+                    </div>
+                @elseif(auth()->user()->isStaff())
+                    <a href="{{ route('staff.dashboard') }}" class="nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i>
+                        <span>لوحة التحكم</span>
+                    </a>
+                    <a href="{{ route('staff.customers') }}" class="nav-item {{ request()->routeIs('staff.customers*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>العملاء</span>
+                    </a>
+                @endif
+            </nav>
+            
+            <div class="sidebar-footer">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1 class="page-title">@yield('page-title', 'لوحة التحكم')</h1>
+                </div>
+                <div class="top-bar-right">
+                    <div class="top-bar-actions">
+                        <button class="icon-btn notification-btn" title="الإشعارات">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge-notification">7</span>
+                        </button>
+                        <button class="icon-btn cart-btn" title="السلة">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span class="badge-notification">8</span>
+                        </button>
+                        <button class="icon-btn settings-btn" title="الإعدادات">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-details">
+                                <div class="user-name">{{ auth()->user()->name }}</div>
+                                <div class="user-title">
+                                    @if(auth()->user()->isAdmin())
+                                        مشرف رئيسي
+                                    @elseif(auth()->user()->isStaff())
+                                        موظف
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <ul>
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @yield('content')
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/dashboard.js') }}"></script>
+    @stack('scripts')
+</body>
+</html>
+
