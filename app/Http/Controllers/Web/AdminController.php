@@ -10,11 +10,12 @@ use App\Models\Booking;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\Service;
-use App\Models\ServiceDuration;
+use App\Models\EmployeeSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class AdminController extends Controller
 {
@@ -37,19 +38,19 @@ class AdminController extends Controller
         $totalStaff = User::where('role', 'staff')->count();
         $totalAdmins = User::where('role', 'admin')->count();
         $totalEmployees = Employee::count();
-        
+
         // Bookings Statistics
         $totalBookings = Booking::count();
         $pendingBookings = Booking::where('status', 'pending')->count();
         $confirmedBookings = Booking::where('status', 'confirmed')->count();
         $completedBookings = Booking::where('status', 'completed')->count();
         $cancelledBookings = Booking::where('status', 'cancelled')->count();
-        
+
         // Revenue Statistics
         $totalRevenue = Booking::where('payment_status', 'paid')->sum('total_price');
         $paidBookings = Booking::where('payment_status', 'paid')->count();
         $unpaidBookings = Booking::where('payment_status', 'unpaid')->count();
-        
+
         // Services Statistics
         $totalCategories = Category::count();
         $activeCategories = Category::where('is_active', true)->count();
@@ -57,40 +58,38 @@ class AdminController extends Controller
         $activeSubCategories = SubCategory::where('is_active', true)->count();
         $totalServices = Service::count();
         $activeServices = Service::where('is_active', true)->count();
-        $totalServiceDurations = ServiceDuration::count();
-        $activeServiceDurations = ServiceDuration::where('is_active', true)->count();
-        
+
         // Specializations Statistics
         $totalSpecializations = Specialization::count();
         $activeSpecializations = Specialization::where('is_active', true)->count();
-        
+
         // Time Slots Statistics
         $totalTimeSlots = TimeSlot::count();
         $availableTimeSlots = TimeSlot::where('is_available', true)->count();
-        
+
         // Recent Data
         $recentBookings = Booking::with(['customer', 'employee.user', 'service'])
             ->latest()
             ->limit(10)
             ->get();
-        
+
         $recentCustomers = User::where('role', 'customer')
             ->latest()
             ->limit(10)
             ->get();
-        
+
         $recentStaff = User::where('role', 'staff')
             ->with('employee')
             ->latest()
             ->limit(10)
             ->get();
-        
+
         // Today's Statistics
         $todayBookings = Booking::whereDate('booking_date', Carbon::today())->count();
         $todayRevenue = Booking::whereDate('created_at', Carbon::today())
             ->where('payment_status', 'paid')
             ->sum('total_price');
-        
+
         // This Month Statistics
         $monthBookings = Booking::whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
@@ -106,19 +105,19 @@ class AdminController extends Controller
             'total_staff' => $totalStaff,
             'total_admins' => $totalAdmins,
             'total_employees' => $totalEmployees,
-            
+
             // Bookings
             'total_bookings' => $totalBookings,
             'pending_bookings' => $pendingBookings,
             'confirmed_bookings' => $confirmedBookings,
             'completed_bookings' => $completedBookings,
             'cancelled_bookings' => $cancelledBookings,
-            
+
             // Revenue
             'total_revenue' => $totalRevenue,
             'paid_bookings' => $paidBookings,
             'unpaid_bookings' => $unpaidBookings,
-            
+
             // Services
             'total_categories' => $totalCategories,
             'active_categories' => $activeCategories,
@@ -126,21 +125,19 @@ class AdminController extends Controller
             'active_sub_categories' => $activeSubCategories,
             'total_services' => $totalServices,
             'active_services' => $activeServices,
-            'total_service_durations' => $totalServiceDurations,
-            'active_service_durations' => $activeServiceDurations,
-            
+
             // Specializations
             'total_specializations' => $totalSpecializations,
             'active_specializations' => $activeSpecializations,
-            
+
             // Time Slots
             'total_time_slots' => $totalTimeSlots,
             'available_time_slots' => $availableTimeSlots,
-            
+
             // Today
             'today_bookings' => $todayBookings,
             'today_revenue' => $todayRevenue,
-            
+
             // This Month
             'month_bookings' => $monthBookings,
             'month_revenue' => $monthRevenue,
@@ -165,20 +162,20 @@ class AdminController extends Controller
     public function admins(Request $request)
     {
         $query = User::where('role', User::ROLE_ADMIN);
-        
+
         // Search
         $searchQuery = $request->get('search', '');
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
-        
+
         $users = $query->latest()->paginate(20)->withQueryString();
-        
+
         return view('admin.users.admins.index', compact('users', 'searchQuery'));
     }
 
@@ -223,7 +220,7 @@ class AdminController extends Controller
         if (!$user->isAdmin()) {
             abort(404);
         }
-        
+
         return view('admin.users.admins.show', compact('user'));
     }
 
@@ -235,7 +232,7 @@ class AdminController extends Controller
         if (!$user->isAdmin()) {
             abort(404);
         }
-        
+
         return view('admin.users.admins.edit', compact('user'));
     }
 
@@ -247,7 +244,7 @@ class AdminController extends Controller
         if (!$user->isAdmin()) {
             abort(404);
         }
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -273,7 +270,7 @@ class AdminController extends Controller
         if (!$user->isAdmin()) {
             abort(404);
         }
-        
+
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users.admins')
                 ->with('error', 'لا يمكنك حذف حسابك الخاص');
@@ -293,21 +290,21 @@ class AdminController extends Controller
     public function staff(Request $request)
     {
         $query = User::where('role', User::ROLE_STAFF);
-        
+
         // Search
         $searchQuery = $request->get('search', '');
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
-        
+
         $users = $query->with('employee.specializations')->latest()->paginate(20)->withQueryString();
         $specializations = Specialization::where('is_active', true)->get();
-        
+
         return view('admin.users.staff.index', compact('users', 'searchQuery', 'specializations'));
     }
 
@@ -332,12 +329,13 @@ class AdminController extends Controller
             'password' => 'required|string|min:8',
             'employee.bio' => 'nullable|string',
             'employee.hourly_rate' => 'nullable|numeric|min:0',
+            'employee.is_available' => 'nullable|boolean',
             'employee.specializations' => 'nullable|array',
-            'employee.specializations.*' => 'exists:specializations,id',
+            'employee.specializations.*' => 'nullable|exists:specializations,id',
             'bio' => 'nullable|string',
             'hourly_rate' => 'nullable|numeric|min:0',
             'specializations' => 'nullable|array',
-            'specializations.*' => 'exists:specializations,id',
+            'specializations.*' => 'required|exists:specializations,id',
         ]);
 
         $user = User::create([
@@ -353,7 +351,7 @@ class AdminController extends Controller
         $bio = $request->input('employee.bio') ?? $request->input('bio');
         $hourlyRate = $request->input('employee.hourly_rate') ?? $request->input('hourly_rate');
         $isAvailable = $request->has('employee.is_available') || $request->has('is_available');
-        
+
         $employee = Employee::create([
             'user_id' => $user->id,
             'bio' => $bio,
@@ -363,9 +361,19 @@ class AdminController extends Controller
 
         // Sync specializations - support both formats
         $specializations = $request->input('employee.specializations') ?? $request->input('specializations', []);
-        if (!empty($specializations)) {
-            $employee->specializations()->sync($specializations);
+
+        // Ensure specializations is an array and filter out empty values
+        if (is_array($specializations)) {
+            $specializations = array_filter($specializations, function ($value) {
+                return !empty($value) && is_numeric($value);
+            });
+            $specializations = array_values($specializations); // Re-index array
+        } else {
+            $specializations = [];
         }
+
+        // Always sync specializations (even if empty array to detach)
+        $employee->specializations()->sync($specializations);
 
         return redirect()->route('admin.users.staff')
             ->with('success', 'تم إنشاء الموظف بنجاح');
@@ -379,9 +387,9 @@ class AdminController extends Controller
         if (!$user->isStaff()) {
             abort(404);
         }
-        
+
         $user->load(['employee.specializations']);
-        
+
         return view('admin.users.staff.show', compact('user'));
     }
 
@@ -393,7 +401,7 @@ class AdminController extends Controller
         if (!$user->isStaff()) {
             abort(404);
         }
-        
+
         $user->load(['employee.specializations']);
         $specializations = Specialization::where('is_active', true)->get();
         return view('admin.users.staff.edit', compact('user', 'specializations'));
@@ -407,7 +415,7 @@ class AdminController extends Controller
         if (!$user->isStaff()) {
             abort(404);
         }
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -436,7 +444,7 @@ class AdminController extends Controller
         $bio = $request->input('employee.bio') ?? $request->input('bio');
         $hourlyRate = $request->input('employee.hourly_rate') ?? $request->input('hourly_rate');
         $isAvailable = $request->has('employee.is_available') || $request->has('is_available');
-        
+
         $employee->update([
             'bio' => $bio,
             'hourly_rate' => $hourlyRate,
@@ -444,10 +452,22 @@ class AdminController extends Controller
         ]);
 
         // Sync specializations - support both formats
-        $specializations = $request->input('employee.specializations') ?? $request->input('specializations');
-        if ($specializations !== null) {
+        $specializations = $request->input('employee.specializations') ?? $request->input('specializations', []);
+
+        // Ensure specializations is an array and filter out empty values
+        if (is_array($specializations)) {
+            $specializations = array_filter($specializations, function ($value) {
+                return !empty($value) && is_numeric($value);
+            });
+            $specializations = array_values($specializations); // Re-index array
+        } else {
+            $specializations = [];
+        }
+
+        if (!empty($specializations)) {
             $employee->specializations()->sync($specializations);
         } else {
+            // If no specializations provided, detach all
             $employee->specializations()->detach();
         }
 
@@ -478,20 +498,20 @@ class AdminController extends Controller
     public function customers(Request $request)
     {
         $query = User::where('role', User::ROLE_CUSTOMER);
-        
+
         // Search
         $searchQuery = $request->get('search', '');
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
-        
+
         $users = $query->latest()->paginate(20)->withQueryString();
-        
+
         return view('admin.users.customers.index', compact('users', 'searchQuery'));
     }
 
@@ -542,7 +562,7 @@ class AdminController extends Controller
         if (!$user->isCustomer()) {
             abort(404);
         }
-        
+
         return view('admin.users.customers.show', compact('user'));
     }
 
@@ -554,7 +574,7 @@ class AdminController extends Controller
         if (!$user->isCustomer()) {
             abort(404);
         }
-        
+
         return view('admin.users.customers.edit', compact('user'));
     }
 
@@ -566,7 +586,7 @@ class AdminController extends Controller
         if (!$user->isCustomer()) {
             abort(404);
         }
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
@@ -636,7 +656,7 @@ class AdminController extends Controller
     public function showUser(User $user)
     {
         $user->load(['employee.specializations']);
-        
+
         // Get user statistics based on role
         return view('admin.users.show', compact('user'));
     }
@@ -712,14 +732,14 @@ class AdminController extends Controller
             ->with('success', 'تم حذف المستخدم بنجاح');
     }
 
-// ==================== Bookings Management ====================
+    // ==================== Bookings Management ====================
 
     /**
      * Show all bookings
      */
     public function bookings(Request $request)
     {
-        $query = Booking::with(['customer', 'employee.user', 'service', 'serviceDuration']);
+        $query = Booking::with(['customer', 'employee.user', 'service', 'timeSlots']);
 
         // Filter by status
         if ($request->filled('status')) {
@@ -739,9 +759,9 @@ class AdminController extends Controller
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('customer', function($q) use ($search) {
+            $query->whereHas('customer', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -755,7 +775,7 @@ class AdminController extends Controller
      */
     public function showBooking(Booking $booking)
     {
-        $booking->load(['customer', 'employee.user', 'service.subCategory.category', 'serviceDuration', 'timeSlot']);
+        $booking->load(['customer', 'employee.user', 'service.subCategory.category', 'timeSlot']);
         return view('admin.bookings.show', compact('booking'));
     }
 
@@ -768,10 +788,21 @@ class AdminController extends Controller
             'status' => 'required|in:pending,confirmed,completed,cancelled',
         ]);
 
+        $oldStatus = $booking->status;
         $booking->update(['status' => $request->status]);
 
         if ($request->status === 'cancelled' && $booking->timeSlot) {
             $booking->timeSlot->update(['is_available' => true]);
+        }
+
+        // Send notification if status changed
+        if ($oldStatus !== $booking->status) {
+            try {
+                $notificationService = app(\App\Services\NotificationService::class);
+                $notificationService->bookingStatusUpdated($booking->fresh()->load(['customer', 'service', 'employee.user']), $oldStatus);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send booking status notification: ' . $e->getMessage());
+            }
         }
 
         return redirect()->back()->with('success', 'تم تحديث حالة الحجز بنجاح');
@@ -795,7 +826,7 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'تم تحديث حالة الدفع بنجاح');
     }
 
-// ==================== Time Slots Management ====================
+    // ==================== Time Slots Management ====================
 
     /**
      * Show all time slots
@@ -913,42 +944,260 @@ class AdminController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'days_of_week' => 'required|array',
-            'days_of_week.*' => 'in:0,1,2,3,4,5,6', // 0=Sunday, 6=Saturday
+            'days_of_week.*' => 'in:0,1,2,3,4,5,6',
         ]);
 
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
-        $currentDate = $startDate->copy();
+
         $created = 0;
 
-        while ($currentDate->lte($endDate)) {
-            $dayOfWeek = $currentDate->dayOfWeek;
-            
-            if (in_array($dayOfWeek, $request->days_of_week)) {
-                // Check if time slot already exists
-                $exists = TimeSlot::where('employee_id', $request->employee_id)
-                    ->where('date', $currentDate->format('Y-m-d'))
-                    ->where('start_time', $request->start_time)
-                    ->where('end_time', $request->end_time)
-                    ->exists();
+        while ($startDate->lte($endDate)) {
 
-                if (!$exists) {
-                    TimeSlot::create([
-                        'employee_id' => $request->employee_id,
-                        'date' => $currentDate->format('Y-m-d'),
-                        'start_time' => $request->start_time,
-                        'end_time' => $request->end_time,
-                        'is_available' => true,
-                    ]);
-                    $created++;
+            if (in_array($startDate->dayOfWeek, $request->days_of_week)) {
+
+                $dayStart = Carbon::parse(
+                    $startDate->format('Y-m-d') . ' ' . $request->start_time
+                );
+
+                $dayEnd = Carbon::parse(
+                    $startDate->format('Y-m-d') . ' ' . $request->end_time
+                );
+
+                // ⬅️ تقسيم الوقت ساعة ساعة
+                $period = CarbonPeriod::create($dayStart, '1 hour', $dayEnd->copy()->subHour());
+
+                foreach ($period as $slotStart) {
+
+                    $slotEnd = $slotStart->copy()->addHour();
+
+                    $exists = TimeSlot::where('employee_id', $request->employee_id)
+                        ->where('date', $startDate->format('Y-m-d'))
+                        ->where('start_time', $slotStart->format('H:i:s'))
+                        ->where('end_time', $slotEnd->format('H:i:s'))
+                        ->exists();
+
+                    if (!$exists) {
+                        TimeSlot::create([
+                            'employee_id' => $request->employee_id,
+                            'date' => $startDate->format('Y-m-d'),
+                            'start_time' => $slotStart->format('H:i:s'),
+                            'end_time' => $slotEnd->format('H:i:s'),
+                            'is_available' => true,
+                        ]);
+
+                        $created++;
+                    }
                 }
             }
 
-            $currentDate->addDay();
+            $startDate->addDay();
         }
 
         return redirect()->route('admin.time-slots')
-            ->with('success', "تم إنشاء {$created} وقت متاح بنجاح");
+            ->with('success', "تم إنشاء {$created} فترة زمنية بنجاح");
+    }
+
+
+
+
+    /**
+     * Show employee schedules page
+     */
+    public function employeeSchedules(Request $request)
+    {
+        $query = EmployeeSchedule::with('employee.user');
+
+        // Filter by employee
+        $employeeFilter = $request->get('employee_id', 'all');
+        if ($request->filled('employee_id') && $employeeFilter !== 'all') {
+            $query->where('employee_id', $employeeFilter);
+        }
+
+        $schedules = $query->latest()->paginate(20)->withQueryString();
+        $employees = Employee::with('user')->get();
+
+        return view('admin.time-slots.schedules', compact('schedules', 'employeeFilter', 'employees'));
+    }
+
+    /**
+     * Show create schedule form
+     */
+    public function createSchedule()
+    {
+        $employees = Employee::with('user')->where('is_available', true)->get();
+        return view('admin.time-slots.create-schedule', compact('employees'));
+    }
+
+    /**
+     * Store new schedule
+     */
+    public function storeSchedule(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'days_of_week' => 'required|array|min:1',
+            'days_of_week.*' => 'in:0,1,2,3,4,5,6',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $schedule = EmployeeSchedule::create([
+            'employee_id' => $request->employee_id,
+            'days_of_week' => $request->days_of_week, // Will be converted to JSON by setter
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'is_active' => $request->has('is_active') ? true : false,
+        ]);
+
+        // Generate time slots for the next 30 days based on this schedule
+        $this->generateTimeSlotsFromSchedule($request->employee_id, $request->days_of_week, $request->start_time, $request->end_time);
+
+        return redirect()->route('admin.time-slots.schedules')
+            ->with('success', 'تم إنشاء المواعيد المتكررة بنجاح وتم إنشاء الأوقات المتاحة للـ 30 يوم القادمة');
+    }
+
+    /**
+     * Generate time slots from schedule
+     */
+    private function generateTimeSlotsFromSchedule(
+        int $employeeId,
+        array $daysOfWeek,
+        string $startTime,
+        string $endTime,
+        int $daysAhead = 30
+    ) {
+        $startDate = Carbon::today();
+        $endDate = Carbon::today()->addDays($daysAhead);
+        $created = 0;
+
+        while ($startDate->lte($endDate)) {
+
+            if (in_array($startDate->dayOfWeek, $daysOfWeek)) {
+
+                $dayStart = Carbon::parse(
+                    $startDate->format('Y-m-d') . ' ' . $startTime
+                );
+
+                $dayEnd = Carbon::parse(
+                    $startDate->format('Y-m-d') . ' ' . $endTime
+                );
+
+                // ⬅️ تقسيم ساعة ساعة
+                $period = CarbonPeriod::create(
+                    $dayStart,
+                    '1 hour',
+                    $dayEnd->copy()->subHour()
+                );
+
+                foreach ($period as $slotStart) {
+
+                    $slotEnd = $slotStart->copy()->addHour();
+
+                    $exists = TimeSlot::where('employee_id', $employeeId)
+                        ->where('date', $startDate->format('Y-m-d'))
+                        ->where('start_time', $slotStart->format('H:i:s'))
+                        ->where('end_time', $slotEnd->format('H:i:s'))
+                        ->exists();
+
+                    if (!$exists) {
+                        TimeSlot::create([
+                            'employee_id' => $employeeId,
+                            'date' => $startDate->format('Y-m-d'),
+                            'start_time' => $slotStart->format('H:i:s'),
+                            'end_time' => $slotEnd->format('H:i:s'),
+                            'is_available' => true,
+                        ]);
+
+                        $created++;
+                    }
+                }
+            }
+
+            $startDate->addDay();
+        }
+
+        return $created;
+    }
+
+
+    /**
+     * Show edit schedule form
+     */
+    public function editSchedule(EmployeeSchedule $schedule)
+    {
+        $schedule->load('employee.user');
+        $employees = Employee::with('user')->where('is_available', true)->get();
+        return view('admin.time-slots.edit-schedule', compact('schedule', 'employees'));
+    }
+
+    /**
+     * Update schedule
+     */
+    public function updateSchedule(Request $request, EmployeeSchedule $schedule)
+    {
+        $request->validate([
+            'days_of_week' => 'required|array|min:1',
+            'days_of_week.*' => 'in:0,1,2,3,4,5,6',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $schedule->update([
+            'days_of_week' => $request->days_of_week, // Will be converted to JSON by setter
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'is_active' => $request->has('is_active') ? true : false,
+        ]);
+
+        // Regenerate time slots for the next 30 days
+        $this->generateTimeSlotsFromSchedule(
+            $schedule->employee_id,
+            $request->days_of_week,
+            $request->start_time,
+            $request->end_time
+        );
+
+        return redirect()->route('admin.time-slots.schedules')
+            ->with('success', 'تم تحديث المواعيد المتكررة بنجاح');
+    }
+
+    /**
+     * Delete schedule
+     */
+    public function deleteSchedule(EmployeeSchedule $schedule)
+    {
+        $schedule->delete();
+        return redirect()->route('admin.time-slots.schedules')
+            ->with('success', 'تم حذف المواعيد المتكررة بنجاح');
+    }
+
+    /**
+     * Generate time slots for all active schedules (can be called via cron)
+     */
+    public function generateTimeSlotsForAllSchedules()
+    {
+        $schedules = EmployeeSchedule::where('is_active', true)->with('employee')->get();
+        $totalCreated = 0;
+
+        foreach ($schedules as $schedule) {
+            if ($schedule->employee && $schedule->employee->is_available) {
+                $daysOfWeek = $schedule->days_of_week_array;
+
+                $created = $this->generateTimeSlotsFromSchedule(
+                    $schedule->employee_id,
+                    $daysOfWeek,
+                    $schedule->start_time,
+                    $schedule->end_time,
+                    30
+                );
+                $totalCreated += $created;
+            }
+        }
+
+        return $totalCreated;
     }
 
     // ==================== Specializations Management ====================
@@ -964,9 +1213,9 @@ class AdminController extends Controller
         $searchQuery = $request->get('search', '');
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -1043,6 +1292,83 @@ class AdminController extends Controller
         $specialization->delete();
         return redirect()->route('admin.specializations')
             ->with('success', 'تم حذف التخصص بنجاح');
+    }
+
+    // ==================== Tickets Management ====================
+
+    /**
+     * Show all tickets
+     */
+    public function tickets(Request $request)
+    {
+        $query = \App\Models\Ticket::with(['user', 'assignedUser', 'latestMessage']);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by priority
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        // Filter by assigned user
+        if ($request->filled('assigned_to')) {
+            $query->where('assigned_to', $request->assigned_to);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('subject', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $tickets = $query->latest()->paginate(20)->withQueryString();
+
+        return view('admin.tickets.index', compact('tickets'));
+    }
+
+    /**
+     * Show ticket details
+     */
+    public function showTicket(\App\Models\Ticket $ticket)
+    {
+        $ticket->load([
+            'user',
+            'assignedUser',
+            'messages.user',
+            'messages.attachments',
+            'attachments',
+        ]);
+
+        return view('admin.tickets.show', compact('ticket'));
+    }
+
+    /**
+     * Update ticket status
+     */
+    public function updateTicketStatus(Request $request, \App\Models\Ticket $ticket)
+    {
+        $request->validate([
+            'status' => 'required|in:open,in_progress,resolved,closed',
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+
+        $ticket->update([
+            'status' => $request->status,
+            'assigned_to' => $request->assigned_to ?? $ticket->assigned_to,
+            'resolved_at' => $request->status === 'resolved' ? now() : null,
+        ]);
+
+        return back()->with('success', 'تم تحديث حالة التذكرة بنجاح');
     }
 
 }

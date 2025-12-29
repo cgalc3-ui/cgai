@@ -19,6 +19,7 @@ class StoreServiceRequest extends FormRequest
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:services,slug',
             'description' => 'nullable|string',
+            'hourly_rate' => 'required|numeric|min:0',
             'is_active' => 'nullable|boolean',
         ];
     }

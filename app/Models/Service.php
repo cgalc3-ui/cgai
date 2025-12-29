@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
@@ -14,13 +13,23 @@ class Service extends Model
         'name',
         'slug',
         'description',
+        'hourly_rate',
         'is_active',
     ];
 
     protected $casts = [
         'sub_category_id' => 'integer',
         'specialization_id' => 'integer',
+        'hourly_rate' => 'decimal:2',
         'is_active' => 'boolean',
+    ];
+
+    protected $hidden = [
+        'hourly_rate',
+    ];
+
+    protected $appends = [
+        'price',
     ];
 
     protected static function boot()
@@ -64,13 +73,19 @@ class Service extends Model
         return $this->belongsTo(Specialization::class);
     }
 
-    public function durations(): HasMany
+    /**
+     * Get price attribute (alias for hourly_rate)
+     */
+    public function getPriceAttribute(): ?float
     {
-        return $this->hasMany(ServiceDuration::class);
+        return $this->hourly_rate !== null ? (float) $this->hourly_rate : null;
     }
 
-    public function activeDurations(): HasMany
+    /**
+     * Get hourly rate
+     */
+    public function getHourlyRate(): ?float
     {
-        return $this->hasMany(ServiceDuration::class)->where('is_active', true);
+        return $this->getPriceAttribute();
     }
 }

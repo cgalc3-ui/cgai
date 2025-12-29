@@ -9,102 +9,181 @@ use App\Http\Requests\CancelBookingRequest;
 use App\Models\Booking;
 use App\Models\Employee;
 use App\Models\Service;
-use App\Models\ServiceDuration;
 use App\Models\TimeSlot;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class BookingController extends Controller
 {
     public function store(StoreBookingRequest $request)
     {
-        $customer = $request->user();
+        // استخدام معاملة (Transaction) لضمان أن جميع العمليات تنجح معًا أو تفشل معًا
+        return DB::transaction(function () use ($request) {
+            $customer = $request->user();
 
-        if (!$customer->isCustomer()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول',
-            ], 403);
-        }
+            // 1. التحقق من صلاحيات المستخدم
+            if (!$customer->isCustomer()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ليس لديك صلاحية للوصول',
+                ], 403);
+            }
 
-        $service = Service::findOrFail($request->service_id);
-        $serviceDuration = ServiceDuration::findOrFail($request->service_duration_id);
+            // 2. جلب والتحقق من الخدمة
+            $service = Service::findOrFail($request->service_id);
 
-        if ($serviceDuration->service_id !== $service->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'مدة الخدمة لا تنتمي للخدمة المختارة',
-            ], 422);
-        }
+            if (!$service->specialization_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الخدمة المختارة لا تحتوي على تخصص محدد.',
+                ], 422);
+            }
 
-        if (!$service->specialization_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'الخدمة لا تحتوي على تخصص',
-            ], 422);
-        }
+            $hourlyRate = $service->getHourlyRate();
+            if (!$hourlyRate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الخدمة المختارة لا تحتوي على سعر ساعة محدد.',
+                ], 422);
+            }
 
-        $bookingDate = Carbon::parse($request->booking_date);
-        $startTime = Carbon::parse($request->start_time);
-        
-        $durationInHours = $this->calculateDurationInHours($serviceDuration);
-        $endTime = $startTime->copy()->addHours($durationInHours);
+            // 3. التحقق من الوقت المحددة (Time Slots)
+            $requestedSlotIds = $request->time_slot_ids;
+            $requestedBookingDate = $request->booking_date;
 
-        $employee = $this->findAvailableEmployee(
-            $service->specialization_id,
-            $bookingDate->format('Y-m-d'),
-            $startTime->format('H:i:s'),
-            $endTime->format('H:i:s')
-        );
+            // جلب كل الوقت المحددة من قاعدة البيانات
+            $timeSlots = TimeSlot::whereIn('id', $requestedSlotIds)->lockForUpdate()->get(); // lockForUpdate لمنع التعديل المتزامن
 
-        if (!$employee) {
-            return response()->json([
-                'success' => false,
-                'message' => 'لا يوجد موظف متاح للتخصص المختار في هذا الوقت',
-            ], 422);
-        }
+            // التحقق من أن جميع المعرفات المطلوبة موجودة
+            if ($timeSlots->count() !== count($requestedSlotIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'واحد أو أكثر من معرفات الوقت المحددة غير صالحة.',
+                ], 422);
+            }
 
-        $timeSlot = TimeSlot::where('employee_id', $employee->id)
-            ->where('date', $bookingDate->format('Y-m-d'))
-            ->where('start_time', $startTime->format('H:i:s'))
-            ->where('is_available', true)
-            ->first();
+            // التحقق من أن جميع الوقت المحددة متاحة
+            if ($timeSlots->where('is_available', false)->isNotEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'بعض الوقت المحددة لم تعد متاحة. يرجى تحديث الصفحة والمحاولة مرة أخرى.',
+                ], 422);
+            }
 
-        if (!$timeSlot) {
-            $timeSlot = TimeSlot::create([
-                'employee_id' => $employee->id,
-                'date' => $bookingDate,
-                'start_time' => $startTime->format('H:i:s'),
-                'end_time' => $endTime->format('H:i:s'),
-                'is_available' => true,
+            // التحقق من أن جميع الوقت المحددة لنفس الموظف
+            $uniqueEmployees = $timeSlots->pluck('employee_id')->unique();
+            if ($uniqueEmployees->count() > 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'يجب أن تكون جميع المدد الزمنية المختارة لنفس الموظف.',
+                ], 422);
+            }
+            $employeeId = $uniqueEmployees->first();
+
+            // التحقق من أن جميع الوقت المحددة في نفس تاريخ الحجز المطلوب
+            if ($timeSlots->first(fn($slot) => $slot->date->format('Y-m-d') !== Carbon::parse($requestedBookingDate)->format('Y-m-d'))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المدد الزمنية المختارة لا تتطابق مع تاريخ الحجز المحدد.',
+                ], 422);
+            }
+
+            // 4. التحقق من أن الموظف لديه التخصص المطلوب
+            $employee = Employee::find($employeeId);
+            if (!$employee || !$employee->specializations()->where('specialization_id', $service->specialization_id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الموظف المتاح لا يقدم التخصص المطلوب لهذه الخدمة.',
+                ], 422);
+            }
+
+            // 5. حساب المدة الإجمالية والسعر الإجمالي
+            $timeSlots = $timeSlots->sortBy('start_time');
+            $totalDurationInHours = 0;
+            foreach ($timeSlots as $slot) {
+                $start = Carbon::parse($slot->start_time);
+                $end = Carbon::parse($slot->end_time);
+                $durationInMinutes = $end->diffInMinutes($start, false); // false للحصول على القيمة المطلقة
+                if ($durationInMinutes < 0) {
+                    // إذا كانت المدة سالبة، نستخدم القيمة المطلقة
+                    $durationInMinutes = abs($durationInMinutes);
+                }
+                $totalDurationInHours += $durationInMinutes / 60.0;
+            }
+
+            // التأكد من أن المدة والسعر إيجابية
+            if ($totalDurationInHours <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المدة الزمنية للحجز غير صالحة',
+                ], 422);
+            }
+
+            if ($hourlyRate <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'سعر الساعة للخدمة غير صالح',
+                ], 422);
+            }
+
+            $totalPrice = $totalDurationInHours * $hourlyRate;
+            
+            // التأكد من أن السعر الإجمالي موجب
+            if ($totalPrice <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'السعر الإجمالي المحسوب غير صالح',
+                ], 422);
+            }
+
+
+            // 7. تحديث حالة الوقت المحددة إلى غير متاحة
+            TimeSlot::whereIn('id', $requestedSlotIds)->update(['is_available' => false]);
+
+            // 8. إنشاء الحجز
+            $firstSlot = $timeSlots->first();
+            $lastSlot = $timeSlots->last();
+
+            $booking = Booking::create([
+                'customer_id' => $customer->id,
+                'employee_id' => $employeeId,
+                'service_id' => $service->id,
+                // يمكن تخزين معرف أول وقت كمرجع
+                'time_slot_id' => $firstSlot->id,
+                'booking_date' => $requestedBookingDate,
+                'start_time' => $firstSlot->start_time,
+                'end_time' => $lastSlot->end_time,
+                'total_price' => $totalPrice,
+                'status' => 'pending',
+                'payment_status' => 'unpaid',
+                'notes' => $request->notes,
             ]);
-        } elseif (!$timeSlot->is_available) {
+
+            // 9. ربط الحجز بجميع الوقت المحددة (علاقة many-to-many)
+            $booking->timeSlots()->attach($requestedSlotIds);
+
+            // 10. إرسال الإشعارات
+            try {
+                $notificationService = app(NotificationService::class);
+                $notificationService->bookingCreated($booking->fresh()->load(['customer', 'service', 'employee.user']));
+            } catch (\Exception $e) {
+                // Log error but don't fail the booking creation
+                \Log::error('Failed to send booking notification: ' . $e->getMessage());
+            }
+
+            // 11. إرجاع الاستجابة (بيانات الدفع فقط)
             return response()->json([
-                'success' => false,
-                'message' => 'الوقت المختار غير متاح',
-            ], 422);
-        }
-
-        $booking = Booking::create([
-            'customer_id' => $customer->id,
-            'employee_id' => $employee->id,
-            'service_id' => $service->id,
-            'service_duration_id' => $serviceDuration->id,
-            'time_slot_id' => $timeSlot->id,
-            'booking_date' => $bookingDate,
-            'start_time' => $timeSlot->start_time,
-            'end_time' => $timeSlot->end_time,
-            'total_price' => $serviceDuration->price,
-            'status' => 'pending',
-            'payment_status' => 'unpaid',
-            'notes' => $request->notes,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'تم إنشاء الحجز بنجاح',
-            'data' => $booking->load(['service', 'employee.user', 'timeSlot', 'serviceDuration']),
-        ], 201);
+                'success' => true,
+                'message' => 'تم إنشاء الحجز بنجاح',
+                'data' => [
+                    'id' => $booking->id,
+                    'total_price' => $booking->total_price,
+                ],
+            ], 201);
+        });
     }
 
     public function index(Request $request)
@@ -119,7 +198,7 @@ class BookingController extends Controller
         }
 
         $query = Booking::where('customer_id', $customer->id)
-            ->with(['service.subCategory.category', 'employee.user', 'timeSlot', 'serviceDuration']);
+            ->with(['service', 'employee.user', 'timeSlots']);
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -133,9 +212,207 @@ class BookingController extends Controller
             ->orderBy('start_time', 'desc')
             ->get();
 
+        // Format the response to include only required data
+        $formattedBookings = $bookings->map(function ($booking) {
+            return [
+                'id' => $booking->id,
+                'customer_id' => $booking->customer_id,
+                'employee_id' => $booking->employee_id,
+                'service_id' => $booking->service_id,
+                'booking_date' => $booking->booking_date,
+                'start_time' => $booking->start_time,
+                'end_time' => $booking->end_time,
+                'total_price' => $booking->total_price,
+                'status' => $booking->status,
+                'payment_status' => $booking->payment_status,
+                'payment_id' => $booking->payment_id,
+                'payment_data' => $booking->payment_data,
+                'paid_at' => $booking->paid_at,
+                'notes' => $booking->notes,
+                'created_at' => $booking->created_at,
+                'updated_at' => $booking->updated_at,
+                'service' => $booking->service ? [
+                    'id' => $booking->service->id,
+                    'name' => $booking->service->name,
+                    'description' => $booking->service->description,
+                    'price' => $booking->service->price,
+                ] : null,
+                'employee' => $booking->employee && $booking->employee->user ? [
+                    'name' => $booking->employee->user->name,
+                ] : null,
+                'time_slots' => $booking->timeSlots->map(function ($timeSlot) {
+                    return [
+                        'id' => $timeSlot->id,
+                        'date' => $timeSlot->date,
+                        'start_time' => $timeSlot->start_time,
+                        'end_time' => $timeSlot->end_time,
+                    ];
+                }),
+            ];
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $bookings,
+            'data' => $formattedBookings,
+        ]);
+    }
+
+    /**
+     * Get available dates for a service
+     */
+    public function availableDates(Request $request)
+    {
+        $customer = $request->user();
+
+        if (!$customer || !$customer->isCustomer()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'يجب تسجيل الدخول للوصول',
+            ], 401);
+        }
+
+        $request->validate([
+            'service_id' => 'required|exists:services,id',
+        ]);
+
+        $service = Service::findOrFail($request->service_id);
+
+        if (!$service->specialization_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الخدمة المختارة لا تحتوي على تخصص',
+            ], 422);
+        }
+
+        // الحصول على سعر الساعة (من hourly_rate أو من ServiceDuration)
+        $hourlyRate = $service->getHourlyRate();
+
+        if (!$hourlyRate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الخدمة المختارة لا تحتوي على سعر الساعة. يرجى إضافة سعر الساعة للخدمة أو إضافة مدة خدمة بساعة واحدة.',
+            ], 422);
+        }
+
+        $specializationId = $service->specialization_id;
+        // المدة ثابتة: ساعة واحدة
+        $durationInHours = 1;
+
+        // Get employees with this specialization (with user data)
+        $employeesWithUser = Employee::where('is_available', true)
+            ->whereHas('specializations', function ($query) use ($specializationId) {
+                $query->where('specializations.id', $specializationId);
+            })
+            ->with('user')
+            ->get();
+
+        $employeesIds = $employeesWithUser->isEmpty() ? [] : $employeesWithUser->pluck('id')->toArray();
+
+        // Get all dates for the next 30 days (even if no employees available)
+        $startDate = Carbon::today();
+        $endDate = Carbon::today()->addDays(30); // Next 30 days
+        $availableDates = [];
+
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+
+            // Get all time slots for this date (only if there are employees)
+            $allTimeSlots = collect([]);
+            if (!empty($employeesIds)) {
+                $allTimeSlots = TimeSlot::whereIn('employee_id', $employeesIds)
+                    ->where('date', $dateStr)
+                    ->orderBy('start_time')
+                    ->get();
+            }
+
+            // إنشاء قائمة بالأوقات كل ساعة (من 8 صباحاً إلى 8 مساءً)
+            $timeSlots = [];
+            $startHour = 10; // 8 AM
+            $endHour = 18; // 8 PM
+            $hasAvailableSlots = false;
+
+            for ($hour = $startHour; $hour < $endHour; $hour++) {
+                $startTime = Carbon::createFromTime($hour, 0, 0);
+                $endTime = $startTime->copy()->addHour();
+
+                $startTimeStr = $startTime->format('H:i');
+                $endTimeStr = $endTime->format('H:i');
+                $startTimeFull = $startTime->format('H:i:s');
+                $endTimeFull = $endTime->format('H:i:s');
+
+                // البحث عن time slots التي تغطي هذا الوقت
+                $isAvailable = false;
+                $timeSlotId = null;
+
+
+                // فقط إذا كان هناك موظفين متاحين
+                if (!$employeesWithUser->isEmpty()) {
+                    foreach ($employeesWithUser as $employee) {
+                        // البحث عن time slot يغطي هذا الوقت
+                        $matchingSlot = $allTimeSlots->first(function ($slot) use ($employee, $startTimeFull, $endTimeFull) {
+                            if ($slot->employee_id !== $employee->id) {
+                                return false;
+                            }
+
+                            $slotStart = Carbon::parse($slot->start_time);
+                            $slotEnd = Carbon::parse($slot->end_time);
+                            $requestStart = Carbon::parse($startTimeFull);
+                            $requestEnd = Carbon::parse($endTimeFull);
+
+                            // التحقق من أن time slot يغطي الوقت المطلوب
+                            return $slotStart->lte($requestStart) && $slotEnd->gte($requestEnd);
+                        });
+
+                        if ($matchingSlot) {
+                            // التحقق من أن time slot متاح
+                            $slotIsAvailable = $matchingSlot->is_available &&
+                                $employee->isAvailableForTimeSlot(
+                                    $matchingSlot->id,
+                                    $dateStr,
+                                    $startTimeFull,
+                                    $endTimeFull
+                                );
+
+                            if ($slotIsAvailable) {
+                                $isAvailable = true;
+                                $hasAvailableSlots = true;
+                                $timeSlotId = $matchingSlot->id;
+                                break; // وجدنا موظف متاح، لا حاجة للبحث أكثر
+                            }
+                        }
+                    }
+                }
+
+                $timeSlots[] = [
+                    'time_slot_id' => $timeSlotId,
+                    'start_time' => $startTimeStr,
+                    'end_time' => $endTimeStr,
+                    'is_available' => $isAvailable,
+                ];
+            }
+
+            // إضافة التاريخ دائماً (حتى لو لم يكن هناك موظفين متاحين)
+            $dateData = [
+                'date' => $dateStr,
+                'formatted_date' => $currentDate->format('Y-m-d'),
+                'day_name' => $this->getDayNameArabic($currentDate->dayOfWeek),
+                'time_slots' => $timeSlots,
+            ];
+
+            // إضافة رسالة إذا لم يكن هناك مواعيد متاحة
+            if (!$hasAvailableSlots) {
+                $dateData['message'] = 'لا يوجد مواعيد متاحة';
+            }
+
+            $availableDates[] = $dateData;
+
+            $currentDate->addDay();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $availableDates,
         ]);
     }
 
@@ -151,56 +428,120 @@ class BookingController extends Controller
         }
 
         $request->validate([
-            'specialization_id' => 'required|exists:specializations,id',
+            'service_id' => 'required|exists:services,id',
             'date' => 'required|date|after_or_equal:today',
-            'service_duration_id' => 'required|exists:service_durations,id',
         ]);
 
-        $specializationId = $request->specialization_id;
+        $service = Service::findOrFail($request->service_id);
+
+        if (!$service->specialization_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الخدمة المختارة لا تحتوي على تخصص',
+            ], 422);
+        }
+
+        // الحصول على سعر الساعة (من hourly_rate أو من ServiceDuration)
+        $hourlyRate = $service->getHourlyRate();
+
+        if (!$hourlyRate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الخدمة المختارة لا تحتوي على سعر الساعة. يرجى إضافة سعر الساعة للخدمة أو إضافة مدة خدمة بساعة واحدة.',
+            ], 422);
+        }
+
         $date = Carbon::parse($request->date)->format('Y-m-d');
-        $serviceDuration = ServiceDuration::findOrFail($request->service_duration_id);
-        $durationInHours = $this->calculateDurationInHours($serviceDuration);
+        $specializationId = $service->specialization_id;
+        // المدة ثابتة: ساعة واحدة
+        $durationInHours = 1;
 
         $employees = Employee::where('is_available', true)
             ->whereHas('specializations', function ($query) use ($specializationId) {
                 $query->where('specializations.id', $specializationId);
             })
+            ->with('user')
             ->get();
 
-        $availableSlots = [];
+        if ($employees->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+            ]);
+        }
 
-        foreach ($employees as $employee) {
-            $timeSlots = $employee->timeSlots()
-                ->where('date', $date)
-                ->where('is_available', true)
-                ->orderBy('start_time')
-                ->get();
+        // Get all time slots for this date
+        $allTimeSlots = TimeSlot::whereIn('employee_id', $employees->pluck('id'))
+            ->where('date', $date)
+            ->orderBy('start_time')
+            ->get();
 
-            foreach ($timeSlots as $slot) {
-                $slotStartTime = Carbon::parse($slot->start_time);
-                $slotEndTime = Carbon::parse($slot->end_time);
-                $calculatedEndTime = $slotStartTime->copy()->addHours($durationInHours);
+        // إنشاء قائمة بالأوقات كل ساعة (من 8 صباحاً إلى 8 مساءً)
+        $timeSlots = [];
+        $startHour = 8; // 8 AM
+        $endHour = 20; // 8 PM
 
-                if ($calculatedEndTime->lte($slotEndTime)) {
-                    if ($employee->isAvailableForTimeSlot($slot->id, $date, $slotStartTime->format('H:i:s'), $calculatedEndTime->format('H:i:s'))) {
-                        $availableSlots[] = [
-                            'id' => $slot->id,
-                            'employee' => [
-                                'id' => $employee->id,
-                                'name' => $employee->user->name,
-                            ],
-                            'start_time' => $slotStartTime->format('H:i'),
-                            'end_time' => $calculatedEndTime->format('H:i'),
-                            'date' => $date,
+        for ($hour = $startHour; $hour < $endHour; $hour++) {
+            $startTime = Carbon::createFromTime($hour, 0, 0);
+            $endTime = $startTime->copy()->addHour();
+
+            $startTimeStr = $startTime->format('H:i');
+            $endTimeStr = $endTime->format('H:i');
+            $startTimeFull = $startTime->format('H:i:s');
+            $endTimeFull = $endTime->format('H:i:s');
+
+            // البحث عن time slots التي تغطي هذا الوقت
+            $availableEmployees = [];
+            $isAvailable = false;
+
+            foreach ($employees as $employee) {
+                // البحث عن time slot يغطي هذا الوقت
+                $matchingSlot = $allTimeSlots->first(function ($slot) use ($employee, $startTimeFull, $endTimeFull) {
+                    if ($slot->employee_id !== $employee->id) {
+                        return false;
+                    }
+
+                    $slotStart = Carbon::parse($slot->start_time);
+                    $slotEnd = Carbon::parse($slot->end_time);
+                    $requestStart = Carbon::parse($startTimeFull);
+                    $requestEnd = Carbon::parse($endTimeFull);
+
+                    // التحقق من أن time slot يغطي الوقت المطلوب
+                    return $slotStart->lte($requestStart) && $slotEnd->gte($requestEnd);
+                });
+
+                if ($matchingSlot) {
+                    // التحقق من أن time slot متاح
+                    $slotIsAvailable = $matchingSlot->is_available &&
+                        $employee->isAvailableForTimeSlot(
+                            $matchingSlot->id,
+                            $date,
+                            $startTimeFull,
+                            $endTimeFull
+                        );
+
+                    if ($slotIsAvailable) {
+                        $isAvailable = true;
+                        $availableEmployees[] = [
+                            'id' => $employee->id,
+                            'name' => $employee->user->name,
                         ];
                     }
                 }
             }
+
+            $timeSlots[] = [
+                'start_time' => $startTimeStr,
+                'end_time' => $endTimeStr,
+                'date' => $date,
+                'is_available' => $isAvailable,
+                'employees' => $availableEmployees,
+            ];
         }
 
         return response()->json([
             'success' => true,
-            'data' => $availableSlots,
+            'data' => $timeSlots,
         ]);
     }
 
@@ -222,9 +563,48 @@ class BookingController extends Controller
             ], 403);
         }
 
+        $booking->load(['service', 'employee.user', 'timeSlots']);
+
+        // Format the response to include only required data
+        $formattedBooking = [
+            'id' => $booking->id,
+            'customer_id' => $booking->customer_id,
+            'employee_id' => $booking->employee_id,
+            'service_id' => $booking->service_id,
+            'booking_date' => $booking->booking_date,
+            'start_time' => $booking->start_time,
+            'end_time' => $booking->end_time,
+            'total_price' => $booking->total_price,
+            'status' => $booking->status,
+            'payment_status' => $booking->payment_status,
+            'payment_id' => $booking->payment_id,
+            'payment_data' => $booking->payment_data,
+            'paid_at' => $booking->paid_at,
+            'notes' => $booking->notes,
+            'created_at' => $booking->created_at,
+            'updated_at' => $booking->updated_at,
+            'service' => $booking->service ? [
+                'id' => $booking->service->id,
+                'name' => $booking->service->name,
+                'description' => $booking->service->description,
+                'price' => $booking->service->price,
+            ] : null,
+            'employee' => $booking->employee && $booking->employee->user ? [
+                'name' => $booking->employee->user->name,
+            ] : null,
+            'time_slots' => $booking->timeSlots->map(function ($timeSlot) {
+                return [
+                    'id' => $timeSlot->id,
+                    'date' => $timeSlot->date,
+                    'start_time' => $timeSlot->start_time,
+                    'end_time' => $timeSlot->end_time,
+                ];
+            }),
+        ];
+
         return response()->json([
             'success' => true,
-            'data' => $booking->load(['service.subCategory.category', 'employee.user', 'timeSlot', 'serviceDuration']),
+            'data' => $formattedBooking,
         ]);
     }
 
@@ -258,7 +638,7 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم تحديث الحجز بنجاح',
-            'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot', 'serviceDuration']),
+            'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot']),
         ]);
     }
 
@@ -306,7 +686,7 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم إلغاء الحجز بنجاح',
-            'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot', 'serviceDuration']),
+            'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot']),
         ]);
     }
 
@@ -355,12 +735,13 @@ class BookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم الدفع بنجاح',
-            'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot', 'serviceDuration']),
+            'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot']),
         ]);
     }
 
     /**
      * Find available employee for specialization and time
+     * يختار أول موظف متاح، ويترك الباقي متاحين للعملاء الآخرين
      */
     private function findAvailableEmployee($specializationId, $date, $startTime, $endTime)
     {
@@ -368,11 +749,30 @@ class BookingController extends Controller
             ->whereHas('specializations', function ($query) use ($specializationId) {
                 $query->where('specializations.id', $specializationId);
             })
+            ->with('user')
             ->get();
 
         foreach ($employees as $employee) {
-            if ($employee->isAvailableForTimeSlot(null, $date, $startTime, $endTime)) {
-                return $employee;
+            // البحث عن time slot يغطي الوقت المطلوب
+            $timeSlot = TimeSlot::where('employee_id', $employee->id)
+                ->where('date', $date)
+                ->where('is_available', true)
+                ->get()
+                ->first(function ($slot) use ($startTime, $endTime) {
+                    $slotStart = Carbon::parse($slot->start_time);
+                    $slotEnd = Carbon::parse($slot->end_time);
+                    $requestStart = Carbon::parse($startTime);
+                    $requestEnd = Carbon::parse($endTime);
+
+                    // التحقق من أن time slot يغطي الوقت المطلوب
+                    return $slotStart->lte($requestStart) && $slotEnd->gte($requestEnd);
+                });
+
+            if ($timeSlot) {
+                // التحقق من أن الموظف متاح في هذا الوقت (لا يوجد تعارض مع حجوزات أخرى)
+                if ($employee->isAvailableForTimeSlot($timeSlot->id, $date, $startTime, $endTime)) {
+                    return $employee;
+                }
             }
         }
 
@@ -382,17 +782,28 @@ class BookingController extends Controller
     /**
      * Calculate duration in hours from service duration
      */
-    private function calculateDurationInHours($serviceDuration): float
+    private function calculateDurationInHours($booking): float
     {
-        switch ($serviceDuration->duration_type) {
-            case 'hour':
-                return $serviceDuration->duration_value;
-            case 'day':
-                return $serviceDuration->duration_value * 24;
-            case 'week':
-                return $serviceDuration->duration_value * 24 * 7;
-            default:
-                return 1;
-        }
+        $start = Carbon::parse($booking->start_time);
+        $end = Carbon::parse($booking->end_time);
+        return $end->diffInMinutes($start) / 60.0;
+    }
+
+    /**
+     * Get Arabic day name
+     */
+    private function getDayNameArabic($dayOfWeek): string
+    {
+        $days = [
+            0 => 'الأحد',
+            1 => 'الإثنين',
+            2 => 'الثلاثاء',
+            3 => 'الأربعاء',
+            4 => 'الخميس',
+            5 => 'الجمعة',
+            6 => 'السبت',
+        ];
+
+        return $days[$dayOfWeek] ?? '';
     }
 }

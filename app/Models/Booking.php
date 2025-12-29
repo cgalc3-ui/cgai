@@ -11,7 +11,6 @@ class Booking extends Model
         'customer_id',
         'employee_id',
         'service_id',
-        'service_duration_id',
         'time_slot_id',
         'booking_date',
         'start_time',
@@ -20,11 +19,16 @@ class Booking extends Model
         'status',
         'payment_status',
         'notes',
+        'payment_id',
+        'payment_data',
+        'paid_at',
     ];
 
     protected $casts = [
         'booking_date' => 'date',
         'total_price' => 'decimal:2',
+        'payment_data' => 'array',
+        'paid_at' => 'datetime',
     ];
 
     /**
@@ -54,16 +58,286 @@ class Booking extends Model
     /**
      * Get the time slot for this booking
      */
+    /**
+     * Get the time slot for this booking (primary)
+     */
     public function timeSlot(): BelongsTo
     {
         return $this->belongsTo(TimeSlot::class);
     }
 
     /**
-     * Get the service duration for this booking
+     * Get all time slots for this booking
      */
-    public function serviceDuration(): BelongsTo
+    public function timeSlots(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsTo(ServiceDuration::class);
+        return $this->belongsToMany(TimeSlot::class);
+    }
+
+    public function getFormattedDurationAttribute(): string
+    {
+        $start = \Carbon\Carbon::parse($this->start_time);
+        $end = \Carbon\Carbon::parse($this->end_time);
+        $diffInMinutes = $end->diffInMinutes($start);
+
+        if ($diffInMinutes < 60) {
+            return $diffInMinutes . ' دقيقة';
+        }
+
+        $hours = floor($diffInMinutes / 60);
+        $minutes = $diffInMinutes % 60;
+
+        $result = $hours . ' ساعة';
+        if ($minutes > 0) {
+            $result .= ' و' . $minutes . ' دقيقة';
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get the actual status based on current time
+     * Returns: 'pending', 'in_progress', 'completed', 'cancelled'
+     */
+    public function getActualStatusAttribute(): string
+    {
+        // If cancelled, return cancelled
+        if ($this->status === 'cancelled') {
+            return 'cancelled';
+        }
+
+        $now = \Carbon\Carbon::now();
+        $bookingDateTime = \Carbon\Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->start_time);
+        $endDateTime = \Carbon\Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->end_time);
+
+        // If booking has ended
+        if ($now->gte($endDateTime)) {
+            return 'completed';
+        }
+
+        // If booking has started but not ended
+        if ($now->gte($bookingDateTime) && $now->lt($endDateTime)) {
+            return 'in_progress';
+        }
+
+        // If booking hasn't started yet, return 'pending' (قيد الانتظار)
+        return 'pending';
+    }
+
+    /**
+     * Get time remaining until booking starts (in minutes)
+     * Returns null if booking has already started
+     */
+    public function getTimeUntilStartAttribute(): ?int
+    {
+        $now = \Carbon\Carbon::now();
+        $bookingDateTime = \Carbon\Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->start_time);
+
+        if ($now->gte($bookingDateTime)) {
+            return null; // Booking has already started
+        }
+
+        return $now->diffInMinutes($bookingDateTime);
+    }
+
+    /**
+     * Get elapsed time since booking started (in minutes)
+     * Returns null if booking hasn't started yet
+     */
+    public function getElapsedTimeAttribute(): ?int
+    {
+        $now = \Carbon\Carbon::now();
+        $bookingDateTime = \Carbon\Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->start_time);
+        $endDateTime = \Carbon\Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->end_time);
+
+        if ($now->lt($bookingDateTime)) {
+            return null; // Booking hasn't started yet
+        }
+
+        if ($now->gte($endDateTime)) {
+            // Booking has ended, return total duration
+            return $bookingDateTime->diffInMinutes($endDateTime);
+        }
+
+        return $bookingDateTime->diffInMinutes($now);
+    }
+
+    /**
+     * Get remaining time until booking ends (in minutes)
+     * Returns null if booking hasn't started or has ended
+     */
+    public function getTimeUntilEndAttribute(): ?int
+    {
+        $now = \Carbon\Carbon::now();
+        $bookingDateTime = \Carbon\Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->start_time);
+        $endDateTime = \Carbon\Carbon::parse($this->booking_date->format('Y-m-d') . ' ' . $this->end_time);
+
+        if ($now->lt($bookingDateTime)) {
+            return null; // Booking hasn't started yet
+        }
+
+        if ($now->gte($endDateTime)) {
+            return null; // Booking has ended
+        }
+
+        return $now->diffInMinutes($endDateTime);
+    }
+
+    /**
+     * Format time remaining/elapsed for display
+     */
+    public function getTimeDisplayAttribute(): ?array
+    {
+        $actualStatus = $this->actual_status;
+
+        if ($actualStatus === 'completed') {
+            return [
+                'type' => 'completed',
+                'message' => 'تم الانتهاء',
+                'time' => null
+            ];
+        }
+
+        if ($actualStatus === 'in_progress') {
+            $elapsed = $this->elapsed_time;
+            $remaining = $this->time_until_end;
+
+            return [
+                'type' => 'in_progress',
+                'message' => 'قيد التنفيذ',
+                'elapsed_minutes' => $elapsed,
+                'elapsed_formatted' => $this->formatMinutes($elapsed),
+                'remaining_minutes' => $remaining,
+                'remaining_formatted' => $remaining ? $this->formatMinutes($remaining) : null
+            ];
+        }
+
+        // Pending or confirmed - show time until start
+        $timeUntilStart = $this->time_until_start;
+        if ($timeUntilStart !== null) {
+            return [
+                'type' => 'upcoming',
+                'message' => 'قادم',
+                'minutes' => $timeUntilStart,
+                'formatted' => $this->formatMinutes($timeUntilStart)
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * Format minutes to human readable string
+     */
+    private function formatMinutes(int $minutes): string
+    {
+        if ($minutes < 60) {
+            return $minutes . ' دقيقة';
+        }
+
+        $hours = floor($minutes / 60);
+        $mins = $minutes % 60;
+
+        $result = $hours . ' ساعة';
+        if ($mins > 0) {
+            $result .= ' و' . $mins . ' دقيقة';
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get formatted time slots display (combines consecutive slots)
+     */
+    public function getFormattedTimeSlotsAttribute(): array
+    {
+        if (!$this->timeSlots || $this->timeSlots->isEmpty()) {
+            return [[
+                'start' => $this->start_time,
+                'end' => $this->end_time,
+                'is_range' => false,
+            ]];
+        }
+
+        $sortedSlots = $this->timeSlots->sortBy('start_time')->values();
+        $ranges = [];
+        $currentRange = null;
+
+        foreach ($sortedSlots as $slot) {
+            $slotStart = \Carbon\Carbon::parse($slot->start_time);
+            $slotEnd = \Carbon\Carbon::parse($slot->end_time);
+
+            if ($currentRange === null) {
+                // Start new range
+                $currentRange = [
+                    'start' => $slot->start_time,
+                    'end' => $slot->end_time,
+                    'slots' => [$slot],
+                ];
+            } else {
+                $currentEnd = \Carbon\Carbon::parse($currentRange['end']);
+                
+                // Check if this slot is consecutive (end of current range equals start of this slot)
+                if ($currentEnd->format('H:i:s') === $slotStart->format('H:i:s')) {
+                    // Extend current range
+                    $currentRange['end'] = $slot->end_time;
+                    $currentRange['slots'][] = $slot;
+                } else {
+                    // Save current range and start new one
+                    $ranges[] = [
+                        'start' => $currentRange['start'],
+                        'end' => $currentRange['end'],
+                        'is_range' => count($currentRange['slots']) > 1,
+                    ];
+                    $currentRange = [
+                        'start' => $slot->start_time,
+                        'end' => $slot->end_time,
+                        'slots' => [$slot],
+                    ];
+                }
+            }
+        }
+
+        // Add last range
+        if ($currentRange !== null) {
+            $ranges[] = [
+                'start' => $currentRange['start'],
+                'end' => $currentRange['end'],
+                'is_range' => count($currentRange['slots']) > 1,
+            ];
+        }
+
+        return $ranges;
+    }
+
+    /**
+     * Update status automatically based on time
+     * This should be called periodically (e.g., via scheduled task)
+     */
+    public function updateStatusAutomatically(): bool
+    {
+        $actualStatus = $this->actual_status;
+        $currentStatus = $this->status;
+
+        // Don't update if cancelled
+        if ($currentStatus === 'cancelled') {
+            return false;
+        }
+
+        // Update to in_progress if started
+        if ($actualStatus === 'in_progress' && $currentStatus !== 'in_progress') {
+            $this->status = 'in_progress';
+            $this->save();
+            return true;
+        }
+
+        // Update to completed if ended
+        if ($actualStatus === 'completed' && $currentStatus !== 'completed') {
+            $this->status = 'completed';
+            $this->save();
+            return true;
+        }
+
+        return false;
     }
 }

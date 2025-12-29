@@ -17,6 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckUserRole::class,
         ]);
     })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule): void {
+        // Update booking statuses every minute
+        $schedule->command('bookings:update-statuses')
+            ->everyMinute()
+            ->withoutOverlapping()
+            ->runInBackground();
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

@@ -98,4 +98,20 @@ class User extends Authenticatable
     {
         return $this->hasOne(Employee::class);
     }
+
+    /**
+     * Get all notifications for this user
+     */
+    public function notifications()
+    {
+        return $this->hasMany(\App\Models\Notification::class);
+    }
+
+    /**
+     * Get unread notifications count
+     */
+    public function unreadNotificationsCount()
+    {
+        return $this->notifications()->unread()->count();
+    }
 }

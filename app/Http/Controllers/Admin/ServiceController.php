@@ -29,13 +29,12 @@ class ServiceController extends Controller
     {
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
+
         if (empty($data['slug'])) {
             unset($data['slug']);
         }
-        
-        Service::create($data);
 
+        $service = Service::create($data);
         return redirect()->route('admin.services.index')
             ->with('success', 'تم إنشاء الخدمة بنجاح');
     }
@@ -51,16 +50,16 @@ class ServiceController extends Controller
     {
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
+
         if (empty($data['slug'])) {
             unset($data['slug']);
         }
-        
-        $service->update($data);
 
+        $service->update($data);
         return redirect()->route('admin.services.index')
             ->with('success', 'تم تحديث الخدمة بنجاح');
     }
+
 
     public function destroy(Service $service)
     {

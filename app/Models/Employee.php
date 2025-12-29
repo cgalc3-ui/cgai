@@ -22,6 +22,14 @@ class Employee extends Model
         'is_available' => 'boolean',
     ];
 
+    protected $hidden = [
+        'hourly_rate',
+    ];
+
+    protected $appends = [
+        'price',
+    ];
+
     /**
      * Get the user that owns the employee
      */
@@ -67,6 +75,22 @@ class Employee extends Model
     }
 
     /**
+     * Get all schedules for this employee
+     */
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(EmployeeSchedule::class);
+    }
+
+    /**
+     * Get active schedules for this employee
+     */
+    public function activeSchedules(): HasMany
+    {
+        return $this->hasMany(EmployeeSchedule::class)->where('is_active', true);
+    }
+
+    /**
      * Check if employee is available for a specific time slot
      */
     public function isAvailableForTimeSlot($timeSlotId, $date, $startTime, $endTime): bool
@@ -82,16 +106,16 @@ class Employee extends Model
                 $query->where(function ($q) use ($startTime, $endTime) {
                     $q->where(function ($q1) use ($startTime, $endTime) {
                         $q1->where('start_time', '<=', $startTime)
-                           ->where('end_time', '>', $startTime);
+                            ->where('end_time', '>', $startTime);
                     })
-                    ->orWhere(function ($q2) use ($startTime, $endTime) {
-                        $q2->where('start_time', '<', $endTime)
-                           ->where('end_time', '>=', $endTime);
-                    })
-                    ->orWhere(function ($q3) use ($startTime, $endTime) {
-                        $q3->where('start_time', '>=', $startTime)
-                           ->where('end_time', '<=', $endTime);
-                    });
+                        ->orWhere(function ($q2) use ($startTime, $endTime) {
+                            $q2->where('start_time', '<', $endTime)
+                                ->where('end_time', '>=', $endTime);
+                        })
+                        ->orWhere(function ($q3) use ($startTime, $endTime) {
+                            $q3->where('start_time', '>=', $startTime)
+                                ->where('end_time', '<=', $endTime);
+                        });
                 });
             })
             ->exists();
@@ -105,7 +129,7 @@ class Employee extends Model
     public static function findAvailableForSpecializationAndTimeSlot($specializationId, $timeSlotId, $date, $startTime, $endTime)
     {
         $timeSlot = \App\Models\TimeSlot::find($timeSlotId);
-        
+
         if (!$timeSlot || !$timeSlot->is_available) {
             return null;
         }
@@ -120,12 +144,20 @@ class Employee extends Model
             $hasTimeSlot = $employee->timeSlots()
                 ->where('id', $timeSlotId)
                 ->exists();
-            
+
             if ($hasTimeSlot && $employee->isAvailableForTimeSlot($timeSlotId, $date, $startTime, $endTime)) {
                 return $employee;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Get price attribute (alias for hourly_rate)
+     */
+    public function getPriceAttribute(): ?float
+    {
+        return $this->hourly_rate !== null ? (float) $this->hourly_rate : null;
     }
 }

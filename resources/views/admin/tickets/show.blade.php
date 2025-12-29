@@ -1,0 +1,658 @@
+@extends('layouts.dashboard')
+
+@section('title', 'تفاصيل التذكرة')
+@section('page-title', 'تفاصيل التذكرة')
+
+@section('content')
+    <div class="ticket-details-container">
+        <!-- Header -->
+        <div class="ticket-details-header">
+            <div class="header-left">
+                <h2>{{ $ticket->subject }}</h2>
+                <div class="ticket-meta-info">
+                    <span class="ticket-date">
+                        <i class="fas fa-calendar"></i> {{ $ticket->created_at->format('Y-m-d H:i') }}
+                    </span>
+                </div>
+            </div>
+            <div class="header-right">
+                <a href="{{ route('admin.tickets') }}" class="btn-back">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>العودة</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Ticket Info -->
+        <div class="ticket-info-section">
+            <div class="info-card">
+                <div class="info-item">
+                    <label>العميل:</label>
+                    <span>{{ $ticket->user->name }}</span>
+                </div>
+                <div class="info-item">
+                    <label>البريد الإلكتروني:</label>
+                    <span>{{ $ticket->user->email }}</span>
+                </div>
+                <div class="info-item">
+                    <label>الهاتف:</label>
+                    <span>{{ $ticket->user->phone ?? 'غير محدد' }}</span>
+                </div>
+            </div>
+
+            <div class="admin-actions-card">
+                <h3>إدارة التذكرة</h3>
+                <form action="{{ route('admin.tickets.update-status', $ticket) }}" method="POST" class="status-form">
+                    @csrf
+                    @method('PUT')
+                    <div class="form-group">
+                        <label>الحالة:</label>
+                        <select name="status" class="form-select">
+                            <option value="open" {{ $ticket->status === 'open' ? 'selected' : '' }}>مفتوحة</option>
+                            <option value="in_progress" {{ $ticket->status === 'in_progress' ? 'selected' : '' }}>قيد المعالجة</option>
+                            <option value="resolved" {{ $ticket->status === 'resolved' ? 'selected' : '' }}>محلولة</option>
+                            <option value="closed" {{ $ticket->status === 'closed' ? 'selected' : '' }}>مغلقة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الأولوية:</label>
+                        <select name="priority" class="form-select" disabled>
+                            <option value="low" {{ $ticket->priority === 'low' ? 'selected' : '' }}>منخفضة</option>
+                            <option value="medium" {{ $ticket->priority === 'medium' ? 'selected' : '' }}>متوسطة</option>
+                            <option value="high" {{ $ticket->priority === 'high' ? 'selected' : '' }}>عالية</option>
+                            <option value="urgent" {{ $ticket->priority === 'urgent' ? 'selected' : '' }}>عاجلة</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-update">تحديث الحالة</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Initial Description -->
+        <div class="description-section">
+            <h3>الوصف الأولي</h3>
+            <div class="description-content">
+                <p>{{ $ticket->description }}</p>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages-section">
+            <h3>المحادثة</h3>
+            <div class="messages-list">
+                @foreach($ticket->messages as $message)
+                    <div class="message-item {{ $message->user_id === auth()->id() ? 'own-message' : '' }}">
+                        <div class="message-header">
+                            <div class="message-user">
+                                <strong>{{ $message->user->name }}</strong>
+                                @if($message->is_internal)
+                                    <span class="badge-internal">ملاحظة داخلية</span>
+                                @endif
+                            </div>
+                            <span class="message-time">{{ $message->created_at->diffForHumans() }}</span>
+                        </div>
+                        <div class="message-body">
+                            <p>{{ $message->message }}</p>
+                            @if($message->attachments->count() > 0)
+                                <div class="message-attachments">
+                                    @foreach($message->attachments as $attachment)
+                                        <div class="attachment-item">
+                                            @if($attachment->isImage())
+                                                <a href="{{ Storage::url($attachment->file_path) }}" target="_blank">
+                                                    <img src="{{ Storage::url($attachment->file_path) }}" 
+                                                         alt="{{ $attachment->file_name }}" 
+                                                         class="attachment-image">
+                                                </a>
+                                            @else
+                                                <a href="{{ Storage::url($attachment->file_path) }}" 
+                                                   target="_blank" class="attachment-link">
+                                                    <i class="fas fa-file"></i>
+                                                    {{ $attachment->file_name }}
+                                                </a>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Reply Form -->
+        <div class="reply-section">
+            <h3>إضافة رد</h3>
+            <form action="{{ route('tickets.add-message', $ticket) }}" method="POST" enctype="multipart/form-data" class="reply-form">
+                @csrf
+                <div class="form-group">
+                    <textarea name="message" class="form-textarea" rows="4" 
+                              placeholder="اكتب ردك هنا..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_internal" value="1">
+                        <span>ملاحظة داخلية (لن يراها العميل)</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="attachments">إرفاق صور (اختياري)</label>
+                    <input type="file" name="attachments[]" id="attachments" 
+                           class="form-input" multiple accept="image/*">
+                    <small class="form-help">يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)</small>
+                </div>
+                <button type="submit" class="btn-send">
+                    <i class="fas fa-paper-plane"></i>
+                    إرسال
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @push('styles')
+        <style>
+            .ticket-details-container {
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                padding: 32px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .ticket-details-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 32px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #e5e7eb;
+            }
+
+            .ticket-details-header h2 {
+                font-size: 28px;
+                font-weight: 700;
+                color: #1f2937;
+                margin: 0 0 12px 0;
+                line-height: 1.3;
+            }
+
+            .ticket-meta-info {
+                display: flex;
+                gap: 20px;
+                font-size: 14px;
+                color: #6b7280;
+                flex-wrap: wrap;
+            }
+
+            .ticket-meta-info span {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .ticket-meta-info i {
+                color: #9ca3af;
+            }
+
+            .btn-back {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                background: #f3f4f6;
+                color: #4b5563;
+                border-radius: 8px;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s;
+                border: 1px solid #e5e7eb;
+            }
+
+            .btn-back:hover {
+                background: #e5e7eb;
+                color: #1f2937;
+                border-color: #d1d5db;
+            }
+
+            .btn-back i {
+                font-size: 12px;
+            }
+
+            .ticket-info-section {
+                display: grid;
+                grid-template-columns: 1fr 320px;
+                gap: 24px;
+                margin-bottom: 32px;
+            }
+
+            .info-card {
+                background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+                padding: 20px;
+                border-radius: 12px;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .info-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .info-item:last-child {
+                border-bottom: none;
+            }
+
+            .info-item label {
+                font-weight: 600;
+                color: #4b5563;
+                font-size: 14px;
+            }
+
+            .info-item span:not(.badge) {
+                color: #1f2937;
+                font-weight: 500;
+            }
+
+            .admin-actions-card {
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                padding: 20px;
+                border-radius: 12px;
+                border: 1px solid #bfdbfe;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .admin-actions-card h3 {
+                font-size: 18px;
+                font-weight: 700;
+                margin: 0 0 16px 0;
+                color: #1e40af;
+            }
+
+            .status-form {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .status-form .form-group {
+                margin: 0;
+            }
+
+            .status-form label {
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 8px;
+            }
+
+            .form-select {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                font-size: 14px;
+                background: white;
+                transition: all 0.2s;
+            }
+
+            .form-select:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            .btn-update {
+                padding: 10px 20px;
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .btn-update:hover {
+                background: #2563eb;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+            }
+
+            .description-section {
+                background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+                padding: 24px;
+                border-radius: 12px;
+                margin-bottom: 32px;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .description-section h3 {
+                font-size: 20px;
+                font-weight: 700;
+                margin: 0 0 16px 0;
+                color: #1f2937;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .description-section h3::before {
+                content: '';
+                width: 4px;
+                height: 20px;
+                background: #3b82f6;
+                border-radius: 2px;
+            }
+
+            .description-content p {
+                color: #374151;
+                line-height: 1.8;
+                margin: 0;
+                font-size: 15px;
+                white-space: pre-wrap;
+            }
+
+            .messages-section {
+                margin-bottom: 32px;
+            }
+
+            .messages-section h3 {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 0 0 24px 0;
+                color: #1f2937;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .messages-section h3::before {
+                content: '';
+                width: 4px;
+                height: 24px;
+                background: #3b82f6;
+                border-radius: 2px;
+            }
+
+            .messages-list {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .message-item {
+                background: #ffffff;
+                padding: 20px;
+                border-radius: 12px;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                transition: all 0.2s;
+            }
+
+            .message-item:hover {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .message-item.own-message {
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                border-color: #93c5fd;
+            }
+
+            .message-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .message-user {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .message-user strong {
+                color: #1f2937;
+                font-size: 15px;
+            }
+
+            .badge-internal {
+                padding: 4px 10px;
+                background: #fef3c7;
+                color: #92400e;
+                border-radius: 6px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+
+            .message-time {
+                font-size: 12px;
+                color: #9ca3af;
+                font-weight: 500;
+            }
+
+            .message-body {
+                padding-top: 8px;
+            }
+
+            .message-body p {
+                margin: 0 0 12px 0;
+                color: #374151;
+                line-height: 1.8;
+                font-size: 15px;
+                white-space: pre-wrap;
+            }
+
+            .message-attachments {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 12px;
+            }
+
+            .attachment-item {
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                overflow: hidden;
+                background: white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: all 0.2s;
+            }
+
+            .attachment-item:hover {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                transform: translateY(-2px);
+            }
+
+            .attachment-item a {
+                display: block;
+                text-decoration: none;
+            }
+
+            .attachment-image {
+                max-width: 300px;
+                max-height: 300px;
+                width: auto;
+                height: auto;
+                display: block;
+                object-fit: contain;
+                cursor: pointer;
+                border-radius: 8px;
+            }
+
+            .attachment-link {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 16px;
+                color: #3b82f6;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+            .attachment-link:hover {
+                background: #f3f4f6;
+            }
+
+            .attachment-link i {
+                font-size: 16px;
+            }
+
+            .reply-section {
+                background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+                padding: 24px;
+                border-radius: 12px;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
+
+            .reply-section h3 {
+                font-size: 20px;
+                font-weight: 700;
+                margin: 0 0 20px 0;
+                color: #1f2937;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .reply-section h3::before {
+                content: '';
+                width: 4px;
+                height: 20px;
+                background: #3b82f6;
+                border-radius: 2px;
+            }
+
+            .reply-form {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .reply-form .form-group {
+                margin: 0;
+            }
+
+            .form-textarea {
+                width: 100%;
+                padding: 14px;
+                border: 2px solid #d1d5db;
+                border-radius: 10px;
+                font-size: 15px;
+                font-family: inherit;
+                transition: all 0.2s;
+                resize: vertical;
+                min-height: 120px;
+            }
+
+            .form-textarea:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            .form-input {
+                width: 100%;
+                padding: 10px 12px;
+                border: 2px solid #d1d5db;
+                border-radius: 8px;
+                font-size: 14px;
+                transition: all 0.2s;
+            }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            .form-help {
+                display: block;
+                font-size: 12px;
+                color: #6b7280;
+                margin-top: 6px;
+            }
+
+            .checkbox-label {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 6px;
+                transition: background 0.2s;
+            }
+
+            .checkbox-label:hover {
+                background: #f3f4f6;
+            }
+
+            .checkbox-label input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+
+            .btn-send {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 14px 28px;
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                align-self: flex-start;
+                transition: all 0.2s;
+                box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+            }
+
+            .btn-send:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+            }
+
+            .btn-send:active {
+                transform: translateY(0);
+            }
+
+            @media (max-width: 768px) {
+                .ticket-details-container {
+                    padding: 20px;
+                }
+
+                .ticket-details-header {
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                .ticket-info-section {
+                    grid-template-columns: 1fr;
+                }
+
+                .ticket-details-header h2 {
+                    font-size: 22px;
+                }
+
+                .attachment-image {
+                    max-width: 100%;
+                }
+            }
+        </style>
+    @endpush
+@endsection
+

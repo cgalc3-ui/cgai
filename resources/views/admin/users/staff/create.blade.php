@@ -103,6 +103,13 @@
                     <label for="hourly_rate">السعر/ساعة (ريال)</label>
                     <input type="number" id="hourly_rate" name="employee[hourly_rate]" value="{{ old('employee.hourly_rate') }}" step="0.01" min="0" class="form-control">
                 </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="employee[is_available]" value="1" {{ old('employee.is_available', true) ? 'checked' : '' }}>
+                        <span>الموظف متاح</span>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -153,44 +160,51 @@
 
 @push('scripts')
 <script>
-    document.getElementById('specialization_select').addEventListener('change', function() {
-        const select = this;
-        const selectedId = select.value;
-        const selectedOption = select.options[select.selectedIndex];
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('specialization_select');
+        if (!select) return;
         
-        if (!selectedId) return;
-        
-        const selectedName = selectedOption.getAttribute('data-name');
-        const container = document.getElementById('selected_specializations');
-        
-        // Check if already selected
-        const existingTags = container.querySelectorAll('.specialization-tag');
-        for (let tag of existingTags) {
-            if (tag.getAttribute('data-id') === selectedId) {
-                select.value = '';
-                return;
+        select.addEventListener('change', function() {
+            const selectedId = this.value;
+            if (!selectedId) return;
+            
+            const selectedOption = this.options[this.selectedIndex];
+            const selectedName = selectedOption.getAttribute('data-name');
+            const container = document.getElementById('selected_specializations');
+            
+            if (!container) return;
+            
+            // Check if already selected
+            const existingTags = container.querySelectorAll('.specialization-tag');
+            for (let tag of existingTags) {
+                if (tag.getAttribute('data-id') === selectedId) {
+                    this.value = '';
+                    return;
+                }
             }
-        }
-        
-        // Create new tag
-        const tagDiv = document.createElement('div');
-        tagDiv.className = 'specialization-tag';
-        tagDiv.setAttribute('data-id', selectedId);
-        tagDiv.innerHTML = `
-            <input type="hidden" name="employee[specializations][]" value="${selectedId}">
-            <span>${selectedName}</span>
-            <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        
-        container.appendChild(tagDiv);
-        select.value = '';
+            
+            // Create new tag
+            const tagDiv = document.createElement('div');
+            tagDiv.className = 'specialization-tag';
+            tagDiv.setAttribute('data-id', selectedId);
+            tagDiv.innerHTML = `
+                <input type="hidden" name="employee[specializations][]" value="${selectedId}">
+                <span>${selectedName}</span>
+                <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(tagDiv);
+            this.value = '';
+        });
     });
     
     function removeSpecialization(button) {
         const tag = button.closest('.specialization-tag');
-        tag.remove();
+        if (tag) {
+            tag.remove();
+        }
     }
 </script>
 @endpush

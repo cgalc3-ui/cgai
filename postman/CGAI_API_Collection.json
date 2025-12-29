@@ -743,49 +743,10 @@
 			"description": "جميع endpoints الخاصة بالخدمات"
 		},
 		{
-			"name": "Time Slots",
-			"item": [
-				{
-					"name": "Get Time Slots for Employee",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/employees/1/time-slots?date=2025-12-25",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"employees",
-								"1",
-								"time-slots"
-							],
-							"query": [
-								{
-									"key": "date",
-									"value": "2025-12-25",
-									"description": "التاريخ المطلوب (YYYY-MM-DD)"
-								}
-							]
-						},
-						"description": "الحصول على الأوقات المتاحة لموظف في تاريخ معين"
-					},
-					"response": []
-				}
-			],
-			"description": "جميع endpoints الخاصة بالأوقات المتاحة"
-		},
-		{
 			"name": "Bookings",
 			"item": [
 				{
-					"name": "1. Get Available Time Slots",
+					"name": "1. Get Available Dates",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -801,34 +762,24 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/customer/bookings/available-time-slots?specialization_id=1&date=2025-12-26&service_duration_id=1",
+							"raw": "{{base_url}}/customer/bookings/available-dates?service_id=1",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"customer",
 								"bookings",
-								"available-time-slots"
+								"available-dates"
 							],
 							"query": [
 								{
-									"key": "specialization_id",
+									"key": "service_id",
 									"value": "1",
-									"description": "معرف التخصص"
-								},
-								{
-									"key": "date",
-									"value": "2025-12-26",
-									"description": "التاريخ المطلوب (YYYY-MM-DD)"
-								},
-								{
-									"key": "service_duration_id",
-									"value": "1",
-									"description": "معرف مدة الخدمة"
+									"description": "معرف الخدمة (التخصص والمدة تُؤخذ تلقائياً من الخدمة - المدة ثابتة: ساعة واحدة)"
 								}
 							]
 						},
-						"description": "الحصول على الأوقات المتاحة بناءً على التخصص والتاريخ ومدة الخدمة. يتطلب Token."
+						"description": "الحصول على جميع التواريخ للـ 30 يوم القادمة مع الأوقات كل ساعة (من 8 صباحاً إلى 8 مساءً) لكل تاريخ. تُرجع جميع التواريخ دائماً، حتى لو لم يكن هناك موظفين متاحين (في هذه الحالة جميع الأوقات تكون is_available: false). التخصص والمدة تُؤخذ تلقائياً من الخدمة (المدة ثابتة: ساعة واحدة). يتطلب Token."
 					},
 					"response": []
 				},
@@ -897,7 +848,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service_id\": 1,\n    \"service_duration_id\": 1,\n    \"booking_date\": \"2025-12-26\",\n    \"start_time\": \"09:00\",\n    \"notes\": \"ملاحظات إضافية (اختياري)\"\n}",
+							"raw": "{\n    \"service_id\": 1,\n    \"booking_date\": \"2025-12-26\",\n    \"time_slot_ids\": [1, 2, 3],\n    \"notes\": \"ملاحظات إضافية (اختياري)\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -914,7 +865,7 @@
 								"bookings"
 							]
 						},
-						"description": "إنشاء حجز جديد. النظام يختار الموظف تلقائياً بناءً على التخصص. يتطلب Token."
+						"description": "إنشاء حجز جديد. يتطلب service_id و booking_date و time_slot_ids (مصفوفة من معرفات الأوقات المتاحة). التخصص والمدة تُؤخذ تلقائياً من الخدمة. جميع time_slot_ids يجب أن تكون لنفس الموظف ونفس التاريخ. يتطلب Token."
 					},
 					"response": []
 				},
@@ -1041,7 +992,7 @@
 					"response": []
 				},
 				{
-					"name": "7. Process Payment",
+					"name": "7. Process Manual Payment",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -1063,7 +1014,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"payment_method\": \"credit_card\",\n    \"transaction_id\": \"TXN123456\"\n}",
+							"raw": "{\n    \"payment_method\": \"cash\",\n    \"transaction_id\": \"TXN123456\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1082,7 +1033,7 @@
 								"payment"
 							]
 						},
-						"description": "معالجة الدفع للحجز. يتطلب Token."
+						"description": "معالجة الدفع اليدوي للحجز (نقدي، بطاقة ائتمان، بطاقة خصم). payment_method: cash, credit_card, debit_card, أو online. transaction_id اختياري. يحدث payment_status إلى 'paid' و status إلى 'confirmed' مباشرة. للدفع الإلكتروني عبر PayMob، استخدم endpoint 'Initiate PayMob Payment'. يتطلب Token."
 					},
 					"response": []
 				}
@@ -1090,10 +1041,96 @@
 			"description": "جميع endpoints الخاصة بالحجوزات"
 		},
 		{
-			"name": "Time Slots",
+			"name": "Payments",
 			"item": [
 				{
-					"name": "Get Time Slots for Employee",
+					"name": "1. Initiate PayMob Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/1/pay-online",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"1",
+								"pay-online"
+							]
+						},
+						"description": "بدء عملية الدفع الإلكتروني عبر PayMob. لا يتطلب بيانات في الـ body (فارغ {}). يُرجع payment_url لتوجيه العميل لصفحة الدفع. بعد إتمام الدفع، PayMob يرسل callback تلقائياً لتحديث payment_status. يتطلب Token ومعرف الحجز (booking_id)."
+					},
+					"response": []
+				},
+				{
+					"name": "2. PayMob Callback (System Use)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"success\": true,\n    \"id\": \"transaction_id\",\n    \"order\": \"paymob_order_id\",\n    \"amount_cents\": 10000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/payment/callback",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"payment",
+								"callback"
+							]
+						},
+						"description": "هذا الـ endpoint يُستخدم من قِبل PayMob لإرسال نتيجة الدفع (نجاح/فشل). لا يُستخدم مباشرة من التطبيق."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالدفع الإلكتروني عبر PayMob"
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "1. Get All Notifications",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -1101,33 +1138,575 @@
 								"key": "Accept",
 								"value": "application/json",
 								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/employees/1/time-slots?date=2025-12-25",
+							"raw": "{{base_url}}/notifications?read=false&type=booking_created&per_page=20",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"employees",
-								"1",
-								"time-slots"
+								"notifications"
 							],
 							"query": [
 								{
-									"key": "date",
-									"value": "2025-12-25",
-									"description": "التاريخ المطلوب (YYYY-MM-DD)"
+									"key": "read",
+									"value": "false",
+									"description": "فلترة حسب الحالة (true/false) - اختياري"
+								},
+								{
+									"key": "type",
+									"value": "booking_created",
+									"description": "فلترة حسب نوع الإشعار (booking_created, booking_status_updated, payment_received, etc.) - اختياري"
+								},
+								{
+									"key": "per_page",
+									"value": "20",
+									"description": "عدد الإشعارات في الصفحة - اختياري (افتراضي: 20)"
 								}
 							]
 						},
-						"description": "الحصول على الأوقات المتاحة لموظف في تاريخ معين"
+						"description": "الحصول على جميع إشعارات المستخدم المصادق عليه. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Unread Notifications Count",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notifications/unread-count",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"unread-count"
+							]
+						},
+						"description": "الحصول على عدد الإشعارات غير المقروءة. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Mark Notification as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications/1/read",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"1",
+								"read"
+							]
+						},
+						"description": "تحديد إشعار معين كمقروء. يتطلب Token ومعرف الإشعار (notification_id)."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Mark All Notifications as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/notifications/mark-all-read",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"mark-all-read"
+							]
+						},
+						"description": "تحديد جميع الإشعارات كمقروءة. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Delete Notification",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/notifications/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"notifications",
+								"1"
+							]
+						},
+						"description": "حذف إشعار معين. يتطلب Token ومعرف الإشعار (notification_id)."
 					},
 					"response": []
 				}
 			],
-			"description": "جميع endpoints الخاصة بالأوقات المتاحة"
+			"description": "جميع endpoints الخاصة بالإشعارات"
+		},
+		{
+			"name": "Tickets",
+			"item": [
+				{
+					"name": "1. Get All Tickets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tickets?status=open&priority=high&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "open",
+									"description": "فلترة حسب الحالة (open, in_progress, resolved, closed) - اختياري"
+								},
+								{
+									"key": "priority",
+									"value": "high",
+									"description": "فلترة حسب الأولوية (low, medium, high, urgent) - اختياري"
+								},
+								{
+									"key": "per_page",
+									"value": "20",
+									"description": "عدد التذاكر في الصفحة - اختياري (افتراضي: 20)"
+								}
+							]
+						},
+						"description": "الحصول على جميع تذاكر المستخدم المصادق عليه. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Create New Ticket",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "subject",
+									"value": "مشكلة في الحجز",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "وصف المشكلة بالتفصيل...",
+									"type": "text"
+								},
+								{
+									"key": "priority",
+									"value": "medium",
+									"type": "text",
+									"description": "الأولوية (low, medium, high, urgent) - اختياري"
+								},
+								{
+									"key": "attachments[]",
+									"type": "file",
+									"src": [],
+									"description": "يمكن إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/tickets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets"
+							]
+						},
+						"description": "إنشاء تذكرة دعم جديدة مع إمكانية إرفاق صور. يتطلب Token. استخدم form-data وليس JSON."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Ticket Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tickets/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets",
+								"1"
+							]
+						},
+						"description": "الحصول على تفاصيل تذكرة معينة مع جميع الرسائل والمرفقات. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Add Message to Ticket",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "message",
+									"value": "نص الرسالة هنا...",
+									"type": "text"
+								},
+								{
+									"key": "is_internal",
+									"value": "false",
+									"type": "text",
+									"description": "ملاحظة داخلية (للأدمن/الموظف فقط) - true/false"
+								},
+								{
+									"key": "attachments[]",
+									"type": "file",
+									"src": [],
+									"description": "يمكن إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/tickets/1/messages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets",
+								"1",
+								"messages"
+							]
+						},
+						"description": "إضافة رسالة جديدة للتذكرة مع إمكانية إرفاق صور. يتطلب Token. استخدم form-data وليس JSON."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Update Ticket Status (Admin/Staff)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"in_progress\",\n    \"assigned_to\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/tickets/1/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tickets",
+								"1",
+								"status"
+							]
+						},
+						"description": "تحديث حالة التذكرة وتعيينها لموظف (للأدمن والموظف فقط). status: open, in_progress, resolved, closed. assigned_to: معرف المستخدم (اختياري). يتطلب Token."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالتذاكر والدعم"
+		},
+		{
+			"name": "Employee",
+			"item": [
+				{
+					"name": "1. Get Employee Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employee/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee",
+								"dashboard"
+							]
+						},
+						"description": "الحصول على بيانات Dashboard الموظف. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Employee Bookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/employee/bookings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee",
+								"bookings"
+							]
+						},
+						"description": "الحصول على جميع حجوزات الموظف. يتطلب Token."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالموظف"
+		},
+		{
+			"name": "Settings",
+			"item": [
+				{
+					"name": "1. Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "الحصول على معلومات المستخدم الحالي. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Update Customer Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"اسم المستخدم\",\n    \"email\": \"user@example.com\",\n    \"phone\": \"0501234567\",\n    \"gender\": \"male\",\n    \"date_of_birth\": \"1990-01-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"profile"
+							]
+						},
+						"description": "تحديث بيانات الملف الشخصي للعميل. يتطلب Token. gender: male/female (اختياري). date_of_birth: YYYY-MM-DD (اختياري)."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالإعدادات والملف الشخصي"
 		}
 	]
 }
-
