@@ -16,8 +16,16 @@ class CategoryController extends Controller
         return view('admin.categories.index', compact('categories'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $view = view('admin.categories.create-modal');
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => $view->render()
+            ]);
+        }
+        
         return view('admin.categories.create');
     }
 
@@ -32,12 +40,28 @@ class CategoryController extends Controller
         
         Category::create($data);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.category_created'),
+                'redirect' => route('admin.categories.index')
+            ]);
+        }
+
         return redirect()->route('admin.categories.index')
-            ->with('success', 'تم إنشاء الفئة بنجاح');
+            ->with('success', __('messages.category_created'));
     }
 
-    public function edit(Category $category)
+    public function edit(Request $request, Category $category)
     {
+        $view = view('admin.categories.edit-modal', compact('category'));
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => $view->render()
+            ]);
+        }
+        
         return view('admin.categories.edit', compact('category'));
     }
 
@@ -52,8 +76,16 @@ class CategoryController extends Controller
         
         $category->update($data);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.category_updated'),
+                'redirect' => route('admin.categories.index')
+            ]);
+        }
+
         return redirect()->route('admin.categories.index')
-            ->with('success', 'تم تحديث الفئة بنجاح');
+            ->with('success', __('messages.category_updated'));
     }
 
     public function destroy(Category $category)

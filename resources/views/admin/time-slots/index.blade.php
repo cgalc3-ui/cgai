@@ -21,7 +21,7 @@
     </div>
 
     <!-- Filter Section -->
-    <div class="filter-container">
+    <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
         <form method="GET" action="{{ route('admin.time-slots') }}" class="filter-form" id="filterForm">
             <div class="filter-inputs">
                 <div class="filter-group">
@@ -351,9 +351,15 @@
                     const month = currentDate.getMonth();
 
                     // Set month/year header
-                    const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-                        'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-                    calendarMonthYear.textContent = `${monthNames[month]} ${year}`;
+                    const monthNames = {
+                        'ar': ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+                        'en': ['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December']
+                    };
+                    const locale = '{{ app()->getLocale() }}';
+                    const monthNamesArray = monthNames[locale] || monthNames['ar'];
+                    calendarMonthYear.textContent = `${monthNamesArray[month]} ${year}`;
 
                     // Get first day of month and number of days
                     const firstDay = new Date(year, month, 1);

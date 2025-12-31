@@ -92,16 +92,17 @@ class SubscriptionRequestController extends Controller
             'expires_at' => $expiresAt,
         ]);
 
-        // Notify the user
+        // Notify the user - Store translation keys, not translated text
         $this->notificationService->send(
             $request->user,
             'subscription_request_status',
-            'تم قبول طلب الاشتراك',
-            "تم قبول طلب الاشتراك في باقة: {$request->subscription->name}",
+            'messages.subscription_request_approved',
+            'messages.subscription_request_approved_for_package',
             [
                 'subscription_request_id' => $request->id,
                 'subscription_id' => $request->subscription_id,
                 'status' => 'approved',
+                'package' => $request->subscription->name, // Store package name in data for translation
             ]
         );
 
@@ -130,16 +131,18 @@ class SubscriptionRequestController extends Controller
             'admin_notes' => $validated['admin_notes'],
         ]);
 
-        // Notify the user
+        // Notify the user - Store translation keys, not translated text
         $this->notificationService->send(
             $request->user,
             'subscription_request_status',
-            'تم رفض طلب الاشتراك',
-            "تم رفض طلب الاشتراك في باقة: {$request->subscription->name}. السبب: {$validated['admin_notes']}",
+            'messages.subscription_request_rejected',
+            'messages.subscription_request_rejected_for_package',
             [
                 'subscription_request_id' => $request->id,
                 'subscription_id' => $request->subscription_id,
                 'status' => 'rejected',
+                'package' => $request->subscription->name, // Store package name in data for translation
+                'reason' => $validated['admin_notes'], // Store rejection reason in data for translation
             ]
         );
 
