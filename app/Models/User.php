@@ -114,4 +114,54 @@ class User extends Authenticatable
     {
         return $this->notifications()->unread()->count();
     }
+
+    /**
+     * Get all subscription requests for this user
+     */
+    public function subscriptionRequests()
+    {
+        return $this->hasMany(SubscriptionRequest::class);
+    }
+
+    /**
+     * Get all subscriptions for this user
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    /**
+     * Get the active subscription for this user
+     */
+    public function activeSubscription()
+    {
+        return $this->hasOne(UserSubscription::class)->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+            });
+    }
+
+    /**
+     * Get the active subscription (method)
+     */
+    public function getActiveSubscription()
+    {
+        return UserSubscription::where('user_id', $this->id)
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+            })
+            ->first();
+    }
+
+    /**
+     * Check if user has an active subscription
+     */
+    public function hasActiveSubscription(): bool
+    {
+        return $this->getActiveSubscription() !== null;
+    }
 }

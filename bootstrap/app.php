@@ -23,6 +23,16 @@ return Application::configure(basePath: dirname(__DIR__))
             ->everyMinute()
             ->withoutOverlapping()
             ->runInBackground();
+
+        // Update expired subscriptions daily
+        $schedule->command('subscriptions:update-expired')
+            ->daily()
+            ->withoutOverlapping();
+
+        // Check expiring subscriptions daily
+        $schedule->command('subscriptions:check-expiring')
+            ->daily()
+            ->withoutOverlapping();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
