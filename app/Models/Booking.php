@@ -67,6 +67,14 @@ class Booking extends Model
     }
 
     /**
+     * Get the rating for this booking
+     */
+    public function rating(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Rating::class);
+    }
+
+    /**
      * Get the bookable item (service or consultation)
      */
     public function getBookableAttribute()

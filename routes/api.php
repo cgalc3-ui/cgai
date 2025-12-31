@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\Admin\SubscriptionController as AdminSubscriptionController;
@@ -44,6 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/bookings/initiate-online-payment', [BookingController::class, 'initiateOnlinePayment']);
         // PayMob Online Payment (Legacy - for old bookings)
         Route::post('/bookings/{bookingId}/pay-online', [\App\Http\Controllers\Api\PaymentController::class, 'initiatePayment']);
+
+        // Ratings
+        Route::post('/ratings', [RatingController::class, 'store']);
+        Route::get('/ratings/my-ratings', [RatingController::class, 'myRatings']);
     });
 
     // Employee routes
@@ -107,6 +112,12 @@ Route::prefix('consultations')->group(function () {
 Route::prefix('faqs')->group(function () {
     Route::get('/', [FaqController::class, 'index']);
     Route::get('/category/{category}', [FaqController::class, 'getByCategory']);
+});
+
+// Public Ratings API routes
+Route::prefix('ratings')->group(function () {
+    Route::get('/', [RatingController::class, 'index']);
+    Route::get('/statistics', [RatingController::class, 'statistics']);
 });
 
 // Public Subscriptions routes (for frontend React)

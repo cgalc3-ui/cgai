@@ -2048,6 +2048,148 @@
 				}
 			],
 			"description": "جميع endpoints الخاصة بالإعدادات والملف الشخصي"
+		},
+		{
+			"name": "Ratings",
+			"item": [
+				{
+					"name": "1. Create Rating",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"booking_id\": 1,\n    \"rating\": 5,\n    \"comment\": \"خدمة ممتازة، أنصح بها بشدة\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/ratings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"ratings"
+							]
+						},
+						"description": "⚠️ إنشاء تقييم جديد لحجز منتهي. الشروط:\n- الحجز يجب أن يكون منتهياً (status = 'completed')\n- الحجز يجب أن ينتمي للعميل المصادق عليه\n- لا يمكن تقييم نفس الحجز مرتين\n- rating: من 1 إلى 5 (مطلوب)\n- comment: نصي (اختياري، حد أقصى 1000 حرف)\n- يتطلب Token"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get My Ratings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/ratings/my-ratings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"ratings",
+								"my-ratings"
+							]
+						},
+						"description": "الحصول على جميع تقييمات العميل المصادق عليه. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get All Ratings (Public)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/ratings?rating=5&per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ratings"
+							],
+							"query": [
+								{
+									"key": "rating",
+									"value": "5",
+									"description": "فلترة حسب التقييم (1-5) - اختياري"
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "عدد التقييمات في الصفحة - اختياري (افتراضي: 15)"
+								}
+							]
+						},
+						"description": "الحصول على جميع التقييمات (عام - لا يتطلب Token). يمكن الفلترة حسب rating."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get Ratings Statistics (Public)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/ratings/statistics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ratings",
+								"statistics"
+							]
+						},
+						"description": "الحصول على إحصائيات التقييمات (متوسط التقييم، عدد التقييمات، توزيع التقييمات). عام - لا يتطلب Token."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالتقييمات\n\n📋 ملاحظات مهمة:\n- ⚠️ يمكن للعميل تقييم الموقع فقط إذا كان لديه حجز معاد انتهى (completed)\n- كل حجز يمكن تقييمه مرة واحدة فقط\n- التقييم من 1 إلى 5 نجوم\n- التعليق اختياري (حد أقصى 1000 حرف)\n\n📋 ترتيب الـ Endpoints:\n1: إنشاء تقييم جديد (يتطلب Token - للعملاء فقط)\n2: الحصول على تقييماتي (يتطلب Token - للعملاء فقط)\n3: الحصول على جميع التقييمات (عام - لا يتطلب Token)\n4: الحصول على إحصائيات التقييمات (عام - لا يتطلب Token)"
 		}
 	]
 }

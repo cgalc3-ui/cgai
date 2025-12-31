@@ -1,0 +1,146 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreRatingRequest;
+use App\Models\Booking;
+use App\Models\Rating;
+use Illuminate\Http\Request;
+
+class RatingController extends Controller
+{
+    /**
+     * Create a new rating for a completed booking
+     */
+    public function store(StoreRatingRequest $request)
+    {
+        $customer = $request->user();
+
+        // Check if user is a customer
+        if (!$customer->isCustomer()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ليس لديك صلاحية للوصول',
+            ], 403);
+        }
+
+        // Get the booking
+        $booking = Booking::findOrFail($request->booking_id);
+
+        // Check if booking belongs to the customer
+        if ($booking->customer_id !== $customer->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'هذا الحجز لا ينتمي إليك',
+            ], 403);
+        }
+
+        // Check if booking is completed
+        if ($booking->status !== 'completed' && $booking->actual_status !== 'completed') {
+            return response()->json([
+                'success' => false,
+                'message' => 'يمكنك التقييم فقط للحجوزات المنتهية',
+            ], 422);
+        }
+
+        // Check if customer already rated this booking
+        $existingRating = Rating::where('booking_id', $booking->id)
+            ->where('customer_id', $customer->id)
+            ->first();
+
+        if ($existingRating) {
+            return response()->json([
+                'success' => false,
+                'message' => 'لقد قمت بتقييم هذا الحجز من قبل',
+            ], 422);
+        }
+
+        // Create rating
+        $rating = Rating::create([
+            'booking_id' => $booking->id,
+            'customer_id' => $customer->id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        $rating->load(['customer', 'booking']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم إضافة التقييم بنجاح',
+            'data' => $rating,
+        ], 201);
+    }
+
+    /**
+     * Get all ratings (public endpoint)
+     */
+    public function index(Request $request)
+    {
+        $query = Rating::with(['customer', 'booking']);
+
+        // Filter by rating if provided
+        if ($request->has('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        // Paginate results
+        $ratings = $query->latest()->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'data' => $ratings,
+        ]);
+    }
+
+    /**
+     * Get customer's own ratings
+     */
+    public function myRatings(Request $request)
+    {
+        $customer = $request->user();
+
+        if (!$customer->isCustomer()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ليس لديك صلاحية للوصول',
+            ], 403);
+        }
+
+        $ratings = Rating::with(['booking'])
+            ->where('customer_id', $customer->id)
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'data' => $ratings,
+        ]);
+    }
+
+    /**
+     * Get rating statistics
+     */
+    public function statistics()
+    {
+        $totalRatings = Rating::count();
+        $averageRating = Rating::avg('rating');
+        $ratingDistribution = Rating::selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->orderBy('rating', 'desc')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->rating => $item->count];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total_ratings' => $totalRatings,
+                'average_rating' => round($averageRating, 2),
+                'rating_distribution' => $ratingDistribution,
+            ],
+        ]);
+    }
+}
