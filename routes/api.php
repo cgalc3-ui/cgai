@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\FaqController;
 use Illuminate\Http\Request;
@@ -32,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']);
         Route::get('/bookings/available-time-slots', [BookingController::class, 'availableTimeSlots']);
         Route::post('/bookings', [BookingController::class, 'store']);
+        Route::post('/bookings/consultation', [BookingController::class, 'storeConsultation']);
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
         Route::put('/bookings/{booking}', [BookingController::class, 'update']);
         Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
@@ -80,6 +82,13 @@ Route::prefix('services')->group(function () {
 
     Route::get('/services', [ServiceController::class, 'index']);
     Route::get('/services/{service}', [ServiceController::class, 'show']);
+});
+
+// Public Consultations API routes
+Route::prefix('consultations')->group(function () {
+    Route::get('/', [ConsultationController::class, 'index']);
+    Route::get('/{id}', [ConsultationController::class, 'show']);
+    Route::get('/category/{categoryId}', [ConsultationController::class, 'byCategory']);
 });
 
 // FAQ API routes

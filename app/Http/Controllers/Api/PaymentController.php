@@ -253,7 +253,8 @@ class PaymentController extends Controller
             return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $booking, $tempBookingData, $tempBookingId, $transactionId, $paymobOrderId, $cacheKey) {
                 // إذا كان الحجز موجود في cache (حجز جديد)، ننشئه الآن
                 if ($tempBookingData) {
-                    $timeSlotIds = $tempBookingData['time_slot_ids'];
+                    // للاستشارات، time_slot_id واحد فقط، للخدمات قد يكون array
+                    $timeSlotIds = $tempBookingData['time_slot_ids'] ?? [$tempBookingData['time_slot_id']];
                     
                     // التحقق من أن الـ time slots لا تزال متاحة قبل حجزها
                     $unavailableSlots = \App\Models\TimeSlot::whereIn('id', $timeSlotIds)
@@ -277,7 +278,9 @@ class PaymentController extends Controller
                     $booking = \App\Models\Booking::create([
                         'customer_id' => $tempBookingData['customer_id'],
                         'employee_id' => $tempBookingData['employee_id'],
-                        'service_id' => $tempBookingData['service_id'],
+                        'service_id' => $tempBookingData['service_id'] ?? null,
+                        'consultation_id' => $tempBookingData['consultation_id'] ?? null,
+                        'booking_type' => $tempBookingData['booking_type'] ?? 'service',
                         'time_slot_id' => $tempBookingData['time_slot_id'],
                         'booking_date' => $tempBookingData['booking_date'],
                         'start_time' => $tempBookingData['start_time'],
@@ -295,8 +298,10 @@ class PaymentController extends Controller
                         ],
                     ]);
 
-                    // ربط الحجز بالـ time slots
-                    $booking->timeSlots()->attach($timeSlotIds);
+                    // ربط الحجز بالـ time slots (للخدمات فقط، الاستشارات تستخدم time_slot_id مباشرة)
+                    if (isset($tempBookingData['time_slot_ids']) && is_array($tempBookingData['time_slot_ids'])) {
+                        $booking->timeSlots()->attach($timeSlotIds);
+                    }
 
                     // حذف البيانات المؤقتة من cache
                     \Illuminate\Support\Facades\Cache::forget($cacheKey);
@@ -322,8 +327,14 @@ class PaymentController extends Controller
                     // Send notifications
                     try {
                         $notificationService = app(NotificationService::class);
-                        $notificationService->bookingCreated($booking->fresh()->load(['customer', 'service', 'employee.user']));
-                        $notificationService->paymentReceived($booking->fresh()->load(['customer', 'service']));
+                        $bookingFresh = $booking->fresh();
+                        if ($bookingFresh->booking_type === 'consultation') {
+                            $bookingFresh->load(['customer', 'consultation', 'employee.user']);
+                        } else {
+                            $bookingFresh->load(['customer', 'service', 'employee.user']);
+                        }
+                        $notificationService->bookingCreated($bookingFresh);
+                        $notificationService->paymentReceived($bookingFresh);
                     } catch (\Exception $e) {
                         Log::error('Failed to send notification: ' . $e->getMessage());
                     }

@@ -54,4 +54,20 @@ class Category extends Model
     {
         return $this->belongsToMany(Employee::class, 'employee_category');
     }
+
+    /**
+     * Get all consultations for this category
+     */
+    public function consultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class);
+    }
+
+    /**
+     * Get active consultations
+     */
+    public function activeConsultations(): HasMany
+    {
+        return $this->hasMany(Consultation::class)->where('is_active', true);
+    }
 }

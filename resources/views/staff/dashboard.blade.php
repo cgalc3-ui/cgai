@@ -131,9 +131,17 @@
                             </td>
                             <td>
                                 <div class="service-info">
-                                    <div class="service-name">{{ $booking->service->name ?? 'غير محدد' }}</div>
+                                    <div class="service-name">
+                                        @if($booking->booking_type === 'consultation')
+                                            <i class="fas fa-comments" style="margin-left: 5px;"></i>
+                                            {{ $booking->consultation->name ?? 'غير محدد' }}
+                                        @else
+                                            {{ $booking->service->name ?? 'غير محدد' }}
+                                        @endif
+                                    </div>
                                     <div class="service-duration">
-                                        <i class="fas fa-clock"></i> {{ $booking->formatted_duration }}
+                                        <i class="fas fa-clock"></i>
+                                        {{ $booking->formatted_duration }}
                                     </div>
                                 </div>
                             </td>

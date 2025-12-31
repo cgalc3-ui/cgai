@@ -762,6 +762,94 @@
 			"description": "جميع endpoints الخاصة بالخدمات"
 		},
 		{
+			"name": "Consultations",
+			"item": [
+				{
+					"name": "1. Get All Consultations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/consultations?category_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"consultations"
+							],
+							"query": [
+								{
+									"key": "category_id",
+									"value": "1",
+									"description": "معرف التخصص (اختياري)"
+								}
+							]
+						},
+						"description": "الحصول على جميع الاستشارات النشطة. يمكن تصفية حسب التخصص."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Consultation by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/consultations/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"consultations",
+								"1"
+							]
+						},
+						"description": "الحصول على استشارة معينة"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Consultations by Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/consultations/category/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"consultations",
+								"category",
+								"1"
+							]
+						},
+						"description": "الحصول على جميع الاستشارات لتخصص معين"
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالاستشارات"
+		},
+		{
 			"name": "Bookings",
 			"item": [
 				{
@@ -928,6 +1016,51 @@
 							]
 						},
 						"description": "⚠️ مهم: هذا الـ endpoint يحفظ بيانات الحجز مؤقتاً في cache فقط - لا يتم إنشاء الحجز في قاعدة البيانات إلا بعد الدفع. يتطلب service_id و booking_date و time_slot_ids. notes و payment_method اختياريين. إذا كان payment_method: online، يُرجع payment_url مباشرة. إذا لم يكن payment_method موجود أو ليس online، يُرجع temp_booking_id فقط (يجب استخدامه في Process Manual Payment). البيانات تُحفظ في cache لمدة 30 دقيقة. التخصص والمدة تُؤخذ تلقائياً من الخدمة. جميع time_slot_ids يجب أن تكون لنفس الموظف ونفس التاريخ. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "4.1. Create Consultation Booking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"consultation_id\": 1,\n    \"booking_date\": \"2025-12-26\",\n    \"time_slot_id\": 1,\n    \"payment_method\": \"online\",\n    \"notes\": \"ملاحظات إضافية (اختياري)\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/consultation",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"consultation"
+							]
+						},
+						"description": "⚠️ مهم: هذا الـ endpoint لحجز استشارة بسعر ثابت. يحفظ بيانات الحجز مؤقتاً في cache فقط - لا يتم إنشاء الحجز في قاعدة البيانات إلا بعد الدفع. يتطلب consultation_id و booking_date و time_slot_id (واحد فقط). notes و payment_method اختياريين. مدة الاستشارة: تأتي من الـ time slot المختار (start_time و end_time). السعر: ثابت كما هو محدد في fixed_price. إذا كان payment_method: online، يُرجع payment_url مباشرة. إذا لم يكن payment_method موجود أو ليس online، يُرجع temp_booking_id فقط (يجب استخدامه في Process Manual Payment). البيانات تُحفظ في cache لمدة 30 دقيقة. يتطلب Token."
 					},
 					"response": []
 				},

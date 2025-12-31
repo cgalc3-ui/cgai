@@ -11,6 +11,8 @@ class Booking extends Model
         'customer_id',
         'employee_id',
         'service_id',
+        'consultation_id',
+        'booking_type',
         'time_slot_id',
         'booking_date',
         'start_time',
@@ -29,6 +31,7 @@ class Booking extends Model
         'total_price' => 'decimal:2',
         'payment_data' => 'array',
         'paid_at' => 'datetime',
+        'booking_type' => 'string',
     ];
 
     /**
@@ -53,6 +56,25 @@ class Booking extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    /**
+     * Get the consultation for this booking
+     */
+    public function consultation(): BelongsTo
+    {
+        return $this->belongsTo(Consultation::class);
+    }
+
+    /**
+     * Get the bookable item (service or consultation)
+     */
+    public function getBookableAttribute()
+    {
+        if ($this->booking_type === 'consultation') {
+            return $this->consultation;
+        }
+        return $this->service;
     }
 
     /**
@@ -252,11 +274,13 @@ class Booking extends Model
     public function getFormattedTimeSlotsAttribute(): array
     {
         if (!$this->timeSlots || $this->timeSlots->isEmpty()) {
-            return [[
-                'start' => $this->start_time,
-                'end' => $this->end_time,
-                'is_range' => false,
-            ]];
+            return [
+                [
+                    'start' => $this->start_time,
+                    'end' => $this->end_time,
+                    'is_range' => false,
+                ]
+            ];
         }
 
         $sortedSlots = $this->timeSlots->sortBy('start_time')->values();
@@ -276,7 +300,7 @@ class Booking extends Model
                 ];
             } else {
                 $currentEnd = \Carbon\Carbon::parse($currentRange['end']);
-                
+
                 // Check if this slot is consecutive (end of current range equals start of this slot)
                 if ($currentEnd->format('H:i:s') === $slotStart->format('H:i:s')) {
                     // Extend current range

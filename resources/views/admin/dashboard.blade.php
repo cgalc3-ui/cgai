@@ -226,7 +226,12 @@
                                         <div
                                             style="display: flex; align-items: center; gap: 8px; color: #64748b; font-weight: 600; font-size: 13px;">
                                             <i class="fas fa-magic" style="font-size: 12px; opacity: 0.7;"></i>
-                                            {{ $booking->service->name ?? '-' }}
+                                            @if($booking->booking_type === 'consultation')
+                                                <i class="fas fa-comments" style="margin-left: 5px;"></i>
+                                                {{ $booking->consultation->name ?? '-' }}
+                                            @else
+                                                {{ $booking->service->name ?? '-' }}
+                                            @endif
                                         </div>
                                     </td>
                                     <td>

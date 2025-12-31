@@ -59,16 +59,24 @@
                 <!-- Service Section -->
                 <div class="m-card">
                     <div class="m-card-header">
-                        <i class="fas fa-concierge-bell"></i> تفاصيل الخدمة
+                        <i class="fas fa-concierge-bell"></i> {{ $booking->booking_type === 'consultation' ? 'تفاصيل الاستشارة' : 'تفاصيل الخدمة' }}
                     </div>
                     <div class="m-service-box">
                         <div class="m-service-info">
-                            <h3>{{ $booking->service->name ?? '---' }}</h3>
+                            <h3>{{ $booking->bookable->name ?? '---' }}</h3>
                             <div class="m-service-meta">
-                                <span><i class="far fa-folder"></i> {{ $booking->service->subCategory->name ?? '' }}</span>
-                                <span class="m-dot"></span>
-                                <span><i class="far fa-clock"></i>
-                                    {{ $booking->formatted_duration }}</span>
+                                @if($booking->booking_type === 'consultation')
+                                    <span><i class="far fa-folder"></i> {{ $booking->consultation->category->name ?? '' }}</span>
+                                    <span class="m-dot"></span>
+                                    <span><i class="far fa-clock"></i> {{ $booking->formatted_duration }}</span>
+                                    <span class="m-dot"></span>
+                                    <span><i class="fas fa-tag"></i> سعر ثابت: {{ number_format($booking->consultation->fixed_price ?? 0, 2) }} ر.س</span>
+                                @else
+                                    <span><i class="far fa-folder"></i> {{ $booking->service->subCategory->name ?? '' }}</span>
+                                    <span class="m-dot"></span>
+                                    <span><i class="far fa-clock"></i>
+                                        {{ $booking->formatted_duration }}</span>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\StoreConsultationBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Requests\CancelBookingRequest;
 use App\Models\Booking;
 use App\Models\Employee;
 use App\Models\Service;
+use App\Models\Consultation;
 use App\Models\TimeSlot;
 use App\Services\NotificationService;
 use Carbon\Carbon;
@@ -1006,7 +1008,8 @@ class BookingController extends Controller
 
         // استخدام معاملة (Transaction) مع lockForUpdate لضمان أن أول من يدفع يحصل على الحجز
         return DB::transaction(function () use ($request, $tempBookingData, $tempBookingId, $cacheKey) {
-            $timeSlotIds = $tempBookingData['time_slot_ids'];
+            // للاستشارات، time_slot_id واحد فقط، للخدمات قد يكون array
+            $timeSlotIds = $tempBookingData['time_slot_ids'] ?? [$tempBookingData['time_slot_id']];
             
             // التحقق من أن الـ time slots لا تزال متاحة قبل حجزها
             $unavailableSlots = TimeSlot::whereIn('id', $timeSlotIds)
@@ -1029,7 +1032,9 @@ class BookingController extends Controller
             $booking = Booking::create([
                 'customer_id' => $tempBookingData['customer_id'],
                 'employee_id' => $tempBookingData['employee_id'],
-                'service_id' => $tempBookingData['service_id'],
+                'service_id' => $tempBookingData['service_id'] ?? null,
+                'consultation_id' => $tempBookingData['consultation_id'] ?? null,
+                'booking_type' => $tempBookingData['booking_type'] ?? 'service',
                 'time_slot_id' => $tempBookingData['time_slot_id'],
                 'booking_date' => $tempBookingData['booking_date'],
                 'start_time' => $tempBookingData['start_time'],
@@ -1045,8 +1050,10 @@ class BookingController extends Controller
                 ],
             ]);
 
-            // ربط الحجز بالـ time slots
-            $booking->timeSlots()->attach($timeSlotIds);
+            // ربط الحجز بالـ time slots (للخدمات فقط، الاستشارات تستخدم time_slot_id مباشرة)
+            if (isset($tempBookingData['time_slot_ids']) && is_array($tempBookingData['time_slot_ids'])) {
+                $booking->timeSlots()->attach($timeSlotIds);
+            }
 
             // حذف البيانات المؤقتة من cache
             \Illuminate\Support\Facades\Cache::forget($cacheKey);
@@ -1072,16 +1079,30 @@ class BookingController extends Controller
             // إرسال إشعارات
             try {
                 $notificationService = app(NotificationService::class);
-                $notificationService->bookingCreated($booking->fresh()->load(['customer', 'service', 'employee.user']));
-                $notificationService->paymentReceived($booking->fresh()->load(['customer', 'service']));
+                $bookingFresh = $booking->fresh();
+                if ($bookingFresh->booking_type === 'consultation') {
+                    $bookingFresh->load(['customer', 'consultation', 'employee.user']);
+                } else {
+                    $bookingFresh->load(['customer', 'service', 'employee.user']);
+                }
+                $notificationService->bookingCreated($bookingFresh);
+                $notificationService->paymentReceived($bookingFresh);
             } catch (\Exception $e) {
                 \Log::error('Failed to send notification: ' . $e->getMessage());
+            }
+
+            // تحميل البيانات المناسبة حسب نوع الحجز
+            $bookingFresh = $booking->fresh();
+            if ($bookingFresh->booking_type === 'consultation') {
+                $bookingFresh->load(['consultation.category', 'employee.user']);
+            } else {
+                $bookingFresh->load(['service.subCategory.category', 'employee.user', 'timeSlots']);
             }
 
             return response()->json([
                 'success' => true,
                 'message' => 'تم الدفع بنجاح وتأكيد الحجز',
-                'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlots']),
+                'data' => $bookingFresh,
             ]);
         });
     }
@@ -1152,5 +1173,233 @@ class BookingController extends Controller
         ];
 
         return $days[$dayOfWeek] ?? '';
+    }
+
+    /**
+     * حجز استشارة
+     */
+    public function storeConsultation(StoreConsultationBookingRequest $request)
+    {
+        return DB::transaction(function () use ($request) {
+            $customer = $request->user();
+
+            if (!$customer->isCustomer()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ليس لديك صلاحية للوصول',
+                ], 403);
+            }
+
+            // جلب الاستشارة
+            $consultation = Consultation::with('category')->findOrFail($request->consultation_id);
+
+            if (!$consultation->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الاستشارة المختارة غير متاحة حالياً',
+                ], 422);
+            }
+
+            // جلب time slot
+            $timeSlot = TimeSlot::lockForUpdate()->find($request->time_slot_id);
+            
+            if (!$timeSlot) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الوقت المختار غير موجود',
+                ], 422);
+            }
+
+            if (!$timeSlot->is_available) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الوقت المختار لم يعد متاحاً',
+                ], 422);
+            }
+
+            // التحقق من أن التاريخ متطابق
+            $requestedBookingDate = $request->booking_date;
+            $timeSlotDate = $timeSlot->date->format('Y-m-d');
+            $requestedDate = Carbon::parse($requestedBookingDate)->format('Y-m-d');
+            
+            if ($timeSlotDate !== $requestedDate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "الوقت المختار لا يتطابق مع تاريخ الحجز. تاريخ الـ Time Slot: {$timeSlotDate}، تاريخ الحجز المطلوب: {$requestedDate}",
+                ], 422);
+            }
+
+            // التحقق من أن الموظف لديه التخصص المطلوب
+            $employee = Employee::find($timeSlot->employee_id);
+            if (!$employee || !$employee->categories()->where('categories.id', $consultation->category_id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الموظف المتاح لا يقدم التخصص المطلوب لهذه الاستشارة',
+                ], 422);
+            }
+
+            // استخدام مدة الـ time slot المختار مباشرة
+            $start = Carbon::parse($timeSlot->start_time);
+            $end = Carbon::parse($timeSlot->end_time);
+            
+            // حساب المدة بالدقائق (نفس الطريقة المستخدمة في حجز الخدمات)
+            $slotDuration = $end->diffInMinutes($start, false);
+            if ($slotDuration < 0) {
+                // إذا كانت المدة سالبة، نستخدم القيمة المطلقة
+                $slotDuration = abs($slotDuration);
+            }
+            
+            if ($slotDuration <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "الوقت المختار غير صالح. يرجى التحقق من أن وقت النهاية بعد وقت البداية.",
+                ], 422);
+            }
+
+            // استخدام end_time من الـ time slot مباشرة
+            $endTime = $timeSlot->end_time;
+
+            // حفظ بيانات الحجز مؤقتاً في cache
+            $tempBookingId = 'temp_consultation_' . uniqid() . '_' . time();
+            $tempBookingData = [
+                'customer_id' => $customer->id,
+                'employee_id' => $employee->id,
+                'consultation_id' => $consultation->id,
+                'booking_type' => 'consultation',
+                'time_slot_id' => $timeSlot->id,
+                'booking_date' => $requestedBookingDate,
+                'start_time' => $timeSlot->start_time,
+                'end_time' => $endTime,
+                'total_price' => $consultation->fixed_price,
+                'notes' => $request->notes,
+            ];
+
+            \Illuminate\Support\Facades\Cache::put(
+                'pending_booking_' . $tempBookingId,
+                $tempBookingData,
+                now()->addMinutes(30)
+            );
+
+            // إذا كان الدفع إلكتروني
+            if ($request->payment_method === 'online') {
+                try {
+                    $paymobService = app(\App\Services\PaymobService::class);
+                    
+                    $auth = $paymobService->authenticate();
+                    if (!$auth || empty($auth['token'])) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'فشل الاتصال بخادم الدفع',
+                        ], 503);
+                    }
+
+                    $amountCents = (int) ($consultation->fixed_price * 100);
+                    $response = \Illuminate\Support\Facades\Http::withHeaders([
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ])->timeout(30)->post(config('services.paymob.base_url', 'https://ksa.paymob.com/api') . '/ecommerce/orders', [
+                        'auth_token' => $auth['token'],
+                        'delivery_needed' => false,
+                        'amount_cents' => $amountCents,
+                        'currency' => config('services.paymob.currency', 'SAR'),
+                        'merchant_order_id' => $tempBookingId,
+                        'items' => []
+                    ]);
+
+                    if (!$response->successful()) {
+                        \Log::error('PayMob Create Order Failed for Consultation', [
+                            'status' => $response->status(),
+                            'body' => $response->body(),
+                        ]);
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'فشل إنشاء طلب الدفع',
+                        ], 503);
+                    }
+
+                    $paymobOrderId = $response->json('id');
+
+                    // Create Payment Key
+                    $billingData = [
+                        'apartment' => 'NA',
+                        'email' => $customer->email ?? 'customer@example.com',
+                        'floor' => 'NA',
+                        'first_name' => $customer->name ?? 'Customer',
+                        'street' => 'NA',
+                        'building' => 'NA',
+                        'phone_number' => $customer->phone ?? '0000000000',
+                        'shipping_method' => 'NA',
+                        'postal_code' => 'NA',
+                        'city' => 'Riyadh',
+                        'country' => 'SA',
+                        'last_name' => 'NA',
+                        'state' => 'NA'
+                    ];
+
+                    $paymentKeyResponse = \Illuminate\Support\Facades\Http::withHeaders([
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ])->timeout(30)->post(config('services.paymob.base_url', 'https://ksa.paymob.com/api') . '/acceptance/payment_keys', [
+                        'auth_token' => $auth['token'],
+                        'amount_cents' => $amountCents,
+                        'expiration' => 3600,
+                        'order_id' => (string) $paymobOrderId,
+                        'billing_data' => $billingData,
+                        'currency' => config('services.paymob.currency', 'SAR'),
+                        'integration_id' => (int) config('services.paymob.integration_id'),
+                        'lock_order_when_paid' => true
+                    ]);
+
+                    if (!$paymentKeyResponse->successful()) {
+                        \Log::error('PayMob Create Payment Key Failed for Consultation', [
+                            'status' => $paymentKeyResponse->status(),
+                            'body' => $paymentKeyResponse->body(),
+                        ]);
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'فشل إنشاء رابط الدفع',
+                        ], 503);
+                    }
+
+                    $paymentKey = $paymentKeyResponse->json('token');
+
+                    if (!$paymentKey) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'فشل إنشاء رابط الدفع',
+                        ], 503);
+                    }
+
+                    $iframeId = config('services.paymob.iframe_id');
+                    $paymentUrl = config('services.paymob.base_url', 'https://ksa.paymob.com/api') . '/acceptance/iframes/' . $iframeId . '?payment_token=' . $paymentKey;
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'تم إنشاء طلب الحجز بنجاح',
+                        'data' => [
+                            'temp_booking_id' => $tempBookingId,
+                            'payment_url' => $paymentUrl,
+                            'total_price' => $consultation->fixed_price,
+                        ],
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Payment error for consultation: ' . $e->getMessage());
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'حدث خطأ أثناء معالجة الدفع',
+                    ], 500);
+                }
+            }
+
+            // إذا كان الدفع نقدي أو لم يتم تحديد طريقة الدفع
+            return response()->json([
+                'success' => true,
+                'message' => 'تم إنشاء طلب الحجز بنجاح',
+                'data' => [
+                    'temp_booking_id' => $tempBookingId,
+                    'total_price' => $consultation->fixed_price,
+                ],
+            ]);
+        });
     }
 }

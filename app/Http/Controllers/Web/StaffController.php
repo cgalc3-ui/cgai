@@ -36,7 +36,7 @@ class StaffController extends Controller
             $todayBookings = 0;
             $pendingBookings = 0;
         } else {
-            $bookings = Booking::with(['customer', 'service'])
+            $bookings = Booking::with(['customer', 'service.subCategory.category', 'consultation.category'])
                 ->where('employee_id', $employee->id)
                 ->latest()
                 ->limit(10)
@@ -120,7 +120,7 @@ class StaffController extends Controller
                 ->with('error', 'ملف الموظف غير موجود');
         }
 
-        $bookings = Booking::with(['customer', 'service', 'timeSlots'])
+        $bookings = Booking::with(['customer', 'service.subCategory.category', 'consultation.category', 'timeSlots'])
             ->where('employee_id', $employee->id)
             ->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'asc')
@@ -132,7 +132,7 @@ class StaffController extends Controller
         }
 
         // Refresh bookings to get updated statuses
-        $bookings->load(['customer', 'service', 'timeSlots']);
+        $bookings->load(['customer', 'service.subCategory.category', 'consultation.category', 'timeSlots']);
 
         return view('staff.bookings.index', compact('bookings'));
     }
@@ -156,7 +156,11 @@ class StaffController extends Controller
                 ->with('error', 'ليس لديك صلاحية للوصول لهذا الحجز');
         }
 
-        $booking->load(['customer', 'service.subCategory.category', 'timeSlot']);
+        if ($booking->booking_type === 'consultation') {
+            $booking->load(['customer', 'consultation.category', 'timeSlot']);
+        } else {
+            $booking->load(['customer', 'service.subCategory.category', 'timeSlot']);
+        }
         
         // Update status automatically
         $booking->updateStatusAutomatically();

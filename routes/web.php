@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\ConsultationController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Web\FaqController;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Services management
     Route::resource('services', ServiceController::class)->parameters([
         'services' => 'service'
+    ]);
+
+    // Consultations management
+    Route::resource('consultations', ConsultationController::class)->parameters([
+        'consultations' => 'consultation'
     ]);
 
     // Tickets management

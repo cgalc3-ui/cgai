@@ -67,7 +67,17 @@ class AdminController extends Controller
         $availableTimeSlots = TimeSlot::where('is_available', true)->count();
 
         // Recent Data
-        $recentBookings = Booking::with(['customer', 'employee.user', 'service'])
+        $recentBookings = Booking::query()
+            ->with([
+                'customer', 
+                'employee.user'
+            ])
+            ->with(['service' => function($q) {
+                $q->with('subCategory.category');
+            }])
+            ->with(['consultation' => function($q) {
+                $q->with('category');
+            }])
             ->latest()
             ->limit(10)
             ->get();
@@ -738,7 +748,20 @@ class AdminController extends Controller
      */
     public function bookings(Request $request)
     {
-        $query = Booking::with(['customer', 'employee.user', 'service', 'timeSlots']);
+        $query = Booking::query()
+            ->with([
+                'customer', 
+                'employee.user',
+                'timeSlots'
+            ])
+            ->when(true, function($q) {
+                $q->with(['service' => function($query) {
+                    $query->with('subCategory.category');
+                }])
+                ->with(['consultation' => function($query) {
+                    $query->with('category');
+                }]);
+            });
 
         // Filter by status
         if ($request->filled('status')) {
@@ -774,7 +797,11 @@ class AdminController extends Controller
      */
     public function showBooking(Booking $booking)
     {
-        $booking->load(['customer', 'employee.user', 'service.subCategory.category', 'timeSlot']);
+        if ($booking->booking_type === 'consultation') {
+            $booking->load(['customer', 'employee.user', 'consultation.category', 'timeSlot']);
+        } else {
+            $booking->load(['customer', 'employee.user', 'service.subCategory.category', 'timeSlot']);
+        }
         return view('admin.bookings.show', compact('booking'));
     }
 
@@ -798,7 +825,13 @@ class AdminController extends Controller
         if ($oldStatus !== $booking->status) {
             try {
                 $notificationService = app(\App\Services\NotificationService::class);
-                $notificationService->bookingStatusUpdated($booking->fresh()->load(['customer', 'service', 'employee.user']), $oldStatus);
+                $bookingFresh = $booking->fresh();
+                if ($bookingFresh->booking_type === 'consultation') {
+                    $bookingFresh->load(['customer', 'consultation', 'employee.user']);
+                } else {
+                    $bookingFresh->load(['customer', 'service', 'employee.user']);
+                }
+                $notificationService->bookingStatusUpdated($bookingFresh, $oldStatus);
             } catch (\Exception $e) {
                 \Log::error('Failed to send booking status notification: ' . $e->getMessage());
             }

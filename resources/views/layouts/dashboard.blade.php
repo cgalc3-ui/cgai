@@ -93,14 +93,14 @@
                         <span>الحجوزات</span>
                     </a>
                     <div class="nav-group">
-                        <div class="nav-group-header {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') ? 'active' : '' }}"
+                        <div class="nav-group-header {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') || request()->routeIs('admin.consultations*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">
                             <i class="fas fa-concierge-bell"></i>
                             <span>الخدمات</span>
                             <i class="fas fa-chevron-down nav-arrow"></i>
                         </div>
                         <div
-                            class="nav-group-items {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') ? 'expanded' : '' }}">
+                            class="nav-group-items {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') || request()->routeIs('admin.consultations*') ? 'expanded' : '' }}">
                             <a href="{{ route('admin.categories.index') }}"
                                 class="nav-item {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
                                 <i class="fas fa-folder"></i>
@@ -115,6 +115,11 @@
                                 class="nav-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}">
                                 <i class="fas fa-cog"></i>
                                 <span>الخدمات</span>
+                            </a>
+                            <a href="{{ route('admin.consultations.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.consultations*') ? 'active' : '' }}">
+                                <i class="fas fa-comments"></i>
+                                <span>الاستشارات</span>
                             </a>
                         </div>
                     </div>
