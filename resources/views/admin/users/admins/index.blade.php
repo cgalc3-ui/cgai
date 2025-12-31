@@ -57,26 +57,26 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone ?? '-' }}</td>
                         <td>
-                            <span class="badge badge-danger">
-                                <i class="fas fa-user-shield"></i> أدمن
+                            <span class="status-pill cancelled">
+                                <i class="fas fa-user-shield" style="margin-left: 5px;"></i> أدمن
                             </span>
                         </td>
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
                         <td>
-                            <div class="action-buttons">
-                                <a href="{{ route('admin.users.admins.show', $user) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> عرض
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <a href="{{ route('admin.users.admins.show', $user) }}" class="calm-action-btn" title="عرض">
+                                    <i class="far fa-eye"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-warning"
+                                <button type="button" class="calm-action-btn warning" title="تعديل"
                                     onclick="openEditAdminModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}', '{{ $user->phone }}')">
-                                    <i class="fas fa-edit"></i> تعديل
+                                    <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.users.admins.delete', $user) }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('هل أنت متأكد من حذف هذا الأدمن؟')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i> حذف
+                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                        <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </div>

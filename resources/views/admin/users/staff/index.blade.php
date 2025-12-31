@@ -58,17 +58,18 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone ?? '-' }}</td>
                         <td>
-                            <span class="badge badge-warning">
-                                <i class="fas fa-user-tie"></i> موظف
+                            <span class="status-pill active">
+                                <i class="fas fa-user-tie" style="margin-left: 5px;"></i> موظف
                             </span>
                         </td>
                         <td>
-                            @if($user->employee && $user->employee->specializations->count() > 0)
-                                @foreach($user->employee->specializations->take(2) as $spec)
-                                    <span class="badge badge-info">{{ $spec->name }}</span>
+                            @if($user->employee && $user->employee->categories->count() > 0)
+                                @foreach($user->employee->categories->take(2) as $cat)
+                                    <span class="status-pill active" style="font-size: 10px; padding: 2px 8px;">{{ $cat->name }}</span>
                                 @endforeach
-                                @if($user->employee->specializations->count() > 2)
-                                    <span class="text-muted">+{{ $user->employee->specializations->count() - 2 }}</span>
+                                @if($user->employee->categories->count() > 2)
+                                    <span class="text-muted"
+                                        style="font-size: 11px;">+{{ $user->employee->categories->count() - 2 }}</span>
                                 @endif
                             @else
                                 <span class="text-muted">-</span>
@@ -76,20 +77,20 @@
                         </td>
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
                         <td>
-                            <div class="action-buttons">
-                                <a href="{{ route('admin.users.staff.show', $user) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> عرض
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <a href="{{ route('admin.users.staff.show', $user) }}" class="calm-action-btn" title="عرض">
+                                    <i class="far fa-eye"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-warning"
-                                    onclick="openEditStaffModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}', '{{ addslashes($user->phone ?? '') }}', {{ $user->employee ? json_encode($user->employee->specializations->pluck('id')->toArray()) : '[]' }}, '{{ addslashes($user->employee->bio ?? '') }}', {{ $user->employee->hourly_rate ?? 'null' }}, {{ $user->employee && $user->employee->is_available ? 'true' : 'false' }})">
-                                    <i class="fas fa-edit"></i> تعديل
+                                <button type="button" class="calm-action-btn warning" title="تعديل"
+                                    onclick="openEditStaffModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}', '{{ addslashes($user->phone ?? '') }}', {{ $user->employee ? json_encode($user->employee->categories->pluck('id')->toArray()) : '[]' }}, '{{ addslashes($user->employee->bio ?? '') }}', {{ $user->employee->hourly_rate ?? 'null' }}, {{ $user->employee && $user->employee->is_available ? 'true' : 'false' }})">
+                                    <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.users.staff.delete', $user) }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('هل أنت متأكد من حذف هذا الموظف؟')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i> حذف
+                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                        <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </div>
@@ -147,17 +148,17 @@
             </div>
 
             <div class="form-group">
-                <label for="add_staff_specializations_select">التخصصات</label>
-                <select id="add_staff_specializations_select" class="form-control">
-                    <option value="">اختر تخصص...</option>
-                    @foreach($specializations as $specialization)
-                        <option value="{{ $specialization->id }}" data-name="{{ $specialization->name }}">
-                            {{ $specialization->name }}
+                <label for="add_staff_categories_select">الفئات (التخصصات)</label>
+                <select id="add_staff_categories_select" class="form-control">
+                    <option value="">اختر فئة...</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" data-name="{{ $category->name }}">
+                            {{ $category->name }}
                         </option>
                     @endforeach
                 </select>
-                <div id="add_staff_selected_specializations"
-                    style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                <div id="add_staff_selected_categories" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                </div>
             </div>
 
             <div class="form-group">
@@ -219,16 +220,16 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_staff_specializations_select">التخصصات</label>
-                <select id="edit_staff_specializations_select" class="form-control">
-                    <option value="">اختر تخصص...</option>
-                    @foreach($specializations as $specialization)
-                        <option value="{{ $specialization->id }}" data-name="{{ $specialization->name }}">
-                            {{ $specialization->name }}
+                <label for="edit_staff_categories_select">الفئات (التخصصات)</label>
+                <select id="edit_staff_categories_select" class="form-control">
+                    <option value="">اختر فئة...</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" data-name="{{ $category->name }}">
+                            {{ $category->name }}
                         </option>
                     @endforeach
                 </select>
-                <div id="edit_staff_selected_specializations"
+                <div id="edit_staff_selected_categories"
                     style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
             </div>
 
@@ -255,7 +256,7 @@
 
     @push('styles')
         <style>
-            .specialization-tag {
+            .category-tag {
                 display: inline-flex;
                 align-items: center;
                 gap: 6px;
@@ -266,7 +267,7 @@
                 font-size: 14px;
             }
 
-            .specialization-tag .remove-spec {
+            .category-tag .remove-cat {
                 background: none;
                 border: none;
                 color: white;
@@ -283,7 +284,7 @@
                 transition: background-color 0.2s;
             }
 
-            .specialization-tag .remove-spec:hover {
+            .category-tag .remove-cat:hover {
                 background-color: rgba(255, 255, 255, 0.2);
             }
         </style>
@@ -291,8 +292,8 @@
 
     @push('scripts')
         <script>
-            // Add Staff Modal - Specializations
-            document.getElementById('add_staff_specializations_select').addEventListener('change', function () {
+            // Add Staff Modal - Categories
+            document.getElementById('add_staff_categories_select').addEventListener('change', function () {
                 const select = this;
                 const selectedId = select.value;
                 const selectedOption = select.options[select.selectedIndex];
@@ -300,10 +301,10 @@
                 if (!selectedId) return;
 
                 const selectedName = selectedOption.getAttribute('data-name');
-                const container = document.getElementById('add_staff_selected_specializations');
+                const container = document.getElementById('add_staff_selected_categories');
 
                 // Check if already selected
-                const existingTags = container.querySelectorAll('.specialization-tag');
+                const existingTags = container.querySelectorAll('.category-tag');
                 for (let tag of existingTags) {
                     if (tag.getAttribute('data-id') === selectedId) {
                         select.value = '';
@@ -313,22 +314,22 @@
 
                 // Create new tag
                 const tagDiv = document.createElement('div');
-                tagDiv.className = 'specialization-tag';
+                tagDiv.className = 'category-tag';
                 tagDiv.setAttribute('data-id', selectedId);
                 tagDiv.innerHTML = `
-                    <input type="hidden" name="specializations[]" value="${selectedId}">
-                    <span>${selectedName}</span>
-                    <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
+                                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                                    <span>${selectedName}</span>
+                                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                `;
 
                 container.appendChild(tagDiv);
                 select.value = '';
             });
 
-            // Edit Staff Modal - Specializations
-            document.getElementById('edit_staff_specializations_select').addEventListener('change', function () {
+            // Edit Staff Modal - Categories
+            document.getElementById('edit_staff_categories_select').addEventListener('change', function () {
                 const select = this;
                 const selectedId = select.value;
                 const selectedOption = select.options[select.selectedIndex];
@@ -336,10 +337,10 @@
                 if (!selectedId) return;
 
                 const selectedName = selectedOption.getAttribute('data-name');
-                const container = document.getElementById('edit_staff_selected_specializations');
+                const container = document.getElementById('edit_staff_selected_categories');
 
                 // Check if already selected
-                const existingTags = container.querySelectorAll('.specialization-tag');
+                const existingTags = container.querySelectorAll('.category-tag');
                 for (let tag of existingTags) {
                     if (tag.getAttribute('data-id') === selectedId) {
                         select.value = '';
@@ -349,26 +350,26 @@
 
                 // Create new tag
                 const tagDiv = document.createElement('div');
-                tagDiv.className = 'specialization-tag';
+                tagDiv.className = 'category-tag';
                 tagDiv.setAttribute('data-id', selectedId);
                 tagDiv.innerHTML = `
-                    <input type="hidden" name="specializations[]" value="${selectedId}">
-                    <span>${selectedName}</span>
-                    <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
+                                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                                    <span>${selectedName}</span>
+                                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                `;
 
                 container.appendChild(tagDiv);
                 select.value = '';
             });
 
-            function removeSpecialization(button) {
-                const tag = button.closest('.specialization-tag');
+            function removeCategory(button) {
+                const tag = button.closest('.category-tag');
                 tag.remove();
             }
 
-            function openEditStaffModal(id, name, email, phone, specializations, bio, hourlyRate, isAvailable) {
+            function openEditStaffModal(id, name, email, phone, categories, bio, hourlyRate, isAvailable) {
                 document.getElementById('editStaffForm').action = '{{ route("admin.users.staff.update", ":id") }}'.replace(':id', id);
                 document.getElementById('edit_staff_name').value = name;
                 document.getElementById('edit_staff_email').value = email;
@@ -378,26 +379,26 @@
                 document.getElementById('edit_staff_hourly_rate').value = hourlyRate || '';
                 document.getElementById('edit_staff_is_available').checked = isAvailable;
 
-                // Reset and set specializations
-                const container = document.getElementById('edit_staff_selected_specializations');
+                // Reset and set categories
+                const container = document.getElementById('edit_staff_selected_categories');
                 container.innerHTML = '';
 
-                if (specializations && Array.isArray(specializations) && specializations.length > 0) {
-                    const specSelect = document.getElementById('edit_staff_specializations_select');
-                    specializations.forEach(specId => {
-                        const option = specSelect.querySelector(`option[value="${specId}"]`);
+                if (categories && Array.isArray(categories) && categories.length > 0) {
+                    const catSelect = document.getElementById('edit_staff_categories_select');
+                    categories.forEach(catId => {
+                        const option = catSelect.querySelector(`option[value="${catId}"]`);
                         if (option) {
-                            const specName = option.getAttribute('data-name');
+                            const catName = option.getAttribute('data-name');
                             const tagDiv = document.createElement('div');
-                            tagDiv.className = 'specialization-tag';
-                            tagDiv.setAttribute('data-id', specId);
+                            tagDiv.className = 'category-tag';
+                            tagDiv.setAttribute('data-id', catId);
                             tagDiv.innerHTML = `
-                                <input type="hidden" name="specializations[]" value="${specId}">
-                                <span>${specName}</span>
-                                <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            `;
+                                                <input type="hidden" name="employee[categories][]" value="${catId}">
+                                                <span>${catName}</span>
+                                                <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            `;
                             container.appendChild(tagDiv);
                         }
                     });
@@ -412,7 +413,7 @@
                 if (addModal) {
                     addModal.addEventListener('hidden.bs.modal', function () {
                         document.getElementById('addStaffForm').reset();
-                        document.getElementById('add_staff_selected_specializations').innerHTML = '';
+                        document.getElementById('add_staff_selected_categories').innerHTML = '';
                     });
                 }
             });

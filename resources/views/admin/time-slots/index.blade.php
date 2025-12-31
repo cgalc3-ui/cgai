@@ -127,23 +127,23 @@
                                     <td>{{ $hour['end']->format('h:i A') }}</td>
                                     <td>
                                         @if($timeSlot->is_available)
-                                            <span class="badge badge-success">متاح</span>
+                                            <span class="status-pill completed">متاح</span>
                                         @else
-                                            <span class="badge badge-danger">غير متاح</span>
+                                            <span class="status-pill cancelled">غير متاح</span>
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="action-buttons">
+                                        <div style="display: flex; gap: 8px;">
                                             <a href="{{ route('admin.time-slots.edit', $timeSlot) }}"
-                                                class="btn btn-sm btn-warning">
-                                                <i class="fas fa-edit"></i> تعديل
+                                                class="calm-action-btn warning" title="تعديل">
+                                                <i class="far fa-edit"></i>
                                             </a>
                                             <form action="{{ route('admin.time-slots.delete', $timeSlot) }}" method="POST"
                                                 class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا الوقت؟')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash"></i> حذف
+                                                <button type="submit" class="calm-action-btn danger" title="حذف">
+                                                    <i class="far fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </div>

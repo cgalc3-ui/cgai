@@ -18,14 +18,31 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     @stack('styles')
+    <script>
+        // Check for saved sidebar state before page renders
+        (function () {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed) {
+                document.documentElement.classList.add('sidebar-collapsed-init');
+            }
+        })();
+    </script>
 </head>
 
-<body>
-    <div class="dashboard-container">
+<body class="">
+    <div class="dashboard-container" id="dashboardContainer">
+        <script>
+            if (document.documentElement.classList.contains('sidebar-collapsed-init')) {
+                document.getElementById('dashboardContainer').classList.add('sidebar-collapsed');
+            }
+        </script>
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2 class="logo">{{ config('app.name') }}</h2>
+                <h2 class="logo">
+                    <span class="logo-full">{{ config('app.name') }}</span>
+                    <span class="logo-mini">{{ substr(config('app.name'), 0, 2) }}</span>
+                </h2>
             </div>
 
             <nav class="sidebar-nav">
@@ -74,11 +91,6 @@
                         class="nav-item {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-check"></i>
                         <span>الحجوزات</span>
-                    </a>
-                    <a href="{{ route('admin.specializations') }}"
-                        class="nav-item {{ request()->routeIs('admin.specializations*') ? 'active' : '' }}">
-                        <i class="fas fa-tags"></i>
-                        <span>التخصصات</span>
                     </a>
                     <div class="nav-group">
                         <div class="nav-group-header {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') ? 'active' : '' }}"
@@ -160,6 +172,20 @@
                     @endif
                 </a>
 
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.faqs.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.faqs*') ? 'active' : '' }}">
+                        <i class="fas fa-question-circle"></i>
+                        <span>إدارة الأسئلة الشائعة</span>
+                    </a>
+                @else
+                    <a href="{{ route('faqs.index') }}"
+                        class="nav-item {{ request()->routeIs('faqs.index') ? 'active' : '' }}">
+                        <i class="fas fa-question-circle"></i>
+                        <span>الأسئلة الشائعة</span>
+                    </a>
+                @endif
+
                 <!-- Tickets link for all users (if not admin/staff) -->
                 @if(auth()->user()->isCustomer())
                     <a href="{{ route('tickets.index') }}"
@@ -199,6 +225,9 @@
             <!-- Top Bar -->
             <header class="top-bar">
                 <div class="top-bar-left">
+                    <button id="sidebarToggle" class="icon-btn sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
                     <h1 class="page-title">@yield('page-title', 'لوحة التحكم')</h1>
                 </div>
                 <div class="top-bar-right">

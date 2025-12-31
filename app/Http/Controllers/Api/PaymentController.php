@@ -220,13 +220,24 @@ class PaymentController extends Controller
         $transactionId = $request->input('id');
         $paymobOrderId = $request->input('order'); // Paymob Order ID
 
-        // Find booking
-        $booking = Booking::where('payment_id', $paymobOrderId)
-            ->orWhere('payment_data->paymob_order_id', $paymobOrderId)
-            ->first();
-
-        if (!$booking) {
-            Log::error('PayMob Callback: Booking not found for order ' . $paymobOrderId);
+        // merchant_order_id هو temp_booking_id
+        $tempBookingId = $request->input('merchant_order_id');
+        
+        // البحث عن البيانات في cache أولاً
+        $cacheKey = 'pending_booking_' . $tempBookingId;
+        $tempBookingData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        
+        // إذا لم يوجد في cache، البحث في قاعدة البيانات (للحجوزات القديمة)
+        $booking = null;
+        if (!$tempBookingData) {
+            // البحث في قاعدة البيانات للحجوزات القديمة
+            $booking = Booking::where('payment_id', $paymobOrderId)
+                ->orWhere('payment_data->paymob_order_id', $paymobOrderId)
+                ->first();
+        }
+        
+        if (!$tempBookingData && !$booking) {
+            Log::error('PayMob Callback: Booking not found in cache or DB for order ' . $paymobOrderId);
             return response()->json(['message' => 'Order not found'], 404);
         }
 
@@ -238,35 +249,170 @@ class PaymentController extends Controller
         }
 
         if ($success) {
-            $paymentData = $booking->payment_data ?? [];
-            // Ensure payment_data is an array
-            if (is_string($paymentData)) {
-                $paymentData = json_decode($paymentData, true) ?? [];
-            }
-            if (!is_array($paymentData)) {
-                $paymentData = [];
-            }
-            
-            $booking->update([
-                'payment_status' => 'paid',
-                'payment_data' => array_merge($paymentData, [
-                    'transaction_id' => $transactionId,
-                    'callback_data' => $request->all()
-                ]),
-                'paid_at' => now(),
-            ]);
+            // استخدام معاملة (Transaction) مع lockForUpdate لضمان أن أول من يدفع يحصل على الحجز
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $booking, $tempBookingData, $tempBookingId, $transactionId, $paymobOrderId, $cacheKey) {
+                // إذا كان الحجز موجود في cache (حجز جديد)، ننشئه الآن
+                if ($tempBookingData) {
+                    $timeSlotIds = $tempBookingData['time_slot_ids'];
+                    
+                    // التحقق من أن الـ time slots لا تزال متاحة قبل حجزها
+                    $unavailableSlots = \App\Models\TimeSlot::whereIn('id', $timeSlotIds)
+                        ->where('is_available', false)
+                        ->lockForUpdate()
+                        ->exists();
+                        
+                    if ($unavailableSlots) {
+                        \Illuminate\Support\Facades\Cache::forget($cacheKey);
+                        Log::error('PayMob Callback: Time slots no longer available for temp booking ' . $tempBookingId);
+                        return response()->json([
+                            'message' => 'بعض الأوقات لم تعد متاحة',
+                            'order_id' => $paymobOrderId
+                        ], 422);
+                    }
 
-            // Send payment notification
-            try {
-                $notificationService = app(NotificationService::class);
-                $notificationService->paymentReceived($booking->fresh()->load(['customer', 'service']));
-            } catch (\Exception $e) {
-                Log::error('Failed to send payment notification: ' . $e->getMessage());
-            }
+                    // حجز الـ time slots بعد الدفع
+                    \App\Models\TimeSlot::whereIn('id', $timeSlotIds)->update(['is_available' => false]);
 
-            // You might want to return HTML for mobile webview or JSON
-            // Since this is the "Redirect URL", user sees this.
-            return response()->json(['message' => 'Payment Successful', 'booking_id' => $booking->id]);
+                    // إنشاء الحجز (confirmed, paid) مباشرة
+                    $booking = \App\Models\Booking::create([
+                        'customer_id' => $tempBookingData['customer_id'],
+                        'employee_id' => $tempBookingData['employee_id'],
+                        'service_id' => $tempBookingData['service_id'],
+                        'time_slot_id' => $tempBookingData['time_slot_id'],
+                        'booking_date' => $tempBookingData['booking_date'],
+                        'start_time' => $tempBookingData['start_time'],
+                        'end_time' => $tempBookingData['end_time'],
+                        'total_price' => $tempBookingData['total_price'],
+                        'status' => 'confirmed',
+                        'payment_status' => 'paid',
+                        'paid_at' => now(),
+                        'notes' => $tempBookingData['notes'] ?? null,
+                        'payment_id' => $paymobOrderId,
+                        'payment_data' => [
+                            'transaction_id' => $transactionId,
+                            'paymob_order_id' => $paymobOrderId,
+                            'callback_data' => $request->all()
+                        ],
+                    ]);
+
+                    // ربط الحجز بالـ time slots
+                    $booking->timeSlots()->attach($timeSlotIds);
+
+                    // حذف البيانات المؤقتة من cache
+                    \Illuminate\Support\Facades\Cache::forget($cacheKey);
+
+                    // إلغاء الحجوزات pending الأخرى لنفس الـ time slots (إذا كانت موجودة)
+                    $otherPendingBookings = \App\Models\Booking::whereIn('id', function($query) use ($timeSlotIds) {
+                        $query->select('booking_id')
+                            ->from('booking_time_slot')
+                            ->whereIn('time_slot_id', $timeSlotIds);
+                    })
+                    ->where('id', '!=', $booking->id)
+                    ->where('status', 'pending')
+                    ->where('payment_status', 'unpaid')
+                    ->get();
+
+                    foreach ($otherPendingBookings as $otherBooking) {
+                        $otherBooking->update([
+                            'status' => 'cancelled',
+                            'notes' => ($otherBooking->notes ?? '') . "\nتم الإلغاء تلقائياً: تم حجز نفس الأوقات من قبل عميل آخر.",
+                        ]);
+                    }
+
+                    // Send notifications
+                    try {
+                        $notificationService = app(NotificationService::class);
+                        $notificationService->bookingCreated($booking->fresh()->load(['customer', 'service', 'employee.user']));
+                        $notificationService->paymentReceived($booking->fresh()->load(['customer', 'service']));
+                    } catch (\Exception $e) {
+                        Log::error('Failed to send notification: ' . $e->getMessage());
+                    }
+
+                    return response()->json(['message' => 'Payment Successful', 'booking_id' => $booking->id]);
+                }
+
+                // للحجوزات القديمة (موجودة في قاعدة البيانات)
+                // إعادة تحميل الحجز مع lockForUpdate
+                $booking = \App\Models\Booking::where('id', $booking->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                // التحقق مرة أخرى من حالة الدفع (قد تكون تغيرت)
+                if ($booking->payment_status === 'paid') {
+                    Log::info('PayMob Callback: Booking already paid ' . $booking->id);
+                    return response()->json([
+                        'message' => 'تم الدفع بالفعل',
+                        'booking_id' => $booking->id
+                    ], 422);
+                }
+
+                $paymentData = $booking->payment_data ?? [];
+                // Ensure payment_data is an array
+                if (is_string($paymentData)) {
+                    $paymentData = json_decode($paymentData, true) ?? [];
+                }
+                if (!is_array($paymentData)) {
+                    $paymentData = [];
+                }
+                
+                // التحقق من أن الـ time slots لا تزال متاحة قبل حجزها
+                $booking->load('timeSlots');
+                $timeSlotIds = $booking->timeSlots->pluck('id')->toArray();
+                
+                $unavailableSlots = \App\Models\TimeSlot::whereIn('id', $timeSlotIds)
+                    ->where('is_available', false)
+                    ->lockForUpdate()
+                    ->exists();
+                    
+                if ($unavailableSlots) {
+                    Log::error('PayMob Callback: Time slots no longer available for booking ' . $booking->id);
+                    return response()->json([
+                        'message' => 'بعض الأوقات لم تعد متاحة',
+                        'booking_id' => $booking->id
+                    ], 422);
+                }
+
+                // حجز الـ time slots بعد الدفع
+                \App\Models\TimeSlot::whereIn('id', $timeSlotIds)->update(['is_available' => false]);
+                
+                $booking->update([
+                    'payment_status' => 'paid',
+                    'status' => 'confirmed',
+                    'payment_data' => array_merge($paymentData, [
+                        'transaction_id' => $transactionId,
+                        'callback_data' => $request->all()
+                    ]),
+                    'paid_at' => now(),
+                ]);
+
+                // إلغاء الحجوزات pending الأخرى لنفس الـ time slots (إذا كانت موجودة)
+                $otherPendingBookings = \App\Models\Booking::whereIn('id', function($query) use ($timeSlotIds) {
+                    $query->select('booking_id')
+                        ->from('booking_time_slot')
+                        ->whereIn('time_slot_id', $timeSlotIds);
+                })
+                ->where('id', '!=', $booking->id)
+                ->where('status', 'pending')
+                ->where('payment_status', 'unpaid')
+                ->get();
+
+                foreach ($otherPendingBookings as $otherBooking) {
+                    $otherBooking->update([
+                        'status' => 'cancelled',
+                        'notes' => ($otherBooking->notes ?? '') . "\nتم الإلغاء تلقائياً: تم حجز نفس الأوقات من قبل عميل آخر.",
+                    ]);
+                }
+
+                // Send payment notification
+                try {
+                    $notificationService = app(NotificationService::class);
+                    $notificationService->paymentReceived($booking->fresh()->load(['customer', 'service']));
+                } catch (\Exception $e) {
+                    Log::error('Failed to send payment notification: ' . $e->getMessage());
+                }
+
+                return response()->json(['message' => 'Payment Successful', 'booking_id' => $booking->id]);
+            });
         } else {
             $paymentData = $booking->payment_data ?? [];
             // Ensure payment_data is an array

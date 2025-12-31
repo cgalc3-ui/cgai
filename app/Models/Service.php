@@ -9,7 +9,6 @@ class Service extends Model
 {
     protected $fillable = [
         'sub_category_id',
-        'specialization_id',
         'name',
         'slug',
         'description',
@@ -19,7 +18,6 @@ class Service extends Model
 
     protected $casts = [
         'sub_category_id' => 'integer',
-        'specialization_id' => 'integer',
         'hourly_rate' => 'decimal:2',
         'is_active' => 'boolean',
     ];
@@ -58,7 +56,7 @@ class Service extends Model
     }
 
     /**
-     * Get the category through sub category
+     * Get the category (specialization) through sub category
      */
     public function getCategoryAttribute()
     {
@@ -66,11 +64,19 @@ class Service extends Model
     }
 
     /**
-     * Get the specialization that this service belongs to
+     * Get category_id (for backward compatibility)
      */
-    public function specialization(): BelongsTo
+    public function getCategoryIdAttribute()
     {
-        return $this->belongsTo(Specialization::class);
+        return $this->subCategory?->category_id;
+    }
+
+    /**
+     * Get specialization_id (for backward compatibility - returns category_id)
+     */
+    public function getSpecializationIdAttribute()
+    {
+        return $this->subCategory?->category_id;
     }
 
     /**

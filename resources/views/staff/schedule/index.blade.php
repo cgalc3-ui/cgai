@@ -32,10 +32,10 @@
             <input type="date" name="date" id="date_picker"
                 value="{{ $selectedDate ? $selectedDate->format('Y-m-d') : '' }}" class="filter-input-small"
                 style="display:none;" onchange="
-                    var checkboxes = document.getElementsByName('day_names[]');
-                    for(var i=0; i<checkboxes.length; i++) checkboxes[i].checked = false;
-                    this.form.submit();
-                ">
+                        var checkboxes = document.getElementsByName('day_names[]');
+                        for(var i=0; i<checkboxes.length; i++) checkboxes[i].checked = false;
+                        this.form.submit();
+                    ">
             <button type="button" class="btn btn-sm btn-outline-secondary"
                 onclick="document.getElementById('date_picker').click()" style="margin-right: auto;">
                 <i class="fas fa-calendar-alt"></i> اختيار تاريخ محدد
@@ -127,13 +127,9 @@
                                     </td>
                                     <td>
                                         @if(!$slot->is_available)
-                                            <span class="badge badge-danger">
-                                                <i class="fas fa-lock"></i> محجوز
-                                            </span>
+                                            <span class="status-pill cancelled">محجوز</span>
                                         @else
-                                            <span class="badge badge-success">
-                                                <i class="fas fa-check-circle"></i> متاح
-                                            </span>
+                                            <span class="status-pill completed">متاح</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -431,7 +427,7 @@
             let currentDate = new Date();
             // Initialize selectedDate from input if present
             let selectedDate = (dateInput && dateInput.value) ? new Date(dateInput.value) : null;
-            
+
             // If no selected date (e.g. checkbox mode), use today for the *view* month but don't select it
             if (!selectedDate) {
                 // If we have "day_names" selected, we still might want to show the current month
@@ -439,7 +435,7 @@
             } else {
                 currentDate = new Date(selectedDate);
                 // Reset to first day to avoid overflow issues when setting month later
-                currentDate.setDate(1); 
+                currentDate.setDate(1);
             }
 
             // Get dates with time slots from server (Using workDays variable passed from controller)
@@ -462,7 +458,7 @@
 
                 // Convert to Arabic week week starting Saturday (Standard grid usually starts Sunday (0) in our view)
                 // HTML Headers: ح (Sun) ...
-                
+
                 calendarDays.innerHTML = '';
 
                 // Add empty cells for days before the first day of the month
@@ -505,14 +501,14 @@
                         // When clicking a date on calendar, we switch to Specific Date mode
                         // So we should check if there are unrelated checkboxes and clear them?
                         // But the server handles preference for date if present.
-                        
+
                         // We need to set the date input
                         if (dateInput) {
                             dateInput.value = dateStr;
-                             // Clear checkboxes to ensure date filter takes precedence visually/logically
+                            // Clear checkboxes to ensure date filter takes precedence visually/logically
                             const checkboxes = document.getElementsByName('day_names[]');
                             checkboxes.forEach(cb => cb.checked = false);
-                            
+
                             filterForm.submit();
                         }
                     });

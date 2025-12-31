@@ -57,26 +57,26 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone ?? '-' }}</td>
                         <td>
-                            <span class="badge badge-info">
-                                <i class="fas fa-user"></i> عميل
+                            <span class="status-pill active">
+                                <i class="fas fa-user" style="margin-left: 5px;"></i> عميل
                             </span>
                         </td>
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
                         <td>
-                            <div class="action-buttons">
-                                <a href="{{ route('admin.users.customers.show', $user) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> عرض
+                            <div style="display: flex; gap: 8px; justify-content: center;">
+                                <a href="{{ route('admin.users.customers.show', $user) }}" class="calm-action-btn" title="عرض">
+                                    <i class="far fa-eye"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-warning"
+                                <button type="button" class="calm-action-btn warning" title="تعديل"
                                     onclick="openEditCustomerModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email ?? '') }}', '{{ addslashes($user->phone ?? '') }}', '{{ $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '' }}', '{{ $user->gender ?? '' }}')">
-                                    <i class="fas fa-edit"></i> تعديل
+                                    <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.users.customers.delete', $user) }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('هل أنت متأكد من حذف هذا العميل؟')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i> حذف
+                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                        <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </div>

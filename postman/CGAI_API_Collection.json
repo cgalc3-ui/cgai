@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "cgai-api-collection",
 		"name": "CGAI API Collection",
-		"description": "Complete API collection for testing all endpoints",
+		"description": "Complete API collection for testing all endpoints\n\n📝 بيانات المستخدمين للاختبار (من UserSeeder):\n- الأدمن: admin@example.com / password123 / 0501234567\n- الموظف: staff@example.com / password123 / 0507654321\n- العميل: customer@example.com / password123 / 0501111111\n\n⚠️ ملاحظة: التسجيل في API يتم على خطوتين:\n1. verify-registration-code (يرجع temp_token)\n2. complete-registration (يستخدم temp_token)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -18,8 +18,9 @@
 		},
 		{
 			"key": "phone",
-			"value": "0501234567",
-			"type": "string"
+			"value": "0501111111",
+			"type": "string",
+			"description": "رقم هاتف العميل للاختبار (customer@example.com)"
 		},
 		{
 			"key": "verification_code",
@@ -30,6 +31,24 @@
 			"key": "temp_token",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "admin_phone",
+			"value": "0501234567",
+			"type": "string",
+			"description": "رقم هاتف الأدمن (admin@example.com / password123)"
+		},
+		{
+			"key": "staff_phone",
+			"value": "0507654321",
+			"type": "string",
+			"description": "رقم هاتف الموظف (staff@example.com / password123)"
+		},
+		{
+			"key": "customer_phone",
+			"value": "0501111111",
+			"type": "string",
+			"description": "رقم هاتف العميل (customer@example.com / password123)"
 		}
 	],
 	"item": [
@@ -784,7 +803,50 @@
 					"response": []
 				},
 				{
-					"name": "2. Get All Bookings",
+					"name": "2. Get Available Time Slots",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/available-time-slots?service_id=1&date=2025-12-26",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"available-time-slots"
+							],
+							"query": [
+								{
+									"key": "service_id",
+									"value": "1",
+									"description": "معرف الخدمة (مطلوب)"
+								},
+								{
+									"key": "date",
+									"value": "2025-12-26",
+									"description": "التاريخ (YYYY-MM-DD) (مطلوب)"
+								}
+							]
+						},
+						"description": "الحصول على الأوقات المتاحة لخدمة معينة في تاريخ محدد. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get All Bookings",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -826,7 +888,7 @@
 					"response": []
 				},
 				{
-					"name": "3. Create Booking",
+					"name": "4. Create Booking",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -848,7 +910,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"service_id\": 1,\n    \"booking_date\": \"2025-12-26\",\n    \"time_slot_ids\": [1, 2, 3],\n    \"notes\": \"ملاحظات إضافية (اختياري)\"\n}",
+							"raw": "{\n    \"service_id\": 1,\n    \"booking_date\": \"2025-12-26\",\n    \"time_slot_ids\": [1, 2, 3],\n    \"payment_method\": \"online\",\n    \"notes\": \"ملاحظات إضافية (اختياري)\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -865,12 +927,102 @@
 								"bookings"
 							]
 						},
-						"description": "إنشاء حجز جديد. يتطلب service_id و booking_date و time_slot_ids (مصفوفة من معرفات الأوقات المتاحة). التخصص والمدة تُؤخذ تلقائياً من الخدمة. جميع time_slot_ids يجب أن تكون لنفس الموظف ونفس التاريخ. يتطلب Token."
+						"description": "⚠️ مهم: هذا الـ endpoint يحفظ بيانات الحجز مؤقتاً في cache فقط - لا يتم إنشاء الحجز في قاعدة البيانات إلا بعد الدفع. يتطلب service_id و booking_date و time_slot_ids. notes و payment_method اختياريين. إذا كان payment_method: online، يُرجع payment_url مباشرة. إذا لم يكن payment_method موجود أو ليس online، يُرجع temp_booking_id فقط (يجب استخدامه في Process Manual Payment). البيانات تُحفظ في cache لمدة 30 دقيقة. التخصص والمدة تُؤخذ تلقائياً من الخدمة. جميع time_slot_ids يجب أن تكون لنفس الموظف ونفس التاريخ. يتطلب Token."
 					},
 					"response": []
 				},
 				{
-					"name": "4. Get Booking by ID",
+					"name": "5. Process Manual Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"temp_booking_id\": \"temp_67890abc123_1735567890\",\n    \"payment_method\": \"cash\",\n    \"transaction_id\": \"TXN123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"payment"
+							]
+						},
+						"description": "معالجة الدفع اليدوي وإنشاء الحجز في قاعدة البيانات. ⚠️ مهم: الحجز يُنشأ في قاعدة البيانات فقط بعد الدفع. يتطلب temp_booking_id (من Create Booking) و payment_method (cash, credit_card, debit_card) و transaction_id (اختياري). بعد الدفع، يتم إنشاء الحجز في قاعدة البيانات مع status: confirmed و payment_status: paid. الأوقات تُحجز بعد الدفع فقط. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Initiate Online Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"temp_booking_id\": \"temp_67890abc123_1735567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/initiate-online-payment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"initiate-online-payment"
+							]
+						},
+						"description": "بدء عملية الدفع الإلكتروني عبر PayMob. ⚠️ مهم: الحجز لا يتم في قاعدة البيانات إلا بعد إتمام الدفع. يتطلب temp_booking_id (من Create Booking). يُرجع payment_url لتوجيه العميل لصفحة الدفع. بعد إتمام الدفع، PayMob يرسل callback تلقائياً لإنشاء الحجز في قاعدة البيانات وتأكيده (status: confirmed, payment_status: paid). الأوقات تُحجز بعد الدفع فقط. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Get Booking by ID",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -901,7 +1053,7 @@
 					"response": []
 				},
 				{
-					"name": "5. Update Booking",
+					"name": "8. Update Booking",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -946,7 +1098,7 @@
 					"response": []
 				},
 				{
-					"name": "6. Cancel Booking",
+					"name": "9. Cancel Booking",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -992,7 +1144,7 @@
 					"response": []
 				},
 				{
-					"name": "7. Process Manual Payment",
+					"name": "10. Process Manual Payment (Legacy - Old Bookings)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -1033,12 +1185,12 @@
 								"payment"
 							]
 						},
-						"description": "معالجة الدفع اليدوي للحجز (نقدي، بطاقة ائتمان، بطاقة خصم). payment_method: cash, credit_card, debit_card, أو online. transaction_id اختياري. يحدث payment_status إلى 'paid' و status إلى 'confirmed' مباشرة. للدفع الإلكتروني عبر PayMob، استخدم endpoint 'Initiate PayMob Payment'. يتطلب Token."
+						"description": "⚠️ هذا الـ endpoint للحجوزات القديمة فقط (pending, unpaid موجودة في قاعدة البيانات). للحجوزات الجديدة، استخدم 'Create Booking' ثم 'Process Manual Payment' مع temp_booking_id. معالجة الدفع اليدوي للحجز القديم (نقدي، بطاقة ائتمان، بطاقة خصم). payment_method: cash, credit_card, debit_card. transaction_id اختياري. يحدث payment_status إلى 'paid' و status إلى 'confirmed' مباشرة. يتطلب Token."
 					},
 					"response": []
 				}
 			],
-			"description": "جميع endpoints الخاصة بالحجوزات"
+			"description": "جميع endpoints الخاصة بالحجوزات\n\n📋 ملاحظات مهمة:\n- ⚠️ الحجز لا يتم في قاعدة البيانات إلا بعد الدفع\n- الخطوات: 1) Create Booking (يحفظ في cache ويعيد temp_booking_id) → 2) Process Manual Payment أو Initiate Online Payment (ينشئ الحجز في قاعدة البيانات بعد الدفع)\n- الأوقات متاحة للجميع حتى الدفع\n- أول من يدفع يحصل على الحجز\n- لا يتم إنشاء حجوزات متعددة لنفس الأوقات قبل الدفع\n- البيانات في cache تنتهي بعد 30 دقيقة\n\n📋 ترتيب الـ Endpoints:\n1-2: جلب التواريخ والأوقات المتاحة\n3: جلب جميع الحجوزات\n4: إنشاء حجز (يحفظ في cache)\n5: معالجة الدفع اليدوي (ينشئ الحجز بعد الدفع)\n6: بدء الدفع الإلكتروني (ينشئ الحجز بعد الدفع عبر PayMob callback)\n7-10: إدارة الحجوزات (عرض، تحديث، إلغاء، دفع للحجوزات القديمة)"
 		},
 		{
 			"name": "Payments",
@@ -1085,7 +1237,7 @@
 								"pay-online"
 							]
 						},
-						"description": "بدء عملية الدفع الإلكتروني عبر PayMob. لا يتطلب بيانات في الـ body (فارغ {}). يُرجع payment_url لتوجيه العميل لصفحة الدفع. بعد إتمام الدفع، PayMob يرسل callback تلقائياً لتحديث payment_status. يتطلب Token ومعرف الحجز (booking_id)."
+						"description": "⚠️ هذا الـ endpoint للحجوزات القديمة فقط (pending, unpaid موجودة في قاعدة البيانات). للحجوزات الجديدة، استخدم 'Create Booking' ثم 'Initiate Online Payment' من قسم Bookings مع temp_booking_id. بدء عملية الدفع الإلكتروني عبر PayMob لحجز قديم. لا يتطلب بيانات في الـ body (فارغ {}). يُرجع payment_url لتوجيه العميل لصفحة الدفع. بعد إتمام الدفع، PayMob يرسل callback تلقائياً لتأكيد الحجز. يتطلب Token ومعرف الحجز (booking_id)."
 					},
 					"response": []
 				},
@@ -1124,7 +1276,7 @@
 					"response": []
 				}
 			],
-			"description": "جميع endpoints الخاصة بالدفع الإلكتروني عبر PayMob"
+			"description": "جميع endpoints الخاصة بالدفع الإلكتروني عبر PayMob\n\n📋 ملاحظات مهمة:\n- للحجوزات الجديدة: استخدم 'Create Booking' ثم 'Initiate Online Payment' من قسم Bookings مع temp_booking_id\n- Initiate PayMob Payment: للحجوزات القديمة فقط (pending, unpaid موجودة في قاعدة البيانات)\n- PayMob Callback: يُستخدم من قِبل PayMob تلقائياً بعد الدفع لإنشاء الحجز في قاعدة البيانات"
 		},
 		{
 			"name": "Notifications",
@@ -1628,6 +1780,62 @@
 				}
 			],
 			"description": "جميع endpoints الخاصة بالموظف"
+		},
+		{
+			"name": "FAQs",
+			"item": [
+				{
+					"name": "1. Get All FAQs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/faqs",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"faqs"
+							]
+						},
+						"description": "الحصول على جميع الأسئلة الشائعة النشطة مجمعة حسب الفئة. لا يتطلب Token (Public endpoint)."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get FAQs by Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/faqs/category/general",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"faqs",
+								"category",
+								"general"
+							]
+						},
+						"description": "الحصول على الأسئلة الشائعة النشطة لفئة معينة. لا يتطلب Token (Public endpoint). أمثلة على الفئات: general, booking, payment, services"
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالأسئلة الشائعة (FAQs)"
 		},
 		{
 			"name": "Settings",

@@ -66,22 +66,22 @@
                         </div>
                         <div class="ticket-status-section">
                             @if($ticket->status === 'open')
-                                <span class="badge badge-warning">مفتوحة</span>
+                                <span class="status-pill pending">مفتوحة</span>
                             @elseif($ticket->status === 'in_progress')
-                                <span class="badge badge-info">قيد المعالجة</span>
+                                <span class="status-pill active">قيد المعالجة</span>
                             @elseif($ticket->status === 'resolved')
-                                <span class="badge badge-success">محلولة</span>
+                                <span class="status-pill confirmed">محلولة</span>
                             @else
-                                <span class="badge badge-secondary">مغلقة</span>
+                                <span class="status-pill cancelled">مغلقة</span>
                             @endif
                             @if($ticket->priority === 'urgent')
-                                <span class="badge badge-danger">عاجلة</span>
+                                <span class="status-pill cancelled">عاجلة</span>
                             @elseif($ticket->priority === 'high')
-                                <span class="badge badge-warning">عالية</span>
+                                <span class="status-pill pending">عالية</span>
                             @elseif($ticket->priority === 'medium')
-                                <span class="badge badge-info">متوسطة</span>
+                                <span class="status-pill active">متوسطة</span>
                             @else
-                                <span class="badge badge-secondary">منخفضة</span>
+                                <span class="status-pill completed">منخفضة</span>
                             @endif
                         </div>
                     </div>

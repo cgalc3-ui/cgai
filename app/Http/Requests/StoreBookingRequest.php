@@ -19,6 +19,7 @@ class StoreBookingRequest extends FormRequest
             'time_slot_ids' => 'required|array|min:1', // يجب أن يكون مصفوفة وعنصر واحد على الأقل
             'time_slot_ids.*' => 'exists:time_slots,id', // تحقق من أن كل معرف في المصفوفة موجود
             'notes' => 'nullable|string',
+            'payment_method' => 'nullable|string|in:online',
         ];
     }
 
@@ -37,7 +38,7 @@ class StoreBookingRequest extends FormRequest
             'time_slot_ids.exists' => 'يجب أن يكون وقت الحجز موجود في القاعدة',
             'notes.string' => 'الملاحظات يجب أن تكون نص',
             'notes.max' => 'الملاحظات لا يمكن أن تتجاوز 1000 حرف',
-
+            'payment_method.in' => 'طريقة الدفع غير صالحة (online فقط)',
         ];
     }
 }

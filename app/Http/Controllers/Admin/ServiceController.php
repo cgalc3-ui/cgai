@@ -7,22 +7,20 @@ use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\Service;
 use App\Models\SubCategory;
-use App\Models\Specialization;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::with(['subCategory.category', 'specialization'])->latest()->paginate(15);
+        $services = Service::with(['subCategory.category'])->latest()->paginate(15);
         return view('admin.services.index', compact('services'));
     }
 
     public function create()
     {
         $subCategories = SubCategory::where('is_active', true)->with('category')->orderBy('name')->get();
-        $specializations = Specialization::orderBy('name')->get();
-        return view('admin.services.create', compact('subCategories', 'specializations'));
+        return view('admin.services.create', compact('subCategories'));
     }
 
     public function store(StoreServiceRequest $request)
@@ -42,8 +40,7 @@ class ServiceController extends Controller
     public function edit(Service $service)
     {
         $subCategories = SubCategory::where('is_active', true)->with('category')->orderBy('name')->get();
-        $specializations = Specialization::orderBy('name')->get();
-        return view('admin.services.edit', compact('service', 'subCategories', 'specializations'));
+        return view('admin.services.edit', compact('service', 'subCategories'));
     }
 
     public function update(UpdateServiceRequest $request, Service $service)

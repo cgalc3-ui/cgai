@@ -10,38 +10,90 @@
     </div>
 
     <!-- Statistics Cards -->
+    <!-- Statistics Cards -->
     <div class="stats-grid">
+        <!-- Total Customers -->
         <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-card-icon purple">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">إجمالي العملاء</h3>
+                <i class="fas fa-ellipsis-h stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle purple">
                     <i class="fas fa-users"></i>
                 </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ $stats['total_customers'] ?? 0 }}</h2>
+                        <span class="stat-card-trend up">
+                            <i class="fas fa-arrow-up"></i> +{{ number_format(5.2, 1) }}%
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">العملاء المسجلين في النظام</span>
+                </div>
             </div>
-            <div class="stat-card-value">{{ $stats['total_customers'] ?? 0 }}</div>
-            <div class="stat-card-label">إجمالي العملاء المسجلين</div>
+            <div class="stat-card-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <path d="M0,25 C10,20 20,28 30,22 C40,16 50,18 60,12 C70,6 80,10 90,8 C100,6 100,5 100,5" fill="none"
+                        stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </div>
         </div>
 
+        <!-- Total Bookings -->
         <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-card-icon blue">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">إجمالي الحجوزات</h3>
+                <i class="fas fa-ellipsis-h stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle blue">
                     <i class="fas fa-calendar-check"></i>
                 </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ $stats['total_bookings'] ?? 0 }}</h2>
+                        <span class="stat-card-trend up">
+                            <i class="fas fa-arrow-up"></i> +{{ number_format(3.8, 1) }}%
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }} حجز اليوم</span>
+                </div>
             </div>
-            <div class="stat-card-value">{{ $stats['total_bookings'] ?? 0 }}</div>
-            <div class="stat-card-label">إجمالي الحجوزات</div>
-            <div class="stat-card-sub">
-                <span class="text-info">{{ $stats['today_bookings'] ?? 0 }} حجز اليوم</span>
+            <div class="stat-card-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <path d="M0,20 C10,25 20,15 30,18 C40,21 50,10 60,15 C70,20 80,5 90,10 C100,15 100,10 100,10"
+                        fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+                </svg>
             </div>
         </div>
 
+        <!-- Pending Bookings -->
         <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-card-icon orange">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">حجوزات قيد الانتظار</h3>
+                <i class="fas fa-ellipsis-h stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle orange">
                     <i class="fas fa-hourglass-half"></i>
                 </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ $stats['pending_bookings'] ?? 0 }}</h2>
+                        <span class="stat-card-trend down">
+                            <i class="fas fa-clock"></i>
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">تحتاج إلى مراجعة وتأكيد</span>
+                </div>
             </div>
-            <div class="stat-card-value">{{ $stats['pending_bookings'] ?? 0 }}</div>
-            <div class="stat-card-label">حجوزات قيد الانتظار</div>
+            <div class="stat-card-chart">
+                <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                    <path d="M0,28 C10,22 20,25 30,20 C40,15 50,22 60,18 C70,14 80,18 90,12 C100,6 100,5 100,5" fill="none"
+                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </div>
         </div>
     </div>
 
@@ -233,14 +285,15 @@
 
                     <div class="form-group">
                         <label for="ticketDescription">الوصف <span class="required">*</span></label>
-                        <textarea name="description" id="ticketDescription" class="form-textarea" rows="6" required></textarea>
+                        <textarea name="description" id="ticketDescription" class="form-textarea" rows="6"
+                            required></textarea>
                         <span class="error-message" id="descriptionError"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="ticketAttachments">المرفقات (صور)</label>
-                        <input type="file" name="attachments[]" id="ticketAttachments" 
-                               class="form-input" multiple accept="image/*">
+                        <input type="file" name="attachments[]" id="ticketAttachments" class="form-input" multiple
+                            accept="image/*">
                         <small class="form-help">يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)</small>
                         <span class="error-message" id="attachmentsError"></span>
                     </div>
@@ -414,14 +467,45 @@
                 font-weight: 500;
             }
 
-            .badge-open { background: #fef3c7; color: #92400e; }
-            .badge-in_progress { background: #dbeafe; color: #1e40af; }
-            .badge-resolved { background: #d1fae5; color: #065f46; }
-            .badge-closed { background: #e5e7eb; color: #374151; }
-            .badge-urgent { background: #fee2e2; color: #991b1b; }
-            .badge-high { background: #fed7aa; color: #9a3412; }
-            .badge-medium { background: #dbeafe; color: #1e40af; }
-            .badge-low { background: #e5e7eb; color: #6b7280; }
+            .badge-open {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .badge-in_progress {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .badge-resolved {
+                background: #d1fae5;
+                color: #065f46;
+            }
+
+            .badge-closed {
+                background: #e5e7eb;
+                color: #374151;
+            }
+
+            .badge-urgent {
+                background: #fee2e2;
+                color: #991b1b;
+            }
+
+            .badge-high {
+                background: #fed7aa;
+                color: #9a3412;
+            }
+
+            .badge-medium {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .badge-low {
+                background: #e5e7eb;
+                color: #6b7280;
+            }
 
             .loading-spinner {
                 text-align: center;
@@ -581,54 +665,54 @@
                         'Accept': 'application/json'
                     }
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.data.data && data.data.data.length > 0) {
-                        let html = '';
-                        data.data.data.forEach(ticket => {
-                            const statusBadge = getStatusBadge(ticket.status);
-                            const priorityBadge = getPriorityBadge(ticket.priority);
-                            const createdAt = new Date(ticket.created_at).toLocaleDateString('ar-SA');
-                            
-                            const ticketUrl = '{{ url("/tickets") }}/' + ticket.id;
-                            html += `
-                                <div class="ticket-item-modal" onclick="window.location.href='${ticketUrl}'">
-                                    <div class="ticket-item-header">
-                                        <div>
-                                            <h3 class="ticket-item-title">${ticket.subject}</h3>
-                                            <div class="ticket-item-meta">
-                                                <span>#${ticket.id}</span>
-                                                <span><i class="fas fa-calendar"></i> ${createdAt}</span>
-                                                ${statusBadge}
-                                                ${priorityBadge}
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.data.data && data.data.data.length > 0) {
+                            let html = '';
+                            data.data.data.forEach(ticket => {
+                                const statusBadge = getStatusBadge(ticket.status);
+                                const priorityBadge = getPriorityBadge(ticket.priority);
+                                const createdAt = new Date(ticket.created_at).toLocaleDateString('ar-SA');
+
+                                const ticketUrl = '{{ url("/tickets") }}/' + ticket.id;
+                                html += `
+                                                <div class="ticket-item-modal" onclick="window.location.href='${ticketUrl}'">
+                                                    <div class="ticket-item-header">
+                                                        <div>
+                                                            <h3 class="ticket-item-title">${ticket.subject}</h3>
+                                                            <div class="ticket-item-meta">
+                                                                <span>#${ticket.id}</span>
+                                                                <span><i class="fas fa-calendar"></i> ${createdAt}</span>
+                                                                ${statusBadge}
+                                                                ${priorityBadge}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <p class="ticket-item-description">${ticket.description ? ticket.description.substring(0, 100) + '...' : ''}</p>
+                                                </div>
+                                            `;
+                            });
+                            ticketsList.innerHTML = html;
+                        } else {
+                            ticketsList.innerHTML = `
+                                            <div class="empty-state-modal">
+                                                <i class="fas fa-inbox"></i>
+                                                <h3>لا توجد تذاكر</h3>
+                                                <p>لم يتم العثور على أي تذاكر دعم</p>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <p class="ticket-item-description">${ticket.description ? ticket.description.substring(0, 100) + '...' : ''}</p>
-                                </div>
-                            `;
-                        });
-                        ticketsList.innerHTML = html;
-                    } else {
+                                        `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading tickets:', error);
                         ticketsList.innerHTML = `
-                            <div class="empty-state-modal">
-                                <i class="fas fa-inbox"></i>
-                                <h3>لا توجد تذاكر</h3>
-                                <p>لم يتم العثور على أي تذاكر دعم</p>
-                            </div>
-                        `;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading tickets:', error);
-                    ticketsList.innerHTML = `
-                        <div class="empty-state-modal">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <h3>حدث خطأ</h3>
-                            <p>فشل تحميل التذاكر. يرجى المحاولة مرة أخرى.</p>
-                        </div>
-                    `;
-                });
+                                        <div class="empty-state-modal">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <h3>حدث خطأ</h3>
+                                            <p>فشل تحميل التذاكر. يرجى المحاولة مرة أخرى.</p>
+                                        </div>
+                                    `;
+                    });
             }
 
             function getStatusBadge(status) {
@@ -652,14 +736,14 @@
             }
 
             // Close modal when clicking outside
-            document.getElementById('ticketsModal')?.addEventListener('click', function(e) {
+            document.getElementById('ticketsModal')?.addEventListener('click', function (e) {
                 if (e.target === this) {
                     closeTicketsModal();
                 }
             });
 
             // Close modal on ESC key
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     const ticketsModal = document.getElementById('ticketsModal');
                     const createModal = document.getElementById('createTicketModal');
@@ -689,20 +773,20 @@
             }
 
             // Handle create ticket form submission
-            document.getElementById('createTicketForm')?.addEventListener('submit', function(e) {
+            document.getElementById('createTicketForm')?.addEventListener('submit', function (e) {
                 e.preventDefault();
-                
+
                 const form = this;
                 const submitBtn = document.getElementById('submitTicketBtn');
                 const formData = new FormData(form);
-                
+
                 // Clear previous errors
                 document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-                
+
                 // Disable submit button
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
-                
+
                 fetch('{{ route("tickets.store") }}', {
                     method: 'POST',
                     body: formData,
@@ -711,64 +795,64 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
                     }
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(data => {
-                            throw { errors: data.errors || {}, message: data.message || 'حدث خطأ' };
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success || !data.errors) {
-                        // Success - close modal and reload tickets
-                        closeCreateTicketModal();
-                        if (document.getElementById('ticketsModal').style.display !== 'none') {
-                            loadTickets();
-                        } else {
-                            // If tickets modal is closed, open it and show the new ticket
-                            openTicketsModal();
-                            setTimeout(() => loadTickets(), 300);
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw { errors: data.errors || {}, message: data.message || 'حدث خطأ' };
+                            });
                         }
-                        // Show success message
-                        alert('تم إنشاء التذكرة بنجاح');
-                    } else {
-                        // Show validation errors
-                        if (data.errors) {
-                            if (data.errors.subject) {
-                                document.getElementById('subjectError').textContent = data.errors.subject[0];
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success || !data.errors) {
+                            // Success - close modal and reload tickets
+                            closeCreateTicketModal();
+                            if (document.getElementById('ticketsModal').style.display !== 'none') {
+                                loadTickets();
+                            } else {
+                                // If tickets modal is closed, open it and show the new ticket
+                                openTicketsModal();
+                                setTimeout(() => loadTickets(), 300);
                             }
-                            if (data.errors.description) {
-                                document.getElementById('descriptionError').textContent = data.errors.description[0];
-                            }
-                            if (data.errors.attachments) {
-                                document.getElementById('attachmentsError').textContent = Array.isArray(data.errors.attachments) 
-                                    ? data.errors.attachments[0] 
-                                    : data.errors.attachments;
-                            }
-                            if (data.errors['attachments.*']) {
-                                document.getElementById('attachmentsError').textContent = Array.isArray(data.errors['attachments.*']) 
-                                    ? data.errors['attachments.*'][0] 
-                                    : data.errors['attachments.*'];
-                            }
+                            // Show success message
+                            alert('تم إنشاء التذكرة بنجاح');
                         } else {
-                            alert('حدث خطأ: ' + (data.message || 'فشل إنشاء التذكرة'));
+                            // Show validation errors
+                            if (data.errors) {
+                                if (data.errors.subject) {
+                                    document.getElementById('subjectError').textContent = data.errors.subject[0];
+                                }
+                                if (data.errors.description) {
+                                    document.getElementById('descriptionError').textContent = data.errors.description[0];
+                                }
+                                if (data.errors.attachments) {
+                                    document.getElementById('attachmentsError').textContent = Array.isArray(data.errors.attachments)
+                                        ? data.errors.attachments[0]
+                                        : data.errors.attachments;
+                                }
+                                if (data.errors['attachments.*']) {
+                                    document.getElementById('attachmentsError').textContent = Array.isArray(data.errors['attachments.*'])
+                                        ? data.errors['attachments.*'][0]
+                                        : data.errors['attachments.*'];
+                                }
+                            } else {
+                                alert('حدث خطأ: ' + (data.message || 'فشل إنشاء التذكرة'));
+                            }
                         }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('حدث خطأ أثناء إنشاء التذكرة. يرجى المحاولة مرة أخرى.');
-                })
-                .finally(() => {
-                    // Re-enable submit button
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التذكرة';
-                });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('حدث خطأ أثناء إنشاء التذكرة. يرجى المحاولة مرة أخرى.');
+                    })
+                    .finally(() => {
+                        // Re-enable submit button
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التذكرة';
+                    });
             });
 
             // Close create modal when clicking outside
-            document.getElementById('createTicketModal')?.addEventListener('click', function(e) {
+            document.getElementById('createTicketModal')?.addEventListener('click', function (e) {
                 if (e.target === this) {
                     closeCreateTicketModal();
                 }

@@ -48,23 +48,24 @@
                         </td>
                         <td>
                             @if($service->is_active)
-                                <span class="badge badge-success">نشط</span>
+                                <span class="status-pill completed">نشط</span>
                             @else
-                                <span class="badge badge-danger">غير نشط</span>
+                                <span class="status-pill cancelled">غير نشط</span>
                             @endif
                         </td>
                         <td>{{ $service->created_at->format('Y-m-d') }}</td>
                         <td>
-                            <div class="action-buttons">
-                                <a href="{{ route('admin.services.edit', $service) }}" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i> تعديل
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{{ route('admin.services.edit', $service) }}" class="calm-action-btn warning"
+                                    title="تعديل">
+                                    <i class="far fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.services.destroy', $service) }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('هل أنت متأكد من حذف هذه الخدمة؟ سيتم حذف جميع مدة الخدمات المرتبطة بها.')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i> حذف
+                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                        <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
                             </div>

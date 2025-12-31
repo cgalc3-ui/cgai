@@ -15,7 +15,6 @@ class StoreServiceRequest extends FormRequest
     {
         return [
             'sub_category_id' => 'required|exists:sub_categories,id',
-            'specialization_id' => 'nullable|exists:specializations,id',
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:services,slug',
             'description' => 'nullable|string',

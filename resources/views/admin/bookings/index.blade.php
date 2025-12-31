@@ -130,44 +130,28 @@
                         </td>
                         <td>
                             @if($booking->status === 'pending')
-                                <span class="badge badge-warning">
-                                    <i class="fas fa-hourglass-half"></i> قيد الانتظار
-                                </span>
+                                <span class="status-pill pending">معلق</span>
                             @elseif($booking->status === 'confirmed')
-                                <span class="badge badge-info">
-                                    <i class="fas fa-check-circle"></i> مؤكد
-                                </span>
+                                <span class="status-pill confirmed">مؤكد</span>
                             @elseif($booking->status === 'completed')
-                                <span class="badge badge-success">
-                                    <i class="fas fa-check-double"></i> مكتمل
-                                </span>
+                                <span class="status-pill completed">مكتمل</span>
                             @else
-                                <span class="badge badge-danger">
-                                    <i class="fas fa-times-circle"></i> ملغي
-                                </span>
+                                <span class="status-pill cancelled">ملغي</span>
                             @endif
                         </td>
                         <td>
                             @if($booking->payment_status === 'paid')
-                                <span class="badge badge-success">
-                                    <i class="fas fa-check"></i> مدفوع
-                                </span>
+                                <span class="status-pill completed">مدفوع</span>
                             @elseif($booking->payment_status === 'unpaid')
-                                <span class="badge badge-warning">
-                                    <i class="fas fa-exclamation-triangle"></i> غير مدفوع
-                                </span>
+                                <span class="status-pill pending">غير مدفوع</span>
                             @else
-                                <span class="badge badge-danger">
-                                    <i class="fas fa-undo"></i> مسترد
-                                </span>
+                                <span class="status-pill cancelled">مسترد</span>
                             @endif
                         </td>
-                        <td>
-                            <div class="action-buttons">
-                                <a href="{{ route('admin.bookings.show', $booking) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> عرض
-                                </a>
-                            </div>
+                        <td style="text-align: center;">
+                            <a href="{{ route('admin.bookings.show', $booking) }}" class="calm-action-btn" title="عرض">
+                                <i class="far fa-eye"></i>
+                            </a>
                         </td>
                     </tr>
                 @empty

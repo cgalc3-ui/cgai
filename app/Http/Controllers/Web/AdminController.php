@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Web;
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\TimeSlot;
-use App\Models\Specialization;
-use App\Models\Booking;
 use App\Models\Category;
+use App\Models\Booking;
 use App\Models\SubCategory;
 use App\Models\Service;
 use App\Models\EmployeeSchedule;
@@ -59,9 +58,9 @@ class AdminController extends Controller
         $totalServices = Service::count();
         $activeServices = Service::where('is_active', true)->count();
 
-        // Specializations Statistics
-        $totalSpecializations = Specialization::count();
-        $activeSpecializations = Specialization::where('is_active', true)->count();
+        // Categories Statistics (used as specializations)
+        $totalCategories = Category::count();
+        $activeCategories = Category::where('is_active', true)->count();
 
         // Time Slots Statistics
         $totalTimeSlots = TimeSlot::count();
@@ -126,9 +125,9 @@ class AdminController extends Controller
             'total_services' => $totalServices,
             'active_services' => $activeServices,
 
-            // Specializations
-            'total_specializations' => $totalSpecializations,
-            'active_specializations' => $activeSpecializations,
+            // Categories (used as specializations)
+            'total_categories' => $totalCategories,
+            'active_categories' => $activeCategories,
 
             // Time Slots
             'total_time_slots' => $totalTimeSlots,
@@ -302,10 +301,10 @@ class AdminController extends Controller
             });
         }
 
-        $users = $query->with('employee.specializations')->latest()->paginate(20)->withQueryString();
-        $specializations = Specialization::where('is_active', true)->get();
+        $users = $query->with('employee.categories')->latest()->paginate(20)->withQueryString();
+        $categories = Category::where('is_active', true)->get();
 
-        return view('admin.users.staff.index', compact('users', 'searchQuery', 'specializations'));
+        return view('admin.users.staff.index', compact('users', 'searchQuery', 'categories'));
     }
 
     /**
@@ -313,8 +312,8 @@ class AdminController extends Controller
      */
     public function createStaff()
     {
-        $specializations = Specialization::where('is_active', true)->get();
-        return view('admin.users.staff.create', compact('specializations'));
+        $categories = Category::where('is_active', true)->get();
+        return view('admin.users.staff.create', compact('categories'));
     }
 
     /**
@@ -330,12 +329,12 @@ class AdminController extends Controller
             'employee.bio' => 'nullable|string',
             'employee.hourly_rate' => 'nullable|numeric|min:0',
             'employee.is_available' => 'nullable|boolean',
-            'employee.specializations' => 'nullable|array',
-            'employee.specializations.*' => 'nullable|exists:specializations,id',
+            'employee.categories' => 'nullable|array',
+            'employee.categories.*' => 'nullable|exists:categories,id',
             'bio' => 'nullable|string',
             'hourly_rate' => 'nullable|numeric|min:0',
-            'specializations' => 'nullable|array',
-            'specializations.*' => 'required|exists:specializations,id',
+            'categories' => 'nullable|array',
+            'categories.*' => 'required|exists:categories,id',
         ]);
 
         $user = User::create([
@@ -359,21 +358,21 @@ class AdminController extends Controller
             'is_available' => $isAvailable,
         ]);
 
-        // Sync specializations - support both formats
-        $specializations = $request->input('employee.specializations') ?? $request->input('specializations', []);
+        // Sync categories - support both formats
+        $categories = $request->input('employee.categories') ?? $request->input('categories', []);
 
-        // Ensure specializations is an array and filter out empty values
-        if (is_array($specializations)) {
-            $specializations = array_filter($specializations, function ($value) {
+        // Ensure categories is an array and filter out empty values
+        if (is_array($categories)) {
+            $categories = array_filter($categories, function ($value) {
                 return !empty($value) && is_numeric($value);
             });
-            $specializations = array_values($specializations); // Re-index array
+            $categories = array_values($categories); // Re-index array
         } else {
-            $specializations = [];
+            $categories = [];
         }
 
-        // Always sync specializations (even if empty array to detach)
-        $employee->specializations()->sync($specializations);
+        // Always sync categories (even if empty array to detach)
+        $employee->categories()->sync($categories);
 
         return redirect()->route('admin.users.staff')
             ->with('success', 'تم إنشاء الموظف بنجاح');
@@ -388,7 +387,7 @@ class AdminController extends Controller
             abort(404);
         }
 
-        $user->load(['employee.specializations']);
+        $user->load(['employee.categories']);
 
         return view('admin.users.staff.show', compact('user'));
     }
@@ -402,9 +401,9 @@ class AdminController extends Controller
             abort(404);
         }
 
-        $user->load(['employee.specializations']);
-        $specializations = Specialization::where('is_active', true)->get();
-        return view('admin.users.staff.edit', compact('user', 'specializations'));
+        $user->load(['employee.categories']);
+        $categories = Category::where('is_active', true)->get();
+        return view('admin.users.staff.edit', compact('user', 'categories'));
     }
 
     /**
@@ -421,13 +420,13 @@ class AdminController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'required|string|unique:users,phone,' . $user->id,
             'password' => 'nullable|string|min:8',
-            'employee.specializations' => 'nullable|array',
-            'employee.specializations.*' => 'exists:specializations,id',
+            'employee.categories' => 'nullable|array',
+            'employee.categories.*' => 'exists:categories,id',
             'employee.bio' => 'nullable|string',
             'employee.hourly_rate' => 'nullable|numeric|min:0',
             'employee.is_available' => 'nullable|boolean',
-            'specializations' => 'nullable|array',
-            'specializations.*' => 'exists:specializations,id',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
             'bio' => 'nullable|string',
             'hourly_rate' => 'nullable|numeric|min:0',
             'is_available' => 'nullable|boolean',
@@ -451,24 +450,24 @@ class AdminController extends Controller
             'is_available' => $isAvailable,
         ]);
 
-        // Sync specializations - support both formats
-        $specializations = $request->input('employee.specializations') ?? $request->input('specializations', []);
+        // Sync categories - support both formats
+        $categories = $request->input('employee.categories') ?? $request->input('categories', []);
 
-        // Ensure specializations is an array and filter out empty values
-        if (is_array($specializations)) {
-            $specializations = array_filter($specializations, function ($value) {
+        // Ensure categories is an array and filter out empty values
+        if (is_array($categories)) {
+            $categories = array_filter($categories, function ($value) {
                 return !empty($value) && is_numeric($value);
             });
-            $specializations = array_values($specializations); // Re-index array
+            $categories = array_values($categories); // Re-index array
         } else {
-            $specializations = [];
+            $categories = [];
         }
 
-        if (!empty($specializations)) {
-            $employee->specializations()->sync($specializations);
+        if (!empty($categories)) {
+            $employee->categories()->sync($categories);
         } else {
-            // If no specializations provided, detach all
-            $employee->specializations()->detach();
+            // If no categories provided, detach all
+            $employee->categories()->detach();
         }
 
         return redirect()->route('admin.users.staff.show', $user)
@@ -667,8 +666,8 @@ class AdminController extends Controller
     public function editUser(User $user)
     {
         $user->load(['employee.specializations']);
-        $specializations = Specialization::where('is_active', true)->get();
-        return view('admin.users.edit', compact('user', 'specializations'));
+        $categories = Category::where('is_active', true)->get();
+        return view('admin.users.edit', compact('user', 'categories'));
     }
 
     /**
@@ -682,8 +681,8 @@ class AdminController extends Controller
             'phone' => 'required|string|unique:users,phone,' . $user->id,
             'role' => 'required|in:admin,staff,customer',
             'password' => 'nullable|string|min:8',
-            'employee.specializations' => 'nullable|array',
-            'employee.specializations.*' => 'exists:specializations,id',
+            'employee.categories' => 'nullable|array',
+            'employee.categories.*' => 'exists:categories,id',
             'employee.bio' => 'nullable|string',
             'employee.hourly_rate' => 'nullable|numeric|min:0',
             'employee.is_available' => 'nullable|boolean',
@@ -703,11 +702,11 @@ class AdminController extends Controller
                 'is_available' => $request->has('employee.is_available') ? true : false,
             ]);
 
-            // Sync specializations
-            if ($request->has('employee.specializations')) {
-                $user->employee->specializations()->sync($request->input('employee.specializations', []));
+            // Sync categories
+            if ($request->has('employee.categories')) {
+                $user->employee->categories()->sync($request->input('employee.categories', []));
             } else {
-                $user->employee->specializations()->detach();
+                $user->employee->categories()->detach();
             }
         }
 
@@ -1200,99 +1199,6 @@ class AdminController extends Controller
         return $totalCreated;
     }
 
-    // ==================== Specializations Management ====================
-
-    /**
-     * Show all specializations
-     */
-    public function specializations(Request $request)
-    {
-        $query = Specialization::query();
-
-        // Search
-        $searchQuery = $request->get('search', '');
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        $specializations = $query->latest()->paginate(20)->withQueryString();
-
-        return view('admin.specializations.index', compact('specializations', 'searchQuery'));
-    }
-
-    /**
-     * Show create specialization form
-     */
-    public function createSpecialization()
-    {
-        return view('admin.specializations.create');
-    }
-
-    /**
-     * Store new specialization
-     */
-    public function storeSpecialization(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:specializations,name',
-            'description' => 'nullable|string',
-            'is_active' => 'nullable|boolean',
-        ]);
-
-        Specialization::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'is_active' => $request->has('is_active') ? true : false,
-        ]);
-
-        return redirect()->route('admin.specializations')
-            ->with('success', 'تم إنشاء التخصص بنجاح');
-    }
-
-    /**
-     * Show edit specialization form
-     */
-    public function editSpecialization(Specialization $specialization)
-    {
-        return view('admin.specializations.edit', compact('specialization'));
-    }
-
-    /**
-     * Update specialization
-     */
-    public function updateSpecialization(Request $request, Specialization $specialization)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:specializations,name,' . $specialization->id,
-            'description' => 'nullable|string',
-            'is_active' => 'nullable|boolean',
-        ]);
-
-        $specialization->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'is_active' => $request->has('is_active') ? true : false,
-        ]);
-
-        return redirect()->route('admin.specializations')
-            ->with('success', 'تم تحديث التخصص بنجاح');
-    }
-
-    /**
-     * Delete specialization
-     */
-    public function deleteSpecialization(Specialization $specialization)
-    {
-        $specialization->delete();
-        return redirect()->route('admin.specializations')
-            ->with('success', 'تم حذف التخصص بنجاح');
-    }
 
     // ==================== Tickets Management ====================
 

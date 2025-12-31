@@ -1,6 +1,6 @@
 // Dashboard JavaScript
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Auto-hide alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
@@ -14,10 +14,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const menuToggle = document.querySelector('.menu-toggle');
     const sidebar = document.querySelector('.sidebar');
-    
+
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('open');
+        });
+    }
+
+    // Sidebar collapse toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const dashboardContainer = document.getElementById('dashboardContainer');
+
+    // Check for saved sidebar state
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+        if (dashboardContainer) dashboardContainer.classList.add('sidebar-collapsed');
+    }
+
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            if (dashboardContainer) {
+                dashboardContainer.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', dashboardContainer.classList.contains('sidebar-collapsed'));
+            }
         });
     }
 
@@ -59,7 +78,7 @@ function toggleNavGroup(element) {
     const navGroup = element.closest('.nav-group');
     const navGroupItems = navGroup.querySelector('.nav-group-items');
     const arrow = element.querySelector('.nav-arrow');
-    
+
     navGroupItems.classList.toggle('expanded');
     arrow.classList.toggle('rotated');
 }
@@ -67,14 +86,14 @@ function toggleNavGroup(element) {
 // Modal Functions
 function initModals() {
     // Close modal on overlay click
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('modal-overlay')) {
             closeModal(e.target);
         }
     });
 
     // Close modal on close button click
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('modal-close') || e.target.closest('.modal-close')) {
             const modal = e.target.closest('.modal-overlay');
             if (modal) {
@@ -84,7 +103,7 @@ function initModals() {
     });
 
     // Close modal on Escape key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             const openModal = document.querySelector('.modal-overlay.show');
             if (openModal) {
@@ -99,7 +118,7 @@ function openModal(modalId) {
     if (modal) {
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
-        
+
         // Focus first input
         const firstInput = modal.querySelector('input, select, textarea');
         if (firstInput) {
@@ -112,11 +131,11 @@ function closeModal(modalElement) {
     if (typeof modalElement === 'string') {
         modalElement = document.getElementById(modalElement);
     }
-    
+
     if (modalElement) {
         modalElement.classList.remove('show');
         document.body.style.overflow = '';
-        
+
         // Reset form if exists
         const form = modalElement.querySelector('form');
         if (form) {

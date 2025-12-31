@@ -65,26 +65,26 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="specialization_select">التخصصات</label>
-                    <select id="specialization_select" class="form-control">
-                        <option value="">اختر تخصص...</option>
-                        @foreach($specializations as $specialization)
-                            <option value="{{ $specialization->id }}" data-name="{{ $specialization->name }}">
-                                {{ $specialization->name }}
+                    <label for="category_select">الفئات (التخصصات)</label>
+                    <select id="category_select" class="form-control">
+                        <option value="">اختر فئة...</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" data-name="{{ $category->name }}">
+                                {{ $category->name }}
                             </option>
                         @endforeach
                     </select>
-                    <div id="selected_specializations" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
-                        @if(old('employee.specializations'))
-                            @foreach(old('employee.specializations') as $specId)
+                    <div id="selected_categories" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                        @if(old('employee.categories'))
+                            @foreach(old('employee.categories') as $catId)
                                 @php
-                                    $spec = $specializations->firstWhere('id', $specId);
+                                    $cat = $categories->firstWhere('id', $catId);
                                 @endphp
-                                @if($spec)
-                                    <div class="specialization-tag" data-id="{{ $spec->id }}">
-                                        <input type="hidden" name="employee[specializations][]" value="{{ $spec->id }}">
-                                        <span>{{ $spec->name }}</span>
-                                        <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
+                                @if($cat)
+                                    <div class="category-tag" data-id="{{ $cat->id }}">
+                                        <input type="hidden" name="employee[categories][]" value="{{ $cat->id }}">
+                                        <span>{{ $cat->name }}</span>
+                                        <button type="button" class="remove-cat" onclick="removeCategory(this)">
                                             <i class="fas fa-times"></i>
                                         </button>
                                     </div>
@@ -126,7 +126,7 @@
 
 @push('styles')
 <style>
-    .specialization-tag {
+    .category-tag {
         display: inline-flex;
         align-items: center;
         gap: 6px;
@@ -136,7 +136,7 @@
         border-radius: 20px;
         font-size: 14px;
     }
-    .specialization-tag .remove-spec {
+    .category-tag .remove-cat {
         background: none;
         border: none;
         color: white;
@@ -152,7 +152,7 @@
         border-radius: 50%;
         transition: background-color 0.2s;
     }
-    .specialization-tag .remove-spec:hover {
+    .category-tag .remove-cat:hover {
         background-color: rgba(255, 255, 255, 0.2);
     }
 </style>
@@ -161,7 +161,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const select = document.getElementById('specialization_select');
+        const select = document.getElementById('category_select');
         if (!select) return;
         
         select.addEventListener('change', function() {
@@ -170,12 +170,12 @@
             
             const selectedOption = this.options[this.selectedIndex];
             const selectedName = selectedOption.getAttribute('data-name');
-            const container = document.getElementById('selected_specializations');
+            const container = document.getElementById('selected_categories');
             
             if (!container) return;
             
             // Check if already selected
-            const existingTags = container.querySelectorAll('.specialization-tag');
+            const existingTags = container.querySelectorAll('.category-tag');
             for (let tag of existingTags) {
                 if (tag.getAttribute('data-id') === selectedId) {
                     this.value = '';
@@ -185,12 +185,12 @@
             
             // Create new tag
             const tagDiv = document.createElement('div');
-            tagDiv.className = 'specialization-tag';
+            tagDiv.className = 'category-tag';
             tagDiv.setAttribute('data-id', selectedId);
             tagDiv.innerHTML = `
-                <input type="hidden" name="employee[specializations][]" value="${selectedId}">
+                <input type="hidden" name="employee[categories][]" value="${selectedId}">
                 <span>${selectedName}</span>
-                <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
+                <button type="button" class="remove-cat" onclick="removeCategory(this)">
                     <i class="fas fa-times"></i>
                 </button>
             `;
@@ -200,8 +200,8 @@
         });
     });
     
-    function removeSpecialization(button) {
-        const tag = button.closest('.specialization-tag');
+    function removeCategory(button) {
+        const tag = button.closest('.category-tag');
         if (tag) {
             tag.remove();
         }

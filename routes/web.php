@@ -7,6 +7,8 @@ use App\Http\Controllers\Web\CustomerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Web\FaqController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -75,15 +77,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/time-slots/schedules/{schedule}', [AdminController::class, 'updateSchedule'])->name('time-slots.schedules.update');
     Route::delete('/time-slots/schedules/{schedule}', [AdminController::class, 'deleteSchedule'])->name('time-slots.schedules.delete');
 
-    // Specializations management
-    Route::get('/specializations', [AdminController::class, 'specializations'])->name('specializations');
-    Route::get('/specializations/create', [AdminController::class, 'createSpecialization'])->name('specializations.create');
-    Route::post('/specializations', [AdminController::class, 'storeSpecialization'])->name('specializations.store');
-    Route::get('/specializations/{specialization}/edit', [AdminController::class, 'editSpecialization'])->name('specializations.edit');
-    Route::put('/specializations/{specialization}', [AdminController::class, 'updateSpecialization'])->name('specializations.update');
-    Route::delete('/specializations/{specialization}', [AdminController::class, 'deleteSpecialization'])->name('specializations.delete');
-
-    // Categories management
+    // Categories management (used as specializations)
     Route::resource('categories', CategoryController::class)->parameters([
         'categories' => 'category'
     ]);
@@ -103,6 +97,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/tickets/{ticket}', [\App\Http\Controllers\Web\AdminController::class, 'showTicket'])->name('tickets.show');
     Route::put('/tickets/{ticket}/status', [\App\Http\Controllers\Web\AdminController::class, 'updateTicketStatus'])->name('tickets.update-status');
 
+    // FAQs management
+    Route::resource('faqs', AdminFaqController::class);
 });
 
 // Staff routes (requires staff or admin role)
@@ -145,6 +141,9 @@ Route::middleware('auth')->prefix('settings')->name('settings.')->group(function
     Route::put('/profile', [\App\Http\Controllers\Web\SettingsController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [\App\Http\Controllers\Web\SettingsController::class, 'updatePassword'])->name('password.update');
 });
+
+// FAQ route for all authenticated users
+Route::middleware('auth')->get('/faqs', [FaqController::class, 'index'])->name('faqs.index');
 
 // Customer routes (public and authenticated)
 Route::prefix('customer')->name('customer.')->group(function () {

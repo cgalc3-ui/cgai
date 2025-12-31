@@ -79,61 +79,42 @@
                                     $actualStatus = $booking->actual_status;
                                     $timeDisplay = $booking->time_display;
                                 @endphp
-                                
+
                                 @if($actualStatus == 'completed')
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-check-double"></i> مكتمل
-                                    </span>
+                                    <span class="status-pill completed">مكتمل</span>
                                 @elseif($actualStatus == 'in_progress')
-                                    <span class="badge badge-primary">
-                                        <i class="fas fa-play-circle"></i> قيد التنفيذ
-                                    </span>
+                                    <span class="status-pill confirmed" style="background: #e0f2fe; color: #0369a1;">قيد
+                                        التنفيذ</span>
                                     @if($timeDisplay && isset($timeDisplay['elapsed_formatted']))
-                                        <div class="time-info" style="font-size: 11px; color: #666; margin-top: 4px;">
-                                            <i class="fas fa-clock"></i> منقضي: {{ $timeDisplay['elapsed_formatted'] }}
-                                            @if(isset($timeDisplay['remaining_formatted']))
-                                                | متبقي: {{ $timeDisplay['remaining_formatted'] }}
-                                            @endif
+                                        <div class="time-info" style="font-size: 10px; color: #64748b; margin-top: 4px;">
+                                            <i class="far fa-clock"></i> {{ $timeDisplay['elapsed_formatted'] }}
                                         </div>
                                     @endif
                                 @elseif($actualStatus == 'cancelled')
-                                    <span class="badge badge-danger">
-                                        <i class="fas fa-times-circle"></i> ملغي
-                                    </span>
+                                    <span class="status-pill cancelled">ملغي</span>
                                 @else
-                                    <span class="badge badge-warning">
-                                        <i class="fas fa-clock"></i> قيد الانتظار
-                                    </span>
+                                    <span class="status-pill pending">قيد الانتظار</span>
                                     @if($timeDisplay && isset($timeDisplay['formatted']))
-                                        <div class="time-info" style="font-size: 11px; color: #666; margin-top: 4px;">
-                                            <i class="fas fa-hourglass-start"></i> يبدأ بعد: {{ $timeDisplay['formatted'] }}
+                                        <div class="time-info" style="font-size: 10px; color: #64748b; margin-top: 4px;">
+                                            <i class="far fa-hourglass"></i> {{ $timeDisplay['formatted'] }}
                                         </div>
                                     @endif
                                 @endif
                             </td>
                             <td>
                                 @if($booking->payment_status === 'paid')
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-check"></i> مدفوع
-                                    </span>
+                                    <span class="status-pill completed">مدفوع</span>
                                 @elseif($booking->payment_status === 'unpaid')
-                                    <span class="badge badge-warning">
-                                        <i class="fas fa-exclamation-triangle"></i> غير مدفوع
-                                    </span>
+                                    <span class="status-pill pending">غير مدفوع</span>
                                 @else
-                                    <span class="badge badge-danger">
-                                        <i class="fas fa-undo"></i> مسترد
-                                    </span>
+                                    <span class="status-pill cancelled">مسترد</span>
                                 @endif
                             </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="{{ route('staff.my-bookings.show', $booking) }}" 
-                                       class="btn-view-details" 
-                                       title="عرض التفاصيل">
-                                        <i class="fas fa-eye"></i> تفاصيل
-                                    </a>
-                                </div>
+                            <td style="text-align: center;">
+                                <a href="{{ route('staff.my-bookings.show', $booking) }}" class="calm-action-btn"
+                                    title="عرض التفاصيل">
+                                    <i class="far fa-eye"></i>
+                                </a>
                             </td>
                         </tr>
                     @empty
@@ -162,7 +143,7 @@
 @push('scripts')
     <script>
         // Auto-refresh page every minute to update booking statuses and times
-        setInterval(function() {
+        setInterval(function () {
             // Only refresh if page is visible
             if (!document.hidden) {
                 location.reload();

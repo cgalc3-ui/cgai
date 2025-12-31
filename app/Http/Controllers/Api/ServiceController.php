@@ -12,15 +12,25 @@ class ServiceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Service::with(['subCategory.category', 'specialization'])
+        $query = Service::with(['subCategory.category'])
             ->where('is_active', true);
 
         if ($request->has('sub_category_id')) {
             $query->where('sub_category_id', $request->sub_category_id);
         }
 
+        // Filter by category_id (instead of specialization_id)
+        if ($request->has('category_id')) {
+            $query->whereHas('subCategory', function ($q) use ($request) {
+                $q->where('category_id', $request->category_id);
+            });
+        }
+
+        // Backward compatibility: support specialization_id as category_id
         if ($request->has('specialization_id')) {
-            $query->where('specialization_id', $request->specialization_id);
+            $query->whereHas('subCategory', function ($q) use ($request) {
+                $q->where('category_id', $request->specialization_id);
+            });
         }
 
         $services = $query->orderBy('name')->get();
@@ -41,7 +51,7 @@ class ServiceController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم إنشاء الخدمة بنجاح',
-            'data' => $service->load(['subCategory.category', 'specialization']),
+            'data' => $service->load(['subCategory.category']),
         ], 201);
     }
 
@@ -49,7 +59,7 @@ class ServiceController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $service->load(['subCategory.category', 'specialization']),
+            'data' => $service->load(['subCategory.category']),
         ]);
     }
 
@@ -63,7 +73,7 @@ class ServiceController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم تحديث الخدمة بنجاح',
-            'data' => $service->fresh()->load(['subCategory.category', 'specialization']),
+            'data' => $service->fresh()->load(['subCategory.category']),
         ]);
     }
 

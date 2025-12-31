@@ -67,11 +67,20 @@ class Employee extends Model
     }
 
     /**
-     * Get all specializations for this employee
+     * Get all categories (specializations) for this employee
+     */
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'employee_category');
+    }
+
+    /**
+     * @deprecated Use categories() instead
+     * Get all specializations for this employee (for backward compatibility)
      */
     public function specializations(): BelongsToMany
     {
-        return $this->belongsToMany(Specialization::class, 'employee_specialization');
+        return $this->categories();
     }
 
     /**
@@ -124,9 +133,9 @@ class Employee extends Model
     }
 
     /**
-     * Find available employee for a specialization and time slot
+     * Find available employee for a category and time slot
      */
-    public static function findAvailableForSpecializationAndTimeSlot($specializationId, $timeSlotId, $date, $startTime, $endTime)
+    public static function findAvailableForCategoryAndTimeSlot($categoryId, $timeSlotId, $date, $startTime, $endTime)
     {
         $timeSlot = \App\Models\TimeSlot::find($timeSlotId);
 
@@ -135,8 +144,8 @@ class Employee extends Model
         }
 
         $employees = static::where('is_available', true)
-            ->whereHas('specializations', function ($query) use ($specializationId) {
-                $query->where('specializations.id', $specializationId);
+            ->whereHas('categories', function ($query) use ($categoryId) {
+                $query->where('categories.id', $categoryId);
             })
             ->get();
 
@@ -151,6 +160,15 @@ class Employee extends Model
         }
 
         return null;
+    }
+
+    /**
+     * @deprecated Use findAvailableForCategoryAndTimeSlot() instead
+     * Find available employee for a specialization and time slot (for backward compatibility)
+     */
+    public static function findAvailableForSpecializationAndTimeSlot($specializationId, $timeSlotId, $date, $startTime, $endTime)
+    {
+        return static::findAvailableForCategoryAndTimeSlot($specializationId, $timeSlotId, $date, $startTime, $endTime);
     }
 
     /**

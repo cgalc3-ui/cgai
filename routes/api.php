@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\FaqController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,8 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
         Route::put('/bookings/{booking}', [BookingController::class, 'update']);
         Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
-        Route::post('/bookings/{booking}/payment', [BookingController::class, 'payment']);
-        // PayMob Online Payment
+        Route::post('/bookings/payment', [BookingController::class, 'payment']);
+        Route::post('/bookings/initiate-online-payment', [BookingController::class, 'initiateOnlinePayment']);
+        // PayMob Online Payment (Legacy - for old bookings)
         Route::post('/bookings/{bookingId}/pay-online', [\App\Http\Controllers\Api\PaymentController::class, 'initiatePayment']);
     });
 
@@ -78,6 +80,11 @@ Route::prefix('services')->group(function () {
 
     Route::get('/services', [ServiceController::class, 'index']);
     Route::get('/services/{service}', [ServiceController::class, 'show']);
+});
 
+// FAQ API routes
+Route::prefix('faqs')->group(function () {
+    Route::get('/', [FaqController::class, 'index']);
+    Route::get('/category/{category}', [FaqController::class, 'getByCategory']);
 });
 
