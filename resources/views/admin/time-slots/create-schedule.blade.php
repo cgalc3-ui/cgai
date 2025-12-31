@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إضافة مواعيد متكررة')
-@section('page-title', 'إضافة مواعيد متكررة')
+@section('title', __('messages.add_recurring_appointments_title'))
+@section('page-title', __('messages.add_recurring_appointments_title'))
 
 @section('content')
 <div class="page-header">
     <div class="page-header-left">
-        <h2>إضافة مواعيد متكررة</h2>
-        <p>إنشاء مواعيد متكررة يتم إنشاء الأوقات المتاحة منها تلقائياً</p>
+        <h2>{{ __('messages.add_recurring_appointments_title') }}</h2>
+        <p>{{ __('messages.add_recurring_appointments_desc') }}</p>
     </div>
     <div class="page-header-right">
         <a href="{{ route('admin.time-slots.schedules') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-right"></i> العودة
+            <i class="fas fa-arrow-right"></i> {{ __('messages.back') }}
         </a>
     </div>
 </div>
@@ -21,9 +21,9 @@
         @csrf
 
         <div class="form-group">
-            <label for="employee_id">الموظف *</label>
+            <label for="employee_id">{{ __('messages.employee') }} *</label>
             <select id="employee_id" name="employee_id" class="form-control" required>
-                <option value="">اختر الموظف</option>
+                <option value="">{{ __('messages.select_employee') }}</option>
                 @foreach($employees as $employee)
                     <option value="{{ $employee->id }}" {{ old('employee_id') == $employee->id ? 'selected' : '' }}>
                         {{ $employee->user->name }}
@@ -36,17 +36,17 @@
         </div>
 
         <div class="form-group">
-            <label>أيام الأسبوع *</label>
+            <label>{{ __('messages.weekdays_label') }} *</label>
             <div class="days-checkboxes">
                 @php
                     $days = [
-                        0 => ['name' => 'الأحد', 'value' => 0],
-                        1 => ['name' => 'الإثنين', 'value' => 1],
-                        2 => ['name' => 'الثلاثاء', 'value' => 2],
-                        3 => ['name' => 'الأربعاء', 'value' => 3],
-                        4 => ['name' => 'الخميس', 'value' => 4],
-                        5 => ['name' => 'الجمعة', 'value' => 5],
-                        6 => ['name' => 'السبت', 'value' => 6],
+                        0 => ['name' => __('messages.sunday'), 'value' => 0],
+                        1 => ['name' => __('messages.monday'), 'value' => 1],
+                        2 => ['name' => __('messages.tuesday'), 'value' => 2],
+                        3 => ['name' => __('messages.wednesday'), 'value' => 3],
+                        4 => ['name' => __('messages.thursday'), 'value' => 4],
+                        5 => ['name' => __('messages.friday'), 'value' => 5],
+                        6 => ['name' => __('messages.saturday'), 'value' => 6],
                     ];
                     $oldDays = old('days_of_week', []);
                 @endphp
@@ -65,7 +65,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="start_time">من *</label>
+                <label for="start_time">{{ __('messages.from_hour') }} *</label>
                 <input type="time" id="start_time" name="start_time" value="{{ old('start_time', '10:00') }}" class="form-control" required>
                 @error('start_time')
                     <span class="error-message">{{ $message }}</span>
@@ -73,7 +73,7 @@
             </div>
 
             <div class="form-group">
-                <label for="end_time">إلى *</label>
+                <label for="end_time">{{ __('messages.to_hour') }} *</label>
                 <input type="time" id="end_time" name="end_time" value="{{ old('end_time', '18:00') }}" class="form-control" required>
                 @error('end_time')
                     <span class="error-message">{{ $message }}</span>
@@ -84,21 +84,21 @@
         <div class="form-group">
             <label class="checkbox-label">
                 <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-                <span>المواعيد نشطة (سيتم إنشاء الأوقات المتاحة تلقائياً)</span>
+                <span>{{ __('messages.appointments_active') }}</span>
             </label>
         </div>
 
         <div class="info-box">
             <i class="fas fa-info-circle"></i>
-            <p>سيتم إنشاء الأوقات المتاحة تلقائياً للـ 30 يوم القادمة بناءً على هذه المواعيد المتكررة.</p>
+            <p>{{ __('messages.auto_create_time_slots_info') }}</p>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> حفظ
+                <i class="fas fa-save"></i> {{ __('messages.save') }}
             </button>
             <a href="{{ route('admin.time-slots.schedules') }}" class="btn btn-secondary">
-                <i class="fas fa-times"></i> إلغاء
+                <i class="fas fa-times"></i> {{ __('messages.cancel') }}
             </a>
         </div>
     </form>

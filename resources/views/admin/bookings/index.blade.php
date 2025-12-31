@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إدارة الحجوزات')
-@section('page-title', 'قائمة الحجوزات')
+@section('title', __('messages.bookings'))
+@section('page-title', __('messages.bookings_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة الحجوزات</h2>
-            <p>إدارة وعرض جميع الحجوزات في مكان واحد</p>
+            <h2>{{ __('messages.bookings_list') }}</h2>
+            <p>{{ __('messages.manage_bookings_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
+                <i class="fas fa-arrow-right"></i> {{ __('messages.back_to_dashboard') }}
             </a>
-            <span class="total-count">إجمالي الحجوزات: {{ $bookings->total() }}</span>
+            <span class="total-count">{{ __('messages.total_bookings') }}: {{ $bookings->total() }}</span>
         </div>
     </div>
 
@@ -22,42 +22,50 @@
         <form method="GET" action="{{ route('admin.bookings') }}" class="filter-form">
             <div class="filter-inputs">
                 <div class="filter-group">
-                    <label for="status"><i class="fas fa-tasks"></i> حالة الحجز:</label>
+                    <label for="status"><i class="fas fa-tasks"></i> {{ __('messages.booking_status') }}:</label>
                     <select name="status" id="status" class="filter-input">
-                        <option value="">الكل</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
-                        <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>مؤكد</option>
-                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>مكتمل</option>
-                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>ملغي</option>
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>
+                            {{ __('messages.pending') }}</option>
+                        <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>
+                            {{ __('messages.confirmed') }}</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>
+                            {{ __('messages.completed') }}</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>
+                            {{ __('messages.cancelled') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="payment_status"><i class="fas fa-credit-card"></i> حالة الدفع:</label>
+                    <label for="payment_status"><i class="fas fa-credit-card"></i>
+                        {{ __('messages.payment_status') }}:</label>
                     <select name="payment_status" id="payment_status" class="filter-input">
-                        <option value="">الكل</option>
-                        <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>مدفوع</option>
-                        <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>غير مدفوع
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>
+                            {{ __('messages.paid') }}</option>
+                        <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>
+                            {{ __('messages.unpaid') }}
                         </option>
-                        <option value="refunded" {{ request('payment_status') === 'refunded' ? 'selected' : '' }}>مسترد
+                        <option value="refunded" {{ request('payment_status') === 'refunded' ? 'selected' : '' }}>
+                            {{ __('messages.refunded') }}
                         </option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="date"><i class="fas fa-calendar-alt"></i> التاريخ:</label>
+                    <label for="date"><i class="fas fa-calendar-alt"></i> {{ __('messages.date') }}:</label>
                     <input type="date" name="date" id="date" class="filter-input" value="{{ request('date') }}">
                 </div>
                 <div class="filter-group">
-                    <label for="search"><i class="fas fa-search"></i> بحث:</label>
-                    <input type="text" name="search" id="search" class="filter-input" placeholder="اسم العميل أو الهاتف"
-                        value="{{ request('search') }}">
+                    <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
+                    <input type="text" name="search" id="search" class="filter-input"
+                        placeholder="{{ __('messages.search_customer_placeholder') }}" value="{{ request('search') }}">
                 </div>
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-check"></i> تطبيق الفلتر
+                    <i class="fas fa-check"></i> {{ __('messages.apply_filter') }}
                 </button>
                 <a href="{{ route('admin.bookings') }}" class="btn btn-secondary">
-                    <i class="fas fa-redo"></i> مسح
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
                 </a>
             </div>
         </form>
@@ -67,14 +75,14 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>العميل</th>
-                    <th>الموظف</th>
-                    <th>الخدمة</th>
-                    <th>التاريخ والوقت</th>
-                    <th>السعر</th>
-                    <th class="text-center">حالة الحجز</th>
-                    <th class="text-center">حالة الدفع</th>
-                    <th class="text-center">الإجراءات</th>
+                    <th>{{ __('messages.client') }}</th>
+                    <th>{{ __('messages.employee') }}</th>
+                    <th>{{ __('messages.service') }}</th>
+                    <th>{{ __('messages.datetime') }}</th>
+                    <th>{{ __('messages.price') }}</th>
+                    <th class="text-center">{{ __('messages.booking_status') }}</th>
+                    <th class="text-center">{{ __('messages.payment_status') }}</th>
+                    <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,7 +90,7 @@
                     <tr>
                         <td>
                             <div class="user-info">
-                                <div class="user-name">{{ $booking->customer->name ?? 'غير محدد' }}</div>
+                                <div class="user-name">{{ $booking->customer->name ?? __('messages.not_specified') }}</div>
                                 <div class="user-details">
                                     @if($booking->customer->phone)
                                         <span><i class="fas fa-phone"></i> {{ $booking->customer->phone }}</span>
@@ -95,7 +103,8 @@
                         </td>
                         <td>
                             <div class="user-info">
-                                <div class="user-name">{{ $booking->employee->user->name ?? 'غير محدد' }}</div>
+                                <div class="user-name">{{ $booking->employee->user->name ?? __('messages.not_specified') }}
+                                </div>
                             </div>
                         </td>
                         <td>
@@ -103,9 +112,9 @@
                                 <div class="service-name">
                                     @if($booking->booking_type === 'consultation')
                                         <i class="fas fa-comments" style="margin-left: 5px;"></i>
-                                        {{ $booking->consultation->name ?? 'غير محدد' }}
+                                        {{ $booking->consultation ? $booking->consultation->trans('name') : __('messages.not_specified') }}
                                     @else
-                                        {{ $booking->service->name ?? 'غير محدد' }}
+                                        {{ $booking->service ? $booking->service->trans('name') : __('messages.not_specified') }}
                                     @endif
                                 </div>
                                 <div class="service-duration">
@@ -134,30 +143,31 @@
                             </div>
                         </td>
                         <td>
-                            <strong class="price">{{ number_format($booking->total_price, 2) }} ر.س</strong>
+                            <strong class="price">{{ number_format($booking->total_price, 2) }}
+                                {{ __('messages.sar') }}</strong>
                         </td>
                         <td class="text-center">
                             @if($booking->status === 'pending')
-                                <span class="status-pill pending">معلق</span>
+                                <span class="status-pill pending">{{ __('messages.pending') }}</span>
                             @elseif($booking->status === 'confirmed')
-                                <span class="status-pill confirmed">مؤكد</span>
+                                <span class="status-pill confirmed">{{ __('messages.confirmed') }}</span>
                             @elseif($booking->status === 'completed')
-                                <span class="status-pill completed">مكتمل</span>
+                                <span class="status-pill completed">{{ __('messages.completed') }}</span>
                             @else
-                                <span class="status-pill cancelled">ملغي</span>
+                                <span class="status-pill cancelled">{{ __('messages.cancelled') }}</span>
                             @endif
                         </td>
                         <td class="text-center">
                             @if($booking->payment_status === 'paid')
-                                <span class="status-pill completed">مدفوع</span>
+                                <span class="status-pill completed">{{ __('messages.paid') }}</span>
                             @elseif($booking->payment_status === 'unpaid')
-                                <span class="status-pill pending">غير مدفوع</span>
+                                <span class="status-pill pending">{{ __('messages.unpaid') }}</span>
                             @else
-                                <span class="status-pill cancelled">مسترد</span>
+                                <span class="status-pill cancelled">{{ __('messages.refunded') }}</span>
                             @endif
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.bookings.show', $booking) }}" class="calm-action-btn" title="عرض">
+                            <a href="{{ route('admin.bookings.show', $booking) }}" class="calm-action-btn" title="{{ __('messages.view') }}">
                                 <i class="far fa-eye"></i>
                             </a>
                         </td>
@@ -167,8 +177,8 @@
                         <td colspan="9" class="text-center">
                             <div class="empty-state">
                                 <i class="fas fa-calendar-times"></i>
-                                <h3>لا توجد حجوزات</h3>
-                                <p>لم يتم العثور على أي حجوزات</p>
+                                <h3>{{ __('messages.no_bookings') }}</h3>
+                                <p>{{ __('messages.no_bookings_desc') }}</p>
                             </div>
                         </td>
                     </tr>

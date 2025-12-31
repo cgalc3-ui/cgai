@@ -134,7 +134,7 @@
         style="margin-top: 30px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         <div class="card-header" style="padding: 20px 25px; border-bottom: 1px solid #f1f5f9;">
             <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-bolt" style="color: #f59e0b;"></i> إجراءات سريعة
+                <i class="fas fa-bolt" style="color: #f59e0b;"></i> {{ __('messages.quick_actions') }}
             </h3>
         </div>
         <div class="card-body" style="padding: 25px;">
@@ -144,8 +144,8 @@
                         <i class="fas fa-user-plus"></i>
                     </div>
                     <div class="action-info">
-                        <span class="action-name">إضافة موظف</span>
-                        <span class="action-desc">إدارة طاقم العمل</span>
+                        <span class="action-name">{{ __('messages.add_staff') }}</span>
+                        <span class="action-desc">{{ __('messages.manage_staff_team') }}</span>
                     </div>
                     <i class="fas fa-chevron-left action-arrow"></i>
                 </a>
@@ -155,8 +155,8 @@
                         <i class="fas fa-plus"></i>
                     </div>
                     <div class="action-info">
-                        <span class="action-name">إضافة خدمة</span>
-                        <span class="action-desc">توسيع قائمة الخدمات</span>
+                        <span class="action-name">{{ __('messages.add_service') }}</span>
+                        <span class="action-desc">{{ __('messages.expand_services_list') }}</span>
                     </div>
                     <i class="fas fa-chevron-left action-arrow"></i>
                 </a>
@@ -166,8 +166,8 @@
                         <i class="fas fa-calendar-plus"></i>
                     </div>
                     <div class="action-info">
-                        <span class="action-name">فتح مواعيد</span>
-                        <span class="action-desc">إدارة جدول الاوقات</span>
+                        <span class="action-name">{{ __('messages.open_appointments') }}</span>
+                        <span class="action-desc">{{ __('messages.manage_schedule') }}</span>
                     </div>
                     <i class="fas fa-chevron-left action-arrow"></i>
                 </a>
@@ -177,8 +177,8 @@
                         <i class="fas fa-list"></i>
                     </div>
                     <div class="action-info">
-                        <span class="action-name">الحجوزات</span>
-                        <span class="action-desc">متابعة كافة الطلبات</span>
+                        <span class="action-name">{{ __('messages.bookings') }}</span>
+                        <span class="action-desc">{{ __('messages.track_all_requests') }}</span>
                     </div>
                     <i class="fas fa-chevron-left action-arrow"></i>
                 </a>
@@ -192,19 +192,19 @@
             <div class="card-header"
                 style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
                 <h3 style="font-size: 18px; font-weight: 700; color: #1e293b;"><i class="fas fa-history color-emerald"></i>
-                    آخر الحجوزات</h3>
-                <a href="{{ route('admin.bookings') }}" class="btn btn-sm btn-info" style="border-radius: 8px;">عرض الكل</a>
+                    {{ __('messages.recent_bookings') }}</h3>
+                <a href="{{ route('admin.bookings') }}" class="btn btn-sm btn-info" style="border-radius: 8px;">{{ __('messages.view_all') }}</a>
             </div>
             <div class="card-body" style="padding: 0;">
                 <div class="table-container" style="box-shadow: none; border-radius: 0; border: none;">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th style="padding-right: 25px;">العميل</th>
-                                <th>الخدمة</th>
-                                <th>الوقت</th>
-                                <th style="text-align: center;">الحالة</th>
-                                <th style="text-align: center;">إجراء</th>
+                                <th style="padding-right: 25px;">{{ __('messages.client') }}</th>
+                                <th>{{ __('messages.service') }}</th>
+                                <th>{{ __('messages.time') }}</th>
+                                <th style="text-align: center;">{{ __('messages.status') }}</th>
+                                <th style="text-align: center;">{{ __('messages.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -242,13 +242,13 @@
                                     </td>
                                     <td style="text-align: center;">
                                         <div class="status-pill {{ $booking->status }}">
-                                            @if($booking->status == 'pending') معلق @elseif($booking->status == 'confirmed')
-                                            مؤكد @elseif($booking->status == 'completed') مكتمل @else ملغي @endif
+                                            @if($booking->status == 'pending') {{ __('messages.pending') }} @elseif($booking->status == 'confirmed')
+                                            {{ __('messages.confirmed') }} @elseif($booking->status == 'completed') {{ __('messages.completed') }} @else {{ __('messages.cancelled') }} @endif
                                         </div>
                                     </td>
                                     <td style="text-align: center;">
                                         <a href="{{ route('admin.bookings.show', $booking->id) }}" class="calm-action-btn"
-                                            title="عرض">
+                                            title="{{ __('messages.view') }}">
                                             <i class="far fa-eye"></i>
                                         </a>
                                     </td>
@@ -264,7 +264,7 @@
         <div class="card donut-report-card">
             <div class="report-header">
                 <div class="report-title-group">
-                    <h3 class="report-title">ملخص الحالات</h3>
+                    <h3 class="report-title">{{ __('messages.status_summary') }}</h3>
                     <div class="report-date">
                         <i class="far fa-calendar-alt"></i>
                         <span>{{ now()->startOfMonth()->translatedFormat('d M') }} -
@@ -364,9 +364,9 @@
             <div class="card-header"
                 style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
                 <h3 style="font-size: 18px; font-weight: 700; color: #1e293b;">
-                    <i class="fas fa-user-tie color-indigo" style="margin-left: 8px;"></i> آخر الموظفين المضافين
+                    <i class="fas fa-user-tie color-indigo" style="margin-left: 8px;"></i> {{ __('messages.recent_staff_added') }}
                 </h3>
-                <a href="{{ route('admin.users.staff') }}" class="btn-view-all">عرض الكل</a>
+                <a href="{{ route('admin.users.staff') }}" class="btn-view-all">{{ __('messages.view_all') }}</a>
             </div>
             <div class="card-body" style="padding: 0 25px 25px 25px;">
                 <div class="premium-list">
@@ -377,10 +377,10 @@
                             </div>
                             <div class="item-details">
                                 <span class="item-title">{{ $staff->name }}</span>
-                                <span class="item-subtitle">{{ $staff->employee?->specialization ?? 'موظف في النظام' }}</span>
+                                <span class="item-subtitle">{{ $staff->employee?->specialization ?? __('messages.staff_in_system') }}</span>
                             </div>
                             <div class="item-action" style="display: flex; align-items: center; gap: 10px;">
-                                <div class="status-pill confirmed" style="font-size: 10px; padding: 2px 8px;">نشط</div>
+                                <div class="status-pill confirmed" style="font-size: 10px; padding: 2px 8px;">{{ __('messages.active') }}</div>
                                 <a href="{{ route('admin.users.staff.edit', $staff->id) }}" class="calm-action-btn sm">
                                     <i class="far fa-edit"></i>
                                 </a>
@@ -396,9 +396,9 @@
             <div class="card-header"
                 style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
                 <h3 style="font-size: 18px; font-weight: 700; color: #1e293b;">
-                    <i class="fas fa-users color-emerald" style="margin-left: 8px;"></i> آخر العملاء المنضمين
+                    <i class="fas fa-users color-emerald" style="margin-left: 8px;"></i> {{ __('messages.recent_customers_joined') }}
                 </h3>
-                <a href="{{ route('admin.users.customers') }}" class="btn-view-all">عرض الكل</a>
+                <a href="{{ route('admin.users.customers') }}" class="btn-view-all">{{ __('messages.view_all') }}</a>
             </div>
             <div class="card-body" style="padding: 0 25px 25px 25px;">
                 <div class="premium-list">

@@ -50,7 +50,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم إنشاء الخدمة بنجاح',
+            'message' => __('messages.service_created_success'),
             'data' => $service->load(['subCategory.category']),
         ], 201);
     }
@@ -72,7 +72,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديث الخدمة بنجاح',
+            'message' => __('messages.service_updated_success'),
             'data' => $service->fresh()->load(['subCategory.category']),
         ]);
     }
@@ -83,7 +83,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم حذف الخدمة بنجاح',
+            'message' => __('messages.service_deleted_success'),
         ]);
     }
 }

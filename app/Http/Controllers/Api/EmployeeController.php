@@ -20,7 +20,7 @@ class EmployeeController extends Controller
             if (!$user->employee) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'ليس لديك صلاحية للوصول',
+                    'message' => __('messages.unauthorized_access'),
                 ], 403);
             }
         }
@@ -57,7 +57,7 @@ class EmployeeController extends Controller
         if (!$user->employee) {
             return response()->json([
                 'success' => false,
-                'message' => 'ملف الموظف غير موجود',
+                'message' => __('messages.employee_not_found'),
             ], 404);
         }
 

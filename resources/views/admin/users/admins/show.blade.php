@@ -1,149 +1,148 @@
 @extends('layouts.dashboard')
 
-@section('title', 'تفاصيل الأدمن')
-@section('page-title', 'تفاصيل الأدمن')
+@section('title', __('messages.admin_details'))
+@section('page-title', __('messages.admin_details'))
 
 @section('content')
-<div class="page-header">
-    <div class="page-header-left">
-        <h2>{{ $user->name }}</h2>
-        <p>عرض وتعديل معلومات الأدمن</p>
-    </div>
-    <div class="page-header-right">
-        <a href="{{ route('admin.users.admins') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-right"></i> العودة للقائمة
-        </a>
-        <a href="{{ route('admin.users.admins.edit', $user) }}" class="btn btn-primary">
-            <i class="fas fa-edit"></i> تعديل
-        </a>
-    </div>
-</div>
-
-<div class="user-profile-container">
-    <!-- User Basic Info -->
-    <div class="card">
-        <div class="card-header">
-            <h3>المعلومات الأساسية</h3>
+    <div class="page-header">
+        <div class="page-header-left">
+            <h2>{{ $user->name }}</h2>
+            <p>{{ __('messages.view_edit_admin_desc') }}</p>
         </div>
-        <div class="card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">الاسم:</span>
-                    <span class="info-value">{{ $user->name }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">البريد الإلكتروني:</span>
-                    <span class="info-value">{{ $user->email }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">رقم الهاتف:</span>
-                    <span class="info-value">{{ $user->phone ?? '-' }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">الدور:</span>
-                    <span class="info-value">
-                        <span class="badge badge-danger">
-                            <i class="fas fa-user-shield"></i> أدمن
+        <div class="page-header-right">
+            <a href="{{ route('admin.users.admins') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right"></i> {{ __('messages.back_to_list') }}
+            </a>
+            <a href="{{ route('admin.users.admins.edit', $user) }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> {{ __('messages.edit') }}
+            </a>
+        </div>
+    </div>
+
+    <div class="user-profile-container">
+        <!-- User Basic Info -->
+        <div class="card">
+            <div class="card-header">
+                <h3>{{ __('messages.basic_information') }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">{{ __('messages.name') }}:</span>
+                        <span class="info-value">{{ $user->name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">{{ __('messages.email') }}:</span>
+                        <span class="info-value">{{ $user->email }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">{{ __('messages.phone') }}:</span>
+                        <span class="info-value">{{ $user->phone ?? '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">{{ __('messages.role') }}:</span>
+                        <span class="info-value">
+                            <span class="badge badge-danger status-pill cancelled">
+                                <i class="fas fa-user-shield"></i> {{ __('messages.admin_role') }}
+                            </span>
                         </span>
-                    </span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">تاريخ التسجيل:</span>
-                    <span class="info-value">{{ $user->created_at->format('Y-m-d H:i') }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">آخر تحديث:</span>
-                    <span class="info-value">{{ $user->updated_at->format('Y-m-d H:i') }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">حالة التحقق من الهاتف:</span>
-                    <span class="info-value">
-                        @if($user->phone_verified_at)
-                            <span class="badge badge-success">مؤكد</span>
-                        @else
-                            <span class="badge badge-danger">غير مؤكد</span>
-                        @endif
-                    </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">{{ __('messages.registration_date') }}:</span>
+                        <span class="info-value">{{ $user->created_at->format('Y-m-d H:i') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">{{ __('messages.last_update') }}:</span>
+                        <span class="info-value">{{ $user->updated_at->format('Y-m-d H:i') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">{{ __('messages.phone_verification_status') }}:</span>
+                        <span class="info-value">
+                            @if($user->phone_verified_at)
+                                <span class="badge badge-success status-pill completed">{{ __('messages.verified') }}</span>
+                            @else
+                                <span class="badge badge-danger status-pill cancelled">{{ __('messages.unverified') }}</span>
+                            @endif
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<style>
-.user-profile-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
+    <style>
+        .user-profile-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-.card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-.card-header {
-    padding: 20px;
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
-}
+        .card-header {
+            padding: 20px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
 
-.card-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: #1f2937;
-}
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
 
-.card-body {
-    padding: 20px;
-}
+        .card-body {
+            padding: 20px;
+        }
 
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
 
-.info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-.info-label {
-    font-size: 14px;
-    color: #6b7280;
-    font-weight: 500;
-}
+        .info-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
 
-.info-value {
-    font-size: 16px;
-    color: #1f2937;
-    font-weight: 600;
-}
+        .info-value {
+            font-size: 16px;
+            color: #1f2937;
+            font-weight: 600;
+        }
 
-.badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-}
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
 
-.badge-danger {
-    background: #ef4444;
-    color: white;
-}
+        .badge-danger {
+            background: #ef4444;
+            color: white;
+        }
 
-.badge-success {
-    background: #10b981;
-    color: white;
-}
-</style>
+        .badge-success {
+            background: #10b981;
+            color: white;
+        }
+    </style>
 @endsection
-

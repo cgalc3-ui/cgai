@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إدارة العملاء')
-@section('page-title', 'قائمة العملاء')
+@section('title', __('messages.customers_list'))
+@section('page-title', __('messages.customers_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة العملاء</h2>
-            <p>إدارة وعرض جميع عملائك في مكان واحد</p>
+            <h2>{{ __('messages.customers_list') }}</h2>
+            <p>{{ __('messages.manage_customers_all_desc') }}</p>
         </div>
         <div class="page-header-right">
             <button type="button" class="btn btn-primary" onclick="openModal('addCustomerModal')">
-                <i class="fas fa-user-plus"></i> إضافة عميل
+                <i class="fas fa-user-plus"></i> {{ __('messages.add_customer') }}
             </button>
-            <span class="total-count">جميع العملاء: {{ $users->total() }}</span>
+            <span class="total-count">{{ __('messages.all_customers_count') }}: {{ $users->total() }}</span>
         </div>
     </div>
 
@@ -22,17 +22,17 @@
         <form method="GET" action="{{ route('admin.users.customers') }}" class="filter-form">
             <div class="filter-inputs">
                 <div class="filter-group">
-                    <label for="search"><i class="fas fa-search"></i> بحث عن عميل:</label>
+                    <label for="search"><i class="fas fa-search"></i> {{ __('messages.search_customer_label') }}:</label>
                     <input type="text" name="search" id="search" value="{{ $searchQuery }}"
-                        placeholder="ابحث بالاسم، البريد أو الهاتف..." class="filter-input">
+                        placeholder="{{ __('messages.search_customer_placeholder') }}" class="filter-input">
                 </div>
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i> بحث
+                    <i class="fas fa-search"></i> {{ __('messages.search') }}
                 </button>
                 <a href="{{ route('admin.users.customers') }}" class="btn btn-secondary">
-                    <i class="fas fa-redo"></i> مسح
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
                 </a>
             </div>
         </form>
@@ -42,12 +42,12 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>الاسم</th>
-                    <th>البريد الإلكتروني</th>
-                    <th>رقم الهاتف</th>
-                    <th class="text-center">الدور</th>
-                    <th>تاريخ التسجيل</th>
-                    <th class="text-center">الإجراءات</th>
+                    <th>{{ __('messages.name') }}</th>
+                    <th>{{ __('messages.email') }}</th>
+                    <th>{{ __('messages.phone') }}</th>
+                    <th class="text-center">{{ __('messages.role') }}</th>
+                    <th>{{ __('messages.registration_date') }}</th>
+                    <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,24 +58,25 @@
                         <td>{{ $user->phone ?? '-' }}</td>
                         <td class="text-center">
                             <span class="status-pill active">
-                                <i class="fas fa-user" style="margin-left: 5px;"></i> عميل
+                                <i class="fas fa-user" style="margin-left: 5px;"></i> {{ __('messages.customer_role') }}
                             </span>
                         </td>
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
                         <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
-                                <a href="{{ route('admin.users.customers.show', $user) }}" class="calm-action-btn" title="عرض">
+                                <a href="{{ route('admin.users.customers.show', $user) }}" class="calm-action-btn"
+                                    title="{{ __('messages.view') }}">
                                     <i class="far fa-eye"></i>
                                 </a>
-                                <button type="button" class="calm-action-btn warning" title="تعديل"
+                                <button type="button" class="calm-action-btn warning" title="{{ __('messages.edit') }}"
                                     onclick="openEditCustomerModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email ?? '') }}', '{{ addslashes($user->phone ?? '') }}', '{{ $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '' }}', '{{ $user->gender ?? '' }}')">
                                     <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.users.customers.delete', $user) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('هل أنت متأكد من حذف هذا العميل؟')">
+                                    onsubmit="return confirm('{{ __('messages.delete_customer_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                    <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -84,7 +85,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">لا يوجد عملاء مسجلين</td>
+                        <td colspan="6" class="text-center">{{ __('messages.no_customers_found') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -96,11 +97,12 @@
     </div>
 
     <!-- Add Customer Modal -->
-    <x-modal modalId="addCustomerModal" title="إضافة عميل جديد" formId="addCustomerForm">
+    <x-modal modalId="addCustomerModal" title="{{ __('messages.add_new_customer') }}" formId="addCustomerForm">
         <form id="addCustomerForm" action="{{ route('admin.users.customers.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="add_customer_name">الاسم الكامل <span class="required">*</span></label>
+                <label for="add_customer_name">{{ __('messages.full_name') }} <span
+                        class="required">{{ __('messages.required_field') }}</span></label>
                 <input type="text" id="add_customer_name" name="name" value="{{ old('name') }}" class="form-control"
                     required>
                 @error('name')
@@ -109,7 +111,7 @@
             </div>
 
             <div class="form-group">
-                <label for="add_customer_email">البريد الإلكتروني</label>
+                <label for="add_customer_email">{{ __('messages.email') }}</label>
                 <input type="email" id="add_customer_email" name="email" value="{{ old('email') }}" class="form-control">
                 @error('email')
                     <span class="error-message">{{ $message }}</span>
@@ -117,7 +119,8 @@
             </div>
 
             <div class="form-group">
-                <label for="add_customer_phone">رقم الهاتف <span class="required">*</span></label>
+                <label for="add_customer_phone">{{ __('messages.phone') }} <span
+                        class="required">{{ __('messages.required_field') }}</span></label>
                 <input type="text" id="add_customer_phone" name="phone" value="{{ old('phone') }}" class="form-control"
                     required>
                 @error('phone')
@@ -127,7 +130,7 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="add_customer_date_of_birth">تاريخ الميلاد</label>
+                    <label for="add_customer_date_of_birth">{{ __('messages.date_of_birth') }}</label>
                     <div class="date-input-wrapper">
                         <input type="date" id="add_customer_date_of_birth" name="date_of_birth"
                             value="{{ old('date_of_birth') }}" class="form-control" max="{{ date('Y-m-d') }}">
@@ -139,11 +142,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="add_customer_gender">النوع</label>
+                    <label for="add_customer_gender">{{ __('messages.gender') }}</label>
                     <select id="add_customer_gender" name="gender" class="form-control">
-                        <option value="">اختر النوع</option>
-                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>ذكر</option>
-                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>أنثى</option>
+                        <option value="">{{ __('messages.select_gender') }}</option>
+                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>{{ __('messages.male') }}
+                        </option>
+                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>{{ __('messages.female') }}
+                        </option>
                     </select>
                     @error('gender')
                         <span class="error-message">{{ $message }}</span>
@@ -154,12 +159,14 @@
     </x-modal>
 
     <!-- Edit Customer Modal -->
-    <x-modal modalId="editCustomerModal" title="تعديل عميل" formId="editCustomerForm">
+    <x-modal modalId="editCustomerModal" title="{{ __('messages.edit') }} {{ __('messages.customer_role') }}"
+        formId="editCustomerForm">
         <form id="editCustomerForm" method="POST">
             @csrf
             @method('PUT')
             <div class="form-group">
-                <label for="edit_customer_name">الاسم الكامل <span class="required">*</span></label>
+                <label for="edit_customer_name">{{ __('messages.full_name') }} <span
+                        class="required">{{ __('messages.required_field') }}</span></label>
                 <input type="text" id="edit_customer_name" name="name" class="form-control" required>
                 @error('name')
                     <span class="error-message">{{ $message }}</span>
@@ -167,7 +174,7 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_customer_email">البريد الإلكتروني</label>
+                <label for="edit_customer_email">{{ __('messages.email') }}</label>
                 <input type="email" id="edit_customer_email" name="email" class="form-control">
                 @error('email')
                     <span class="error-message">{{ $message }}</span>
@@ -175,7 +182,8 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_customer_phone">رقم الهاتف <span class="required">*</span></label>
+                <label for="edit_customer_phone">{{ __('messages.phone') }} <span
+                        class="required">{{ __('messages.required_field') }}</span></label>
                 <input type="text" id="edit_customer_phone" name="phone" class="form-control" required>
                 @error('phone')
                     <span class="error-message">{{ $message }}</span>
@@ -184,7 +192,7 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="edit_customer_date_of_birth">تاريخ الميلاد</label>
+                    <label for="edit_customer_date_of_birth">{{ __('messages.date_of_birth') }}</label>
                     <div class="date-input-wrapper">
                         <input type="date" id="edit_customer_date_of_birth" name="date_of_birth" class="form-control"
                             max="{{ date('Y-m-d') }}">
@@ -196,11 +204,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="edit_customer_gender">النوع</label>
+                    <label for="edit_customer_gender">{{ __('messages.gender') }}</label>
                     <select id="edit_customer_gender" name="gender" class="form-control">
-                        <option value="">اختر النوع</option>
-                        <option value="male">ذكر</option>
-                        <option value="female">أنثى</option>
+                        <option value="">{{ __('messages.select_gender') }}</option>
+                        <option value="male">{{ __('messages.male') }}</option>
+                        <option value="female">{{ __('messages.female') }}</option>
                     </select>
                     @error('gender')
                         <span class="error-message">{{ $message }}</span>

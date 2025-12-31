@@ -1,22 +1,22 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إدارة الأسئلة الشائعة')
-@section('page-title', 'إدارة الأسئلة الشائعة')
+@section('title', __('messages.faqs'))
+@section('page-title', __('messages.faqs_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>إدارة الأسئلة الشائعة</h2>
-            <p>إضافة وتعديل وحذف الأسئلة الشائعة للمستخدمين</p>
+            <h2>{{ __('messages.faqs_list') }}</h2>
+            <p>{{ __('messages.manage_faqs_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('faqs.index') }}" class="btn btn-secondary" style="margin-left: 10px;">
-                <i class="fas fa-eye"></i> عرض كما يرى المستخدم
+                <i class="fas fa-eye"></i> {{ __('messages.view_as_user') }}
             </a>
             <a href="{{ route('admin.faqs.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> إضافة سؤال جديد
+                <i class="fas fa-plus"></i> {{ __('messages.add_faq') }}
             </a>
-            <span class="total-count">إجمالي الأسئلة: {{ $faqs->count() }}</span>
+            <span class="total-count">{{ __('messages.total_faqs') }}: {{ $faqs->count() }}</span>
         </div>
     </div>
 
@@ -24,36 +24,38 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>السؤال</th>
-                    <th>الفئة</th>
-                    <th class="text-center">الترتيب</th>
-                    <th class="text-center">الحالة</th>
-                    <th class="text-center">الإجراءات</th>
+                    <th>{{ __('messages.question') }}</th>
+                    <th>{{ __('messages.category') }}</th>
+                    <th class="text-center">{{ __('messages.sort_order') }}</th>
+                    <th class="text-center">{{ __('messages.status') }}</th>
+                    <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($faqs as $faq)
                     <tr>
-                        <td>{{ Str::limit($faq->question, 60) }}</td>
-                        <td><span class="status-pill active" style="font-size: 11px;">{{ $faq->category }}</span></td>
+                        <td>{{ Str::limit($faq->trans('question'), 60) }}</td>
+                        <td><span class="status-pill active"
+                                style="font-size: 11px;">{{ __('messages.' . $faq->category) ?? $faq->category }}</span></td>
                         <td class="text-center">{{ $faq->sort_order }}</td>
                         <td class="text-center">
                             @if($faq->is_active)
-                                <span class="status-pill completed">نشط</span>
+                                <span class="status-pill completed">{{ __('messages.active') }}</span>
                             @else
-                                <span class="status-pill cancelled">غير نشط</span>
+                                <span class="status-pill cancelled">{{ __('messages.inactive') }}</span>
                             @endif
                         </td>
                         <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
-                                <a href="{{ route('admin.faqs.edit', $faq) }}" class="calm-action-btn warning" title="تعديل">
+                                <a href="{{ route('admin.faqs.edit', $faq) }}" class="calm-action-btn warning"
+                                    title="{{ __('messages.edit') }}">
                                     <i class="far fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.faqs.destroy', $faq) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('هل أنت متأكد من حذف هذا السؤال؟')">
+                                    onsubmit="return confirm('{{ __('messages.delete_faq_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                    <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -62,7 +64,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center">لا توجد أسئلة مسجلة</td>
+                        <td colspan="5" class="text-center">{{ __('messages.no_faqs') }}</td>
                     </tr>
                 @endforelse
             </tbody>

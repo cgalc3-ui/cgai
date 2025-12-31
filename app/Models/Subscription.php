@@ -5,11 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use App\Traits\Translatable;
+
 class Subscription extends Model
 {
+    use Translatable;
+
     protected $fillable = [
         'name',
+        'name_en',
         'description',
+        'description_en',
         'features',
         'price',
         'duration_type',
@@ -57,7 +63,17 @@ class Subscription extends Model
      */
     public function getDurationTextAttribute(): string
     {
-        return match($this->duration_type) {
+        if (app()->getLocale() === 'en') {
+            return match ($this->duration_type) {
+                'monthly' => 'Monthly',
+                '3months' => '3 Months',
+                '6months' => '6 Months',
+                'yearly' => 'Yearly',
+                default => $this->duration_type,
+            };
+        }
+
+        return match ($this->duration_type) {
             'monthly' => 'شهري',
             '3months' => '3 أشهر',
             '6months' => '6 أشهر',

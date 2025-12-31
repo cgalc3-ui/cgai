@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'الاستشارات')
-@section('page-title', 'قائمة الاستشارات')
+@section('title', __('messages.consultations'))
+@section('page-title', __('messages.consultations_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة الاستشارات</h2>
-            <p>إدارة وعرض جميع الاستشارات</p>
+            <h2>{{ __('messages.consultations_list') }}</h2>
+            <p>{{ __('messages.manage_consultations_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('admin.consultations.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> إضافة استشارة جديدة
+                <i class="fas fa-plus"></i> {{ __('messages.add_consultation') }}
             </a>
-            <span class="total-count">إجمالي الاستشارات: {{ $consultations->total() }}</span>
+            <span class="total-count">{{ __('messages.total_consultations') }}: {{ $consultations->total() }}</span>
         </div>
     </div>
 
@@ -21,44 +21,43 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>الاسم</th>
-                    <th>التخصص</th>
-                    <th>السعر الثابت</th>
-                    <th>المدة</th>
-                    <th class="text-center">الحالة</th>
-                    <th>تاريخ الإنشاء</th>
-                    <th class="text-center">الإجراءات</th>
+                    <th>{{ __('messages.name') }}</th>
+                    <th>{{ __('messages.category') }}</th>
+                    <th>{{ __('messages.fixed_price') }}</th>
+                    <th class="text-center">{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.created_at') }}</th>
+                    <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($consultations as $consultation)
                     <tr>
-                        <td>{{ $consultation->name }}</td>
-                        <td>{{ $consultation->category->name }}</td>
+                        <td>{{ $consultation->trans('name') }}</td>
+                        <td>{{ $consultation->category->trans('name') }}</td>
                         <td>
                             <span style="color: #28a745; font-weight: 600;">{{ number_format($consultation->fixed_price, 2) }}
-                                ر.س</span>
+                                {{ __('messages.sar') }}</span>
                         </td>
-                        <td>حسب الـ Time Slot</td>
                         <td class="text-center">
                             @if($consultation->is_active)
-                                <span class="status-pill completed">نشط</span>
+                                <span class="status-pill completed">{{ __('messages.active') }}</span>
                             @else
-                                <span class="status-pill cancelled">غير نشط</span>
+                                <span class="status-pill cancelled">{{ __('messages.inactive') }}</span>
                             @endif
                         </td>
                         <td>{{ $consultation->created_at->format('Y-m-d') }}</td>
                         <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.consultations.edit', $consultation) }}" class="calm-action-btn warning"
-                                    title="تعديل">
+                                    title="{{ __('messages.edit') }}">
                                     <i class="far fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.consultations.destroy', $consultation) }}" method="POST"
-                                    class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه الاستشارة؟')">
+                                    class="d-inline"
+                                    onsubmit="return confirm('{{ __('messages.delete_consultation_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                    <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -67,7 +66,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">لا توجد استشارات مسجلة</td>
+                        <td colspan="6" class="text-center">{{ __('messages.no_consultations') }}</td>
                     </tr>
                 @endforelse
             </tbody>

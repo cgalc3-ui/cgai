@@ -61,7 +61,7 @@ class NotificationController extends Controller
         if ($notification->user_id !== $user->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذا الإشعار',
+                'message' => __('messages.notification_unauthorized_access'),
             ], 403);
         }
 
@@ -69,7 +69,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديد الإشعار كمقروء',
+            'message' => __('messages.notification_marked_read'),
             'data' => $notification->fresh(),
         ]);
     }
@@ -90,7 +90,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديد جميع الإشعارات كمقروءة',
+            'message' => __('messages.notification_all_marked_read'),
         ]);
     }
 
@@ -105,7 +105,7 @@ class NotificationController extends Controller
         if ($notification->user_id !== $user->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية لحذف هذا الإشعار',
+                'message' => __('messages.notification_cannot_delete'),
             ], 403);
         }
 
@@ -113,7 +113,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم حذف الإشعار بنجاح',
+            'message' => __('messages.notification_deleted_success'),
         ]);
     }
 }

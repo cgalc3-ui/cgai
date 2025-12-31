@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إدارة الموظفين')
-@section('page-title', 'قائمة الموظفين')
+@section('title', __('messages.staff_list'))
+@section('page-title', __('messages.staff_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة الموظفين</h2>
-            <p>إدارة وعرض جميع الموظفين في مكان واحد</p>
+            <h2>{{ __('messages.staff_list') }}</h2>
+            <p>{{ __('messages.manage_staff_all_desc') }}</p>
         </div>
         <div class="page-header-right">
             <button type="button" class="btn btn-primary" onclick="openModal('addStaffModal')">
-                <i class="fas fa-user-plus"></i> إضافة موظف
+                <i class="fas fa-user-plus"></i> {{ __('messages.add_staff') }}
             </button>
-            <span class="total-count">جميع الموظفين: {{ $users->total() }}</span>
+            <span class="total-count">{{ __('messages.all_staff_count') }}: {{ $users->total() }}</span>
         </div>
     </div>
 
@@ -22,17 +22,17 @@
         <form method="GET" action="{{ route('admin.users.staff') }}" class="filter-form">
             <div class="filter-inputs">
                 <div class="filter-group">
-                    <label for="search"><i class="fas fa-search"></i> بحث عن موظف:</label>
+                    <label for="search"><i class="fas fa-search"></i> {{ __('messages.search_staff_label') }}:</label>
                     <input type="text" name="search" id="search" value="{{ $searchQuery }}"
-                        placeholder="ابحث بالاسم، البريد أو الهاتف..." class="filter-input">
+                        placeholder="{{ __('messages.search_staff_placeholder') }}" class="filter-input">
                 </div>
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i> بحث
+                    <i class="fas fa-search"></i> {{ __('messages.search') }}
                 </button>
                 <a href="{{ route('admin.users.staff') }}" class="btn btn-secondary">
-                    <i class="fas fa-redo"></i> مسح
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
                 </a>
             </div>
         </form>
@@ -42,13 +42,13 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>الاسم</th>
-                    <th>البريد الإلكتروني</th>
-                    <th>رقم الهاتف</th>
-                    <th class="text-center">الدور</th>
-                    <th>التخصصات</th>
-                    <th>تاريخ التسجيل</th>
-                    <th class="text-center">الإجراءات</th>
+                    <th>{{ __('messages.name') }}</th>
+                    <th>{{ __('messages.email') }}</th>
+                    <th>{{ __('messages.phone') }}</th>
+                    <th class="text-center">{{ __('messages.role') }}</th>
+                    <th>{{ __('messages.specializations') }}</th>
+                    <th>{{ __('messages.registration_date') }}</th>
+                    <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,7 +59,7 @@
                         <td>{{ $user->phone ?? '-' }}</td>
                         <td class="text-center">
                             <span class="status-pill active">
-                                <i class="fas fa-user-tie" style="margin-left: 5px;"></i> موظف
+                                <i class="fas fa-user-tie" style="margin-left: 5px;"></i> {{ __('messages.staff_role') }}
                             </span>
                         </td>
                         <td>
@@ -78,18 +78,19 @@
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
                         <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
-                                <a href="{{ route('admin.users.staff.show', $user) }}" class="calm-action-btn" title="عرض">
+                                <a href="{{ route('admin.users.staff.show', $user) }}" class="calm-action-btn"
+                                    title="{{ __('messages.view') }}">
                                     <i class="far fa-eye"></i>
                                 </a>
-                                <button type="button" class="calm-action-btn warning" title="تعديل"
+                                <button type="button" class="calm-action-btn warning" title="{{ __('messages.edit') }}"
                                     onclick="openEditStaffModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}', '{{ addslashes($user->phone ?? '') }}', {{ $user->employee ? json_encode($user->employee->categories->pluck('id')->toArray()) : '[]' }}, '{{ addslashes($user->employee->bio ?? '') }}', {{ $user->employee->hourly_rate ?? 'null' }}, {{ $user->employee && $user->employee->is_available ? 'true' : 'false' }})">
                                     <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.users.staff.delete', $user) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('هل أنت متأكد من حذف هذا الموظف؟')">
+                                    onsubmit="return confirm('{{ __('messages.delete_staff_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                    <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -98,7 +99,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">لا يوجد موظفين مسجلين</td>
+                        <td colspan="7" class="text-center">{{ __('messages.no_staff_found') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -110,11 +111,11 @@
     </div>
 
     <!-- Add Staff Modal -->
-    <x-modal modalId="addStaffModal" title="إضافة موظف جديد" formId="addStaffForm">
+    <x-modal modalId="addStaffModal" title="{{ __('messages.add_new_staff') }}" formId="addStaffForm">
         <form id="addStaffForm" action="{{ route('admin.users.staff.store') }}" method="POST">
             @csrf
             <div class="form-group">
-                <label for="add_staff_name">الاسم الكامل <span class="required">*</span></label>
+                <label for="add_staff_name">{{ __('messages.full_name') }} <span class="required">*</span></label>
                 <input type="text" id="add_staff_name" name="name" value="{{ old('name') }}" class="form-control" required>
                 @error('name')
                     <span class="error-message">{{ $message }}</span>
@@ -122,7 +123,7 @@
             </div>
 
             <div class="form-group">
-                <label for="add_staff_email">البريد الإلكتروني <span class="required">*</span></label>
+                <label for="add_staff_email">{{ __('messages.email') }} <span class="required">*</span></label>
                 <input type="email" id="add_staff_email" name="email" value="{{ old('email') }}" class="form-control"
                     required>
                 @error('email')
@@ -131,7 +132,7 @@
             </div>
 
             <div class="form-group">
-                <label for="add_staff_phone">رقم الهاتف <span class="required">*</span></label>
+                <label for="add_staff_phone">{{ __('messages.phone') }} <span class="required">*</span></label>
                 <input type="text" id="add_staff_phone" name="phone" value="{{ old('phone') }}" class="form-control"
                     required>
                 @error('phone')
@@ -140,7 +141,7 @@
             </div>
 
             <div class="form-group">
-                <label for="add_staff_password">كلمة المرور <span class="required">*</span></label>
+                <label for="add_staff_password">{{ __('messages.password') }} <span class="required">*</span></label>
                 <input type="password" id="add_staff_password" name="password" class="form-control" required minlength="8">
                 @error('password')
                     <span class="error-message">{{ $message }}</span>
@@ -148,9 +149,9 @@
             </div>
 
             <div class="form-group">
-                <label for="add_staff_categories_select">الفئات (التخصصات)</label>
+                <label for="add_staff_categories_select">{{ __('messages.categories_specializations') }}</label>
                 <select id="add_staff_categories_select" class="form-control">
-                    <option value="">اختر فئة...</option>
+                    <option value="">{{ __('messages.select_category_placeholder') }}</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" data-name="{{ $category->name }}">
                             {{ $category->name }}
@@ -162,13 +163,13 @@
             </div>
 
             <div class="form-group">
-                <label for="add_staff_bio">السيرة الذاتية</label>
+                <label for="add_staff_bio">{{ __('messages.bio') }}</label>
                 <textarea id="add_staff_bio" name="bio" rows="3" class="form-control"
-                    placeholder="وصف مختصر عن الموظف">{{ old('bio') }}</textarea>
+                    placeholder="{{ __('messages.bio_placeholder') }}">{{ old('bio') }}</textarea>
             </div>
 
             <div class="form-group">
-                <label for="add_staff_hourly_rate">السعر/ساعة (ريال)</label>
+                <label for="add_staff_hourly_rate">{{ __('messages.hourly_rate_sar') }}</label>
                 <input type="number" id="add_staff_hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
                     step="0.01" min="0" class="form-control">
             </div>
@@ -176,19 +177,20 @@
             <div class="form-group">
                 <label class="checkbox-label">
                     <input type="checkbox" name="is_available" value="1" {{ old('is_available', true) ? 'checked' : '' }}>
-                    <span>الموظف متاح</span>
+                    <span>{{ __('messages.employee_available') }}</span>
                 </label>
             </div>
         </form>
     </x-modal>
 
     <!-- Edit Staff Modal -->
-    <x-modal modalId="editStaffModal" title="تعديل موظف" formId="editStaffForm">
+    <x-modal modalId="editStaffModal" title="{{ __('messages.edit') }} {{ __('messages.staff_role') }}"
+        formId="editStaffForm">
         <form id="editStaffForm" method="POST">
             @csrf
             @method('PUT')
             <div class="form-group">
-                <label for="edit_staff_name">الاسم الكامل <span class="required">*</span></label>
+                <label for="edit_staff_name">{{ __('messages.full_name') }} <span class="required">*</span></label>
                 <input type="text" id="edit_staff_name" name="name" class="form-control" required>
                 @error('name')
                     <span class="error-message">{{ $message }}</span>
@@ -196,7 +198,7 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_staff_email">البريد الإلكتروني <span class="required">*</span></label>
+                <label for="edit_staff_email">{{ __('messages.email') }} <span class="required">*</span></label>
                 <input type="email" id="edit_staff_email" name="email" class="form-control" required>
                 @error('email')
                     <span class="error-message">{{ $message }}</span>
@@ -204,7 +206,7 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_staff_phone">رقم الهاتف <span class="required">*</span></label>
+                <label for="edit_staff_phone">{{ __('messages.phone') }} <span class="required">*</span></label>
                 <input type="text" id="edit_staff_phone" name="phone" class="form-control" required>
                 @error('phone')
                     <span class="error-message">{{ $message }}</span>
@@ -212,7 +214,8 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_staff_password">كلمة المرور (اتركها فارغة إذا لم تريد تغييرها)</label>
+                <label for="edit_staff_password">{{ __('messages.password') }}
+                    ({{ __('messages.password_help_edit') }})</label>
                 <input type="password" id="edit_staff_password" name="password" class="form-control" minlength="8">
                 @error('password')
                     <span class="error-message">{{ $message }}</span>
@@ -220,9 +223,9 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_staff_categories_select">الفئات (التخصصات)</label>
+                <label for="edit_staff_categories_select">{{ __('messages.categories_specializations') }}</label>
                 <select id="edit_staff_categories_select" class="form-control">
-                    <option value="">اختر فئة...</option>
+                    <option value="">{{ __('messages.select_category_placeholder') }}</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" data-name="{{ $category->name }}">
                             {{ $category->name }}
@@ -234,13 +237,13 @@
             </div>
 
             <div class="form-group">
-                <label for="edit_staff_bio">السيرة الذاتية</label>
+                <label for="edit_staff_bio">{{ __('messages.bio') }}</label>
                 <textarea id="edit_staff_bio" name="bio" rows="3" class="form-control"
-                    placeholder="وصف مختصر عن الموظف"></textarea>
+                    placeholder="{{ __('messages.bio_placeholder') }}"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="edit_staff_hourly_rate">السعر/ساعة (ريال)</label>
+                <label for="edit_staff_hourly_rate">{{ __('messages.hourly_rate_sar') }}</label>
                 <input type="number" id="edit_staff_hourly_rate" name="hourly_rate" step="0.01" min="0"
                     class="form-control">
             </div>
@@ -248,7 +251,7 @@
             <div class="form-group">
                 <label class="checkbox-label">
                     <input type="checkbox" id="edit_staff_is_available" name="is_available" value="1">
-                    <span>الموظف متاح</span>
+                    <span>{{ __('messages.employee_available') }}</span>
                 </label>
             </div>
         </form>
@@ -317,12 +320,12 @@
                 tagDiv.className = 'category-tag';
                 tagDiv.setAttribute('data-id', selectedId);
                 tagDiv.innerHTML = `
-                                            <input type="hidden" name="employee[categories][]" value="${selectedId}">
-                                            <span>${selectedName}</span>
-                                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        `;
+                                                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                                                    <span>${selectedName}</span>
+                                                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                `;
 
                 container.appendChild(tagDiv);
                 select.value = '';
@@ -353,12 +356,12 @@
                 tagDiv.className = 'category-tag';
                 tagDiv.setAttribute('data-id', selectedId);
                 tagDiv.innerHTML = `
-                                            <input type="hidden" name="employee[categories][]" value="${selectedId}">
-                                            <span>${selectedName}</span>
-                                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        `;
+                                                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                                                    <span>${selectedName}</span>
+                                                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                `;
 
                 container.appendChild(tagDiv);
                 select.value = '';
@@ -393,12 +396,12 @@
                             tagDiv.className = 'category-tag';
                             tagDiv.setAttribute('data-id', catId);
                             tagDiv.innerHTML = `
-                                                        <input type="hidden" name="employee[categories][]" value="${catId}">
-                                                        <span>${catName}</span>
-                                                        <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    `;
+                                                                <input type="hidden" name="employee[categories][]" value="${catId}">
+                                                                <span>${catName}</span>
+                                                                <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            `;
                             container.appendChild(tagDiv);
                         }
                     });

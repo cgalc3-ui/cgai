@@ -1,18 +1,18 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إدارة التذاكر')
-@section('page-title', 'إدارة التذاكر')
+@section('title', __('messages.tickets'))
+@section('page-title', __('messages.tickets_list'))
 
 @section('content')
     <div class="tickets-admin-container">
         <!-- Header -->
         <div class="tickets-header">
             <div class="header-left">
-                <h2>إدارة التذاكر</h2>
-                <p>جميع تذاكر الدعم في النظام</p>
+                <h2>{{ __('messages.tickets_list') }}</h2>
+                <p>{{ __('messages.manage_tickets_desc') }}</p>
             </div>
             <div class="header-right">
-                <span class="total-count">إجمالي التذاكر: {{ $tickets->total() }}</span>
+                <span class="total-count">{{ __('messages.total_tickets') }}: {{ $tickets->total() }}</span>
             </div>
         </div>
 
@@ -20,33 +20,40 @@
         <div class="filters-container">
             <form method="GET" action="{{ route('admin.tickets') }}" class="filters-form">
                 <div class="filter-group">
-                    <label>الحالة:</label>
+                    <label>{{ __('messages.status') }}:</label>
                     <select name="status" class="filter-select">
-                        <option value="">الكل</option>
-                        <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>مفتوحة</option>
-                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>قيد المعالجة
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>{{ __('messages.open') }}
                         </option>
-                        <option value="resolved" {{ request('status') === 'resolved' ? 'selected' : '' }}>محلولة</option>
-                        <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>مغلقة</option>
+                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>
+                            {{ __('messages.in_progress') }}</option>
+                        <option value="resolved" {{ request('status') === 'resolved' ? 'selected' : '' }}>
+                            {{ __('messages.resolved') }}</option>
+                        <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>
+                            {{ __('messages.closed') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>الأولوية:</label>
+                    <label>{{ __('messages.priority') }}:</label>
                     <select name="priority" class="filter-select">
-                        <option value="">الكل</option>
-                        <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>منخفضة</option>
-                        <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>متوسطة</option>
-                        <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>عالية</option>
-                        <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>عاجلة</option>
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>{{ __('messages.low') }}
+                        </option>
+                        <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>
+                            {{ __('messages.medium') }}</option>
+                        <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>{{ __('messages.high') }}
+                        </option>
+                        <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>
+                            {{ __('messages.urgent') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>البحث:</label>
-                    <input type="text" name="search" class="filter-input" placeholder="الموضوع أو اسم العميل"
-                        value="{{ request('search') }}">
+                    <label>{{ __('messages.search') }}:</label>
+                    <input type="text" name="search" class="filter-input"
+                        placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
                 </div>
-                <button type="submit" class="btn-filter">تطبيق</button>
-                <a href="{{ route('admin.tickets') }}" class="btn-clear">مسح</a>
+                <button type="submit" class="btn-filter">{{ __('messages.apply') }}</button>
+                <a href="{{ route('admin.tickets') }}" class="btn-clear">{{ __('messages.clear') }}</a>
             </form>
         </div>
 
@@ -55,13 +62,13 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>العميل</th>
-                        <th>الموضوع</th>
-                        <th class="text-center">الحالة</th>
-                        <th class="text-center">الأولوية</th>
-                        <th>معين ل</th>
-                        <th>التاريخ</th>
-                        <th class="text-center">الإجراءات</th>
+                        <th>{{ __('messages.client') }}</th>
+                        <th>{{ __('messages.subject') }}</th>
+                        <th class="text-center">{{ __('messages.status') }}</th>
+                        <th class="text-center">{{ __('messages.priority') }}</th>
+                        <th>{{ __('messages.assigned_to') }}</th>
+                        <th>{{ __('messages.date') }}</th>
+                        <th class="text-center">{{ __('messages.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,34 +87,35 @@
                             </td>
                             <td class="text-center">
                                 @if($ticket->status === 'open')
-                                    <span class="status-pill pending">مفتوحة</span>
+                                    <span class="status-pill pending">{{ __('messages.open') }}</span>
                                 @elseif($ticket->status === 'in_progress')
-                                    <span class="status-pill active">قيد المعالجة</span>
+                                    <span class="status-pill active">{{ __('messages.in_progress') }}</span>
                                 @elseif($ticket->status === 'resolved')
-                                    <span class="status-pill confirmed">محلولة</span>
+                                    <span class="status-pill confirmed">{{ __('messages.resolved') }}</span>
                                 @else
-                                    <span class="status-pill cancelled">مغلقة</span>
+                                    <span class="status-pill cancelled">{{ __('messages.closed') }}</span>
                                 @endif
                             </td>
                             <td class="text-center">
                                 @if($ticket->priority === 'urgent')
-                                    <span class="status-pill cancelled">عاجلة</span>
+                                    <span class="status-pill cancelled">{{ __('messages.urgent') }}</span>
                                 @elseif($ticket->priority === 'high')
-                                    <span class="status-pill pending">عالية</span>
+                                    <span class="status-pill pending">{{ __('messages.high') }}</span>
                                 @elseif($ticket->priority === 'medium')
-                                    <span class="status-pill active">متوسطة</span>
+                                    <span class="status-pill active">{{ __('messages.medium') }}</span>
                                 @else
-                                    <span class="status-pill completed">منخفضة</span>
+                                    <span class="status-pill completed">{{ __('messages.low') }}</span>
                                 @endif
                             </td>
                             <td>
-                                {{ $ticket->assignedUser->name ?? 'غير معين' }}
+                                {{ $ticket->assignedUser->name ?? __('messages.unassigned') }}
                             </td>
                             <td>
                                 {{ $ticket->created_at->format('Y-m-d') }}
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('admin.tickets.show', $ticket) }}" class="calm-action-btn" title="عرض">
+                                <a href="{{ route('admin.tickets.show', $ticket) }}" class="calm-action-btn"
+                                    title="{{ __('messages.view') }}">
                                     <i class="far fa-eye"></i>
                                 </a>
                             </td>
@@ -117,8 +125,8 @@
                             <td colspan="7" class="text-center">
                                 <div class="empty-state">
                                     <i class="fas fa-headset"></i>
-                                    <h3>لا توجد تذاكر</h3>
-                                    <p>لم يتم العثور على أي تذاكر</p>
+                                    <h3>{{ __('messages.no_tickets') }}</h3>
+                                    <p>{{ __('messages.no_tickets_desc') }}</p>
                                 </div>
                             </td>
                         </tr>

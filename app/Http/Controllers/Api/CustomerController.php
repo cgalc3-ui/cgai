@@ -17,7 +17,7 @@ class CustomerController extends Controller
         if (!$user->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول',
+                'message' => __('messages.unauthorized_access'),
             ], 403);
         }
 
@@ -37,7 +37,7 @@ class CustomerController extends Controller
         if (!$user->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول',
+                'message' => __('messages.unauthorized_access'),
             ], 403);
         }
 
@@ -49,7 +49,7 @@ class CustomerController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديث الملف الشخصي بنجاح',
+            'message' => __('messages.profile_updated_success'),
             'customer' => $user->fresh(),
         ]);
     }
@@ -64,7 +64,7 @@ class CustomerController extends Controller
         if (!$user->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول',
+                'message' => __('messages.unauthorized_access'),
             ], 403);
         }
 

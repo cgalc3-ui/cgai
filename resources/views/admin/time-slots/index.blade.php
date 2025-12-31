@@ -1,22 +1,22 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إدارة الأوقات المتاحة')
-@section('page-title', 'إدارة الأوقات المتاحة')
+@section('title', __('messages.time_slots'))
+@section('page-title', __('messages.time_slots'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة الأوقات المتاحة</h2>
-            <p>إدارة جميع الأوقات المتاحة للموظفين</p>
+            <h2>{{ __('messages.time_slots_list') }}</h2>
+            <p>{{ __('messages.manage_time_slots_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('admin.time-slots.schedules') }}" class="btn btn-info">
-                <i class="fas fa-calendar-alt"></i> المواعيد المتكررة
+                <i class="fas fa-calendar-alt"></i> {{ __('messages.recurring_appointments') }}
             </a>
             <a href="{{ route('admin.time-slots.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> إضافة وقت متاح
+                <i class="fas fa-plus"></i> {{ __('messages.add_time_slot') }}
             </a>
-            <span class="total-count">إجمالي الأوقات: {{ $timeSlots->total() }}</span>
+            <span class="total-count">{{ __('messages.total_time_slots') }}: {{ $timeSlots->total() }}</span>
         </div>
     </div>
 
@@ -25,9 +25,9 @@
         <form method="GET" action="{{ route('admin.time-slots') }}" class="filter-form" id="filterForm">
             <div class="filter-inputs">
                 <div class="filter-group">
-                    <label for="employee_id"><i class="fas fa-user-tie"></i> الموظف:</label>
+                    <label for="employee_id"><i class="fas fa-user-tie"></i> {{ __('messages.employee') }}:</label>
                     <select name="employee_id" id="employee_id" class="filter-select">
-                        <option value="all" {{ $employeeFilter == 'all' ? 'selected' : '' }}>جميع الموظفين</option>
+                        <option value="all" {{ $employeeFilter == 'all' ? 'selected' : '' }}>{{ __('messages.all_employees') }}</option>
                         @foreach($employees as $employee)
                             <option value="{{ $employee->id }}" {{ $employeeFilter == $employee->id ? 'selected' : '' }}>
                                 {{ $employee->user->name }}
@@ -36,17 +36,17 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="date"><i class="fas fa-calendar-day"></i> التاريخ:</label>
+                    <label for="date"><i class="fas fa-calendar-day"></i> {{ __('messages.date') }}:</label>
                     <input type="date" name="date" id="date"
                         value="{{ $dateFilter ?? \Carbon\Carbon::today()->format('Y-m-d') }}" class="filter-input">
                 </div>
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> فلترة
+                    <i class="fas fa-filter"></i> {{ __('messages.apply_filter') }}
                 </button>
                 <a href="{{ route('admin.time-slots') }}" class="btn btn-secondary">
-                    <i class="fas fa-redo"></i> مسح
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
                 </a>
             </div>
         </form>
@@ -84,12 +84,12 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>الموظف</th>
-                            <th>التاريخ</th>
-                            <th>من</th>
-                            <th>إلى</th>
-                            <th class="text-center">الحالة</th>
-                            <th class="text-center">الإجراءات</th>
+                            <th>{{ __('messages.employee') }}</th>
+                            <th>{{ __('messages.date') }}</th>
+                            <th>{{ __('messages.from_hour') }}</th>
+                            <th>{{ __('messages.to_hour') }}</th>
+                            <th class="text-center">{{ __('messages.status') }}</th>
+                            <th class="text-center">{{ __('messages.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,22 +127,22 @@
                                     <td>{{ $hour['end']->format('h:i A') }}</td>
                                     <td class="text-center">
                                         @if($timeSlot->is_available)
-                                            <span class="status-pill completed">متاح</span>
+                                            <span class="status-pill completed">{{ __('messages.available') }}</span>
                                         @else
-                                            <span class="status-pill cancelled">غير متاح</span>
+                                            <span class="status-pill cancelled">{{ __('messages.unavailable') }}</span>
                                         @endif
                                     </td>
                                     <td class="text-center">
                                         <div style="display: flex; gap: 8px; justify-content: center;">
                                             <a href="{{ route('admin.time-slots.edit', $timeSlot) }}"
-                                                class="calm-action-btn warning" title="تعديل">
+                                                class="calm-action-btn warning" title="{{ __('messages.edit') }}">
                                                 <i class="far fa-edit"></i>
                                             </a>
                                             <form action="{{ route('admin.time-slots.delete', $timeSlot) }}" method="POST"
-                                                class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا الوقت؟')">
+                                                class="d-inline" onsubmit="return confirm('{{ __('messages.delete_time_slot_confirm') }}')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="calm-action-btn danger" title="حذف">
+                                                <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                                     <i class="far fa-trash-alt"></i>
                                                 </button>
                                             </form>
@@ -152,7 +152,7 @@
                             @endforeach
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">لا توجد أوقات متاحة مسجلة</td>
+                                <td colspan="6" class="text-center">{{ __('messages.no_time_slots') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

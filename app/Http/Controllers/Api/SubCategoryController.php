@@ -35,7 +35,7 @@ class SubCategoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم إنشاء الفئة الفرعية بنجاح',
+            'message' => __('messages.subcategory_created_success'),
             'data' => $subCategory->load('category'),
         ], 201);
     }
@@ -57,7 +57,7 @@ class SubCategoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديث الفئة الفرعية بنجاح',
+            'message' => __('messages.subcategory_updated_success'),
             'data' => $subCategory->fresh()->load('category'),
         ]);
     }
@@ -68,7 +68,7 @@ class SubCategoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم حذف الفئة الفرعية بنجاح',
+            'message' => __('messages.subcategory_deleted_success'),
         ]);
     }
 }

@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'الفئات الفرعية')
-@section('page-title', 'قائمة الفئات الفرعية')
+@section('title', __('messages.sub_categories'))
+@section('page-title', __('messages.sub_categories_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة الفئات الفرعية</h2>
-            <p>إدارة وعرض جميع الفئات الفرعية</p>
+            <h2>{{ __('messages.sub_categories_list') }}</h2>
+            <p>{{ __('messages.manage_sub_categories_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('admin.sub-categories.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> إضافة فئة فرعية جديدة
+                <i class="fas fa-plus"></i> {{ __('messages.add_sub_category') }}
             </a>
-            <span class="total-count">إجمالي الفئات الفرعية: {{ $subCategories->total() }}</span>
+            <span class="total-count">{{ __('messages.total_sub_categories') }}: {{ $subCategories->total() }}</span>
         </div>
     </div>
 
@@ -21,40 +21,40 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>الاسم</th>
-                    <th>الفئة الرئيسية</th>
-                    <th>الوصف</th>
-                    <th class="text-center">الحالة</th>
-                    <th>تاريخ الإنشاء</th>
-                    <th class="text-center">الإجراءات</th>
+                    <th>{{ __('messages.name') }}</th>
+                    <th>{{ __('messages.category') }}</th>
+                    <th>{{ __('messages.description') }}</th>
+                    <th class="text-center">{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.created_at') }}</th>
+                    <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($subCategories as $subCategory)
                     <tr>
-                        <td>{{ $subCategory->name }}</td>
-                        <td>{{ $subCategory->category->name }}</td>
-                        <td>{{ Str::limit($subCategory->description ?? '-', 50) }}</td>
+                        <td>{{ $subCategory->trans('name') }}</td>
+                        <td>{{ $subCategory->category->trans('name') }}</td>
+                        <td>{{ Str::limit($subCategory->trans('description') ?? '-', 50) }}</td>
                         <td class="text-center">
                             @if($subCategory->is_active)
-                                <span class="status-pill completed">نشط</span>
+                                <span class="status-pill completed">{{ __('messages.active') }}</span>
                             @else
-                                <span class="status-pill cancelled">غير نشط</span>
+                                <span class="status-pill cancelled">{{ __('messages.inactive') }}</span>
                             @endif
                         </td>
                         <td>{{ $subCategory->created_at->format('Y-m-d') }}</td>
                         <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.sub-categories.edit', $subCategory) }}" class="calm-action-btn warning"
-                                    title="تعديل">
+                                    title="{{ __('messages.edit') }}">
                                     <i class="far fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.sub-categories.destroy', $subCategory) }}" method="POST"
                                     class="d-inline"
-                                    onsubmit="return confirm('هل أنت متأكد من حذف هذه الفئة الفرعية؟ سيتم حذف جميع الخدمات المرتبطة بها.')">
+                                    onsubmit="return confirm('{{ __('messages.delete_sub_category_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                    <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -63,7 +63,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">لا توجد فئات فرعية مسجلة</td>
+                        <td colspan="6" class="text-center">{{ __('messages.no_sub_categories') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'مدة الخدمات')
-@section('page-title', 'قائمة مدة الخدمات')
+@section('title', __('messages.service_durations'))
+@section('page-title', __('messages.service_durations_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة مدة الخدمات</h2>
-            <p>إدارة وعرض جميع مدة الخدمات</p>
+            <h2>{{ __('messages.service_durations_list') }}</h2>
+            <p>{{ __('messages.manage_service_durations_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('admin.service-durations.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> إضافة مدة خدمة جديدة
+                <i class="fas fa-plus"></i> {{ __('messages.add_service_duration') }}
             </a>
-            <span class="total-count">إجمالي مدة الخدمات: {{ $durations->total() }}</span>
+            <span class="total-count">{{ __('messages.total_service_durations') }}: {{ $durations->total() }}</span>
         </div>
     </div>
 
@@ -21,13 +21,13 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>الخدمة</th>
-                    <th>نوع المدة</th>
-                    <th>قيمة المدة</th>
-                    <th>السعر</th>
-                    <th>الحالة</th>
-                    <th>تاريخ الإنشاء</th>
-                    <th>الإجراءات</th>
+                    <th>{{ __('messages.service') }}</th>
+                    <th>{{ __('messages.duration_type') }}</th>
+                    <th>{{ __('messages.duration_value') }}</th>
+                    <th>{{ __('messages.price') }}</th>
+                    <th>{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.created_at') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,34 +36,34 @@
                         <td>{{ $duration->service->name }}</td>
                         <td>
                             @if($duration->duration_type == 'hour')
-                                ساعة
+                                {{ __('messages.hour') }}
                             @elseif($duration->duration_type == 'day')
-                                يوم
+                                {{ __('messages.day') }}
                             @elseif($duration->duration_type == 'week')
-                                أسبوع
+                                {{ __('messages.week') }}
                             @endif
                         </td>
                         <td>{{ $duration->duration_value }}</td>
-                        <td>{{ number_format($duration->price, 2) }} ر.س</td>
+                        <td>{{ number_format($duration->price, 2) }} {{ __('messages.sar') }}</td>
                         <td>
                             @if($duration->is_active)
-                                <span class="status-pill completed">نشط</span>
+                                <span class="status-pill completed">{{ __('messages.active') }}</span>
                             @else
-                                <span class="status-pill cancelled">غير نشط</span>
+                                <span class="status-pill cancelled">{{ __('messages.inactive') }}</span>
                             @endif
                         </td>
                         <td>{{ $duration->created_at->format('Y-m-d') }}</td>
                         <td>
                             <div style="display: flex; gap: 8px;">
                                 <a href="{{ route('admin.service-durations.edit', $duration) }}" class="calm-action-btn warning"
-                                    title="تعديل">
+                                    title="{{ __('messages.edit') }}">
                                     <i class="far fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.service-durations.destroy', $duration) }}" method="POST"
-                                    class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه المدة؟')">
+                                    class="d-inline" onsubmit="return confirm('{{ __('messages.delete_service_duration_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                    <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -72,7 +72,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">لا توجد مدة خدمات مسجلة</td>
+                        <td colspan="7" class="text-center">{{ __('messages.no_service_durations') }}</td>
                     </tr>
                 @endforelse
             </tbody>

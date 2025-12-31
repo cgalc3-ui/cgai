@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
-@section('title', 'تفاصيل التذكرة')
-@section('page-title', 'تفاصيل التذكرة')
+@section('title', __('messages.ticket_details'))
+@section('page-title', __('messages.ticket_details'))
 
 @section('content')
     <div class="ticket-details-container">
@@ -18,7 +18,7 @@
             <div class="header-right">
                 <a href="{{ route('admin.tickets') }}" class="btn-back">
                     <i class="fas fa-arrow-right"></i>
-                    <span>العودة</span>
+                    <span>{{ __('messages.back') }}</span>
                 </a>
             </div>
         </div>
@@ -27,50 +27,58 @@
         <div class="ticket-info-section">
             <div class="info-card">
                 <div class="info-item">
-                    <label>العميل:</label>
+                    <label>{{ __('messages.client') }}:</label>
                     <span>{{ $ticket->user->name }}</span>
                 </div>
                 <div class="info-item">
-                    <label>البريد الإلكتروني:</label>
+                    <label>{{ __('messages.email') }}:</label>
                     <span>{{ $ticket->user->email }}</span>
                 </div>
                 <div class="info-item">
-                    <label>الهاتف:</label>
-                    <span>{{ $ticket->user->phone ?? 'غير محدد' }}</span>
+                    <label>{{ __('messages.phone') }}:</label>
+                    <span>{{ $ticket->user->phone ?? __('messages.not_specified') }}</span>
                 </div>
             </div>
 
             <div class="admin-actions-card">
-                <h3>إدارة التذكرة</h3>
+                <h3>{{ __('messages.manage_ticket') }}</h3>
                 <form action="{{ route('admin.tickets.update-status', $ticket) }}" method="POST" class="status-form">
                     @csrf
                     @method('PUT')
                     <div class="form-group">
-                        <label>الحالة:</label>
+                        <label>{{ __('messages.status') }}:</label>
                         <select name="status" class="form-select">
-                            <option value="open" {{ $ticket->status === 'open' ? 'selected' : '' }}>مفتوحة</option>
-                            <option value="in_progress" {{ $ticket->status === 'in_progress' ? 'selected' : '' }}>قيد المعالجة</option>
-                            <option value="resolved" {{ $ticket->status === 'resolved' ? 'selected' : '' }}>محلولة</option>
-                            <option value="closed" {{ $ticket->status === 'closed' ? 'selected' : '' }}>مغلقة</option>
+                            <option value="open" {{ $ticket->status === 'open' ? 'selected' : '' }}>{{ __('messages.open') }}
+                            </option>
+                            <option value="in_progress" {{ $ticket->status === 'in_progress' ? 'selected' : '' }}>
+                                {{ __('messages.in_progress') }}</option>
+                            <option value="resolved" {{ $ticket->status === 'resolved' ? 'selected' : '' }}>
+                                {{ __('messages.resolved') }}</option>
+                            <option value="closed" {{ $ticket->status === 'closed' ? 'selected' : '' }}>
+                                {{ __('messages.closed') }}</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>الأولوية:</label>
+                        <label>{{ __('messages.priority') }}:</label>
                         <select name="priority" class="form-select" disabled>
-                            <option value="low" {{ $ticket->priority === 'low' ? 'selected' : '' }}>منخفضة</option>
-                            <option value="medium" {{ $ticket->priority === 'medium' ? 'selected' : '' }}>متوسطة</option>
-                            <option value="high" {{ $ticket->priority === 'high' ? 'selected' : '' }}>عالية</option>
-                            <option value="urgent" {{ $ticket->priority === 'urgent' ? 'selected' : '' }}>عاجلة</option>
+                            <option value="low" {{ $ticket->priority === 'low' ? 'selected' : '' }}>{{ __('messages.low') }}
+                            </option>
+                            <option value="medium" {{ $ticket->priority === 'medium' ? 'selected' : '' }}>
+                                {{ __('messages.medium') }}</option>
+                            <option value="high" {{ $ticket->priority === 'high' ? 'selected' : '' }}>
+                                {{ __('messages.high') }}</option>
+                            <option value="urgent" {{ $ticket->priority === 'urgent' ? 'selected' : '' }}>
+                                {{ __('messages.urgent') }}</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-update">تحديث الحالة</button>
+                    <button type="submit" class="btn-update">{{ __('messages.update_status') }}</button>
                 </form>
             </div>
         </div>
 
         <!-- Initial Description -->
         <div class="description-section">
-            <h3>الوصف الأولي</h3>
+            <h3>{{ __('messages.initial_description') }}</h3>
             <div class="description-content">
                 <p>{{ $ticket->description }}</p>
             </div>
@@ -78,7 +86,7 @@
 
         <!-- Messages -->
         <div class="messages-section">
-            <h3>المحادثة</h3>
+            <h3>{{ __('messages.conversation') }}</h3>
             <div class="messages-list">
                 @foreach($ticket->messages as $message)
                     <div class="message-item {{ $message->user_id === auth()->id() ? 'own-message' : '' }}">
@@ -86,7 +94,7 @@
                             <div class="message-user">
                                 <strong>{{ $message->user->name }}</strong>
                                 @if($message->is_internal)
-                                    <span class="badge-internal">ملاحظة داخلية</span>
+                                    <span class="badge-internal">{{ __('messages.internal_note') }}</span>
                                 @endif
                             </div>
                             <span class="message-time">{{ $message->created_at->diffForHumans() }}</span>
@@ -99,13 +107,12 @@
                                         <div class="attachment-item">
                                             @if($attachment->isImage())
                                                 <a href="{{ Storage::url($attachment->file_path) }}" target="_blank">
-                                                    <img src="{{ Storage::url($attachment->file_path) }}" 
-                                                         alt="{{ $attachment->file_name }}" 
-                                                         class="attachment-image">
+                                                    <img src="{{ Storage::url($attachment->file_path) }}" alt="{{ $attachment->file_name }}"
+                                                        class="attachment-image">
                                                 </a>
                                             @else
-                                                <a href="{{ Storage::url($attachment->file_path) }}" 
-                                                   target="_blank" class="attachment-link">
+                                                <a href="{{ Storage::url($attachment->file_path) }}" target="_blank"
+                                                    class="attachment-link">
                                                     <i class="fas fa-file"></i>
                                                     {{ $attachment->file_name }}
                                                 </a>
@@ -122,28 +129,28 @@
 
         <!-- Reply Form -->
         <div class="reply-section">
-            <h3>إضافة رد</h3>
-            <form action="{{ route('tickets.add-message', $ticket) }}" method="POST" enctype="multipart/form-data" class="reply-form">
+            <h3>{{ __('messages.add_reply') }}</h3>
+            <form action="{{ route('tickets.add-message', $ticket) }}" method="POST" enctype="multipart/form-data"
+                class="reply-form">
                 @csrf
                 <div class="form-group">
-                    <textarea name="message" class="form-textarea" rows="4" 
-                              placeholder="اكتب ردك هنا..." required></textarea>
+                    <textarea name="message" class="form-textarea" rows="4"
+                        placeholder="{{ __('messages.reply_placeholder') }}" required></textarea>
                 </div>
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="is_internal" value="1">
-                        <span>ملاحظة داخلية (لن يراها العميل)</span>
+                        <span>{{ __('messages.internal_note_desc') }}</span>
                     </label>
                 </div>
                 <div class="form-group">
-                    <label for="attachments">إرفاق صور (اختياري)</label>
-                    <input type="file" name="attachments[]" id="attachments" 
-                           class="form-input" multiple accept="image/*">
-                    <small class="form-help">يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)</small>
+                    <label for="attachments">{{ __('messages.attach_images') }} ({{ __('messages.optional') }})</label>
+                    <input type="file" name="attachments[]" id="attachments" class="form-input" multiple accept="image/*">
+                    <small class="form-help">{{ __('messages.attachment_help') }}</small>
                 </div>
                 <button type="submit" class="btn-send">
                     <i class="fas fa-paper-plane"></i>
-                    إرسال
+                    {{ __('messages.send') }}
                 </button>
             </form>
         </div>
@@ -655,4 +662,3 @@
         </style>
     @endpush
 @endsection
-

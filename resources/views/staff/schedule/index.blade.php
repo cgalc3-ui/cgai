@@ -1,29 +1,30 @@
 @extends('layouts.dashboard')
 
-@section('title', 'أيام العمل')
-@section('page-title', 'أيام العمل')
+@section('title', __('messages.work_days'))
+@section('page-title', __('messages.work_days'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>جدول أوقات العمل</h2>
-            <p>عرض الأوقات المتاحة والحجوزات لليوم المحدد</p>
+            <h2>{{ __('messages.work_schedule') }}</h2>
+            <p>{{ __('messages.view_available_times') }}</p>
         </div>
         <div class="page-header-right">
-            <span class="total-count">عدد الفترات: {{ $timeSlots->count() }}</span>
+            <span class="total-count">{{ __('messages.periods_count') }}: {{ $timeSlots->count() }}</span>
         </div>
     </div>
 
     <!-- Filter Section -->
     <div class="filter-container">
         <form method="GET" action="{{ route('staff.my-schedule') }}" class="filter-form" id="filterForm">
-            <label>أيام العمل:</label>
+            <label>{{ __('messages.work_days') }}:</label>
             <div class="checkbox-group">
                 @foreach($weekDays as $day)
                     <label class="checkbox-label">
                         <input type="checkbox" name="day_names[]" value="{{ $day['name_en'] }}" {{ in_array($day['name_en'], $selectedDayNames) ? 'checked' : '' }}
                             onchange="document.getElementById('date_picker').value=''; this.form.submit()">
-                        <span class="custom-checkbox">{{ $day['name_ar'] }}</span>
+                        <span
+                            class="custom-checkbox">{{ app()->getLocale() == 'ar' ? $day['name_ar'] : $day['name_en'] }}</span>
                     </label>
                 @endforeach
             </div>
@@ -32,13 +33,13 @@
             <input type="date" name="date" id="date_picker"
                 value="{{ $selectedDate ? $selectedDate->format('Y-m-d') : '' }}" class="filter-input-small"
                 style="display:none;" onchange="
-                        var checkboxes = document.getElementsByName('day_names[]');
-                        for(var i=0; i<checkboxes.length; i++) checkboxes[i].checked = false;
-                        this.form.submit();
-                    ">
+                                var checkboxes = document.getElementsByName('day_names[]');
+                                for(var i=0; i<checkboxes.length; i++) checkboxes[i].checked = false;
+                                this.form.submit();
+                            ">
             <button type="button" class="btn btn-sm btn-outline-secondary"
                 onclick="document.getElementById('date_picker').click()" style="margin-right: auto;">
-                <i class="fas fa-calendar-alt"></i> اختيار تاريخ محدد
+                <i class="fas fa-calendar-alt"></i> {{ __('messages.select_specific_date') }}
             </button>
         </form>
     </div>
@@ -49,21 +50,31 @@
             <div class="calendar-container">
                 <div class="calendar-header">
                     <button type="button" class="calendar-nav-btn" id="prevMonth">
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-{{ app()->getLocale() == 'ar' ? 'chevron-right' : 'chevron-left' }}"></i>
                     </button>
                     <h3 id="calendarMonthYear"></h3>
                     <button type="button" class="calendar-nav-btn" id="nextMonth">
-                        <i class="fas fa-chevron-left"></i>
+                        <i class="fas fa-{{ app()->getLocale() == 'ar' ? 'chevron-left' : 'chevron-right' }}"></i>
                     </button>
                 </div>
                 <div class="calendar-weekdays">
-                    <div class="weekday">ح</div>
-                    <div class="weekday">ن</div>
-                    <div class="weekday">ث</div>
-                    <div class="weekday">ر</div>
-                    <div class="weekday">خ</div>
-                    <div class="weekday">ج</div>
-                    <div class="weekday">س</div>
+                    @if(app()->getLocale() == 'ar')
+                        <div class="weekday">ح</div>
+                        <div class="weekday">ن</div>
+                        <div class="weekday">ث</div>
+                        <div class="weekday">ر</div>
+                        <div class="weekday">خ</div>
+                        <div class="weekday">ج</div>
+                        <div class="weekday">س</div>
+                    @else
+                        <div class="weekday">S</div>
+                        <div class="weekday">M</div>
+                        <div class="weekday">T</div>
+                        <div class="weekday">W</div>
+                        <div class="weekday">T</div>
+                        <div class="weekday">F</div>
+                        <div class="weekday">S</div>
+                    @endif
                 </div>
                 <div class="calendar-days" id="calendarDays"></div>
             </div>
@@ -76,14 +87,14 @@
                     <h3>
                         <i class="fas fa-calendar-day"></i>
                         @if(count($selectedDayNames) > 0)
-                                            الأيام المحددة: {{ implode('، ', array_map(function ($d) use ($weekDays) {
-                                return collect($weekDays)->where('name_en', $d)->first()['name_ar'] ?? $d;
+                                            {{ __('messages.selected_days') }}: {{ implode('، ', array_map(function ($d) use ($weekDays) {
+                                return app()->getLocale() == 'ar' ? (collect($weekDays)->where('name_en', $d)->first()['name_ar'] ?? $d) : $d;
                             }, $selectedDayNames)) }}
                         @elseif($selectedDate)
                             {{ $selectedDate->format('Y-m-d') }}
-                            <span class="day-badge">{{ $selectedDate->locale('ar')->dayName }}</span>
+                            <span class="day-badge">{{ $selectedDate->locale(app()->getLocale())->dayName }}</span>
                         @else
-                            جميع الأوقات القادمة
+                            {{ __('messages.all_upcoming_times') }}
                         @endif
                     </h3>
                 </div>
@@ -94,11 +105,11 @@
                             <tr>
                                 <!-- Show Date column if not a specific date selected (i.e. day name filter or default) -->
                                 @if(!$selectedDate)
-                                    <th>التاريخ</th>
+                                    <th>{{ __('messages.date') }}</th>
                                 @endif
-                                <th>من الساعة</th>
-                                <th>إلى الساعة</th>
-                                <th>الحالة</th>
+                                <th>{{ __('messages.from_hour') }}</th>
+                                <th>{{ __('messages.to_hour') }}</th>
+                                <th>{{ __('messages.status') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,7 +120,7 @@
                                             <div class="datetime-info">
                                                 <span class="date">{{ \Carbon\Carbon::parse($slot->date)->format('Y-m-d') }}</span>
                                                 <small
-                                                    class="text-muted">{{ \Carbon\Carbon::parse($slot->date)->locale('ar')->dayName }}</small>
+                                                    class="text-muted">{{ \Carbon\Carbon::parse($slot->date)->locale(app()->getLocale())->dayName }}</small>
                                             </div>
                                         </td>
                                     @endif
@@ -127,9 +138,9 @@
                                     </td>
                                     <td>
                                         @if(!$slot->is_available)
-                                            <span class="status-pill cancelled">محجوز</span>
+                                            <span class="status-pill cancelled">{{ __('messages.booked') }}</span>
                                         @else
-                                            <span class="status-pill completed">متاح</span>
+                                            <span class="status-pill completed">{{ __('messages.available') }}</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -138,8 +149,8 @@
                                     <td colspan="{{ !$selectedDate ? 4 : 3 }}" class="text-center">
                                         <div class="empty-state">
                                             <i class="fas fa-calendar-times"></i>
-                                            <h3>لا توجد فترات عمل</h3>
-                                            <p>لا توجد فترات عمل مطابقة للبحث.</p>
+                                            <h3>{{ __('messages.no_work_periods') }}</h3>
+                                            <p>{{ __('messages.no_work_periods_desc') }}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -446,8 +457,11 @@
                 const month = currentDate.getMonth();
 
                 // Set month/year header
-                const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                const monthNamesAr = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
                     'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+                const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+                const monthNames = "{{ app()->getLocale() }}" === 'ar' ? monthNamesAr : monthNamesEn;
                 calendarMonthYear.textContent = `${monthNames[month]} ${year}`;
 
                 // Get first day of month and number of days

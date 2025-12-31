@@ -94,7 +94,7 @@ class TicketController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'تم إنشاء التذكرة بنجاح',
+                'message' => __('messages.ticket_created_success'),
                 'data' => $ticket,
             ], 201);
         });
@@ -111,7 +111,7 @@ class TicketController extends Controller
         if ($ticket->user_id !== $user->id && !$user->isAdminOrStaff()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذه التذكرة',
+                'message' => __('messages.ticket_unauthorized_access'),
             ], 403);
         }
 
@@ -148,7 +148,7 @@ class TicketController extends Controller
         if ($ticket->user_id !== $user->id && !$user->isAdminOrStaff()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذه التذكرة',
+                'message' => __('messages.ticket_unauthorized_access'),
             ], 403);
         }
 
@@ -189,7 +189,7 @@ class TicketController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'تم إرسال الرسالة بنجاح',
+                'message' => __('messages.ticket_message_sent_success'),
                 'data' => $message,
             ], 201);
         });
@@ -205,7 +205,7 @@ class TicketController extends Controller
         if (!$user->isAdminOrStaff()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية لتحديث حالة التذكرة',
+                'message' => __('messages.ticket_cannot_update_status'),
             ], 403);
         }
 
@@ -222,7 +222,7 @@ class TicketController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديث حالة التذكرة بنجاح',
+            'message' => __('messages.ticket_status_updated_success'),
             'data' => $ticket->fresh()->load(['assignedUser']),
         ]);
     }

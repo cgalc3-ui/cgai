@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -50,53 +50,53 @@
                     <a href="{{ route('admin.dashboard') }}"
                         class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i class="fas fa-home"></i>
-                        <span>لوحة التحكم</span>
+                        <span>{{ __('messages.dashboard') }}</span>
                     </a>
                     <div class="nav-group">
                         <div class="nav-group-header {{ request()->routeIs('admin.users*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">
                             <i class="fas fa-users"></i>
-                            <span>المستخدمين</span>
+                            <span>{{ __('messages.users') }}</span>
                             <i class="fas fa-chevron-down nav-arrow"></i>
                         </div>
                         <div class="nav-group-items {{ request()->routeIs('admin.users*') ? 'expanded' : '' }}">
                             <a href="{{ route('admin.users.admins') }}"
                                 class="nav-item {{ request()->routeIs('admin.users.admins*') ? 'active' : '' }}">
                                 <i class="fas fa-user-shield"></i>
-                                <span>الأدمن</span>
+                                <span>{{ __('messages.admins') }}</span>
                             </a>
                             <a href="{{ route('admin.users.staff') }}"
                                 class="nav-item {{ request()->routeIs('admin.users.staff*') ? 'active' : '' }}">
                                 <i class="fas fa-user-tie"></i>
-                                <span>الموظفين</span>
+                                <span>{{ __('messages.staff') }}</span>
                             </a>
                             <a href="{{ route('admin.users.customers') }}"
                                 class="nav-item {{ request()->routeIs('admin.users.customers*') ? 'active' : '' }}">
                                 <i class="fas fa-user"></i>
-                                <span>العملاء</span>
+                                <span>{{ __('messages.customers') }}</span>
                             </a>
                         </div>
                     </div>
                     <a href="{{ route('admin.time-slots') }}"
                         class="nav-item {{ request()->routeIs('admin.time-slots') && !request()->routeIs('admin.time-slots.schedules*') ? 'active' : '' }}">
                         <i class="fas fa-clock"></i>
-                        <span>الأوقات المتاحة</span>
+                        <span>{{ __('messages.time_slots') }}</span>
                     </a>
                     <a href="{{ route('admin.time-slots.schedules') }}"
                         class="nav-item {{ request()->routeIs('admin.time-slots.schedules*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt"></i>
-                        <span>المواعيد المتكررة</span>
+                        <span>{{ __('messages.recurring_appointments') }}</span>
                     </a>
                     <a href="{{ route('admin.bookings') }}"
                         class="nav-item {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-check"></i>
-                        <span>الحجوزات</span>
+                        <span>{{ __('messages.bookings') }}</span>
                     </a>
                     <div class="nav-group">
                         <div class="nav-group-header {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') || request()->routeIs('admin.consultations*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">
                             <i class="fas fa-concierge-bell"></i>
-                            <span>الخدمات</span>
+                            <span>{{ __('messages.services_menu') }}</span>
                             <i class="fas fa-chevron-down nav-arrow"></i>
                         </div>
                         <div
@@ -104,29 +104,29 @@
                             <a href="{{ route('admin.categories.index') }}"
                                 class="nav-item {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
                                 <i class="fas fa-folder"></i>
-                                <span>الفئات</span>
+                                <span>{{ __('messages.categories') }}</span>
                             </a>
                             <a href="{{ route('admin.sub-categories.index') }}"
                                 class="nav-item {{ request()->routeIs('admin.sub-categories*') ? 'active' : '' }}">
                                 <i class="fas fa-folder-open"></i>
-                                <span>الفئات الفرعية</span>
+                                <span>{{ __('messages.sub_categories') }}</span>
                             </a>
                             <a href="{{ route('admin.services.index') }}"
                                 class="nav-item {{ request()->routeIs('admin.services*') ? 'active' : '' }}">
                                 <i class="fas fa-cog"></i>
-                                <span>الخدمات</span>
+                                <span>{{ __('messages.services') }}</span>
                             </a>
                             <a href="{{ route('admin.consultations.index') }}"
                                 class="nav-item {{ request()->routeIs('admin.consultations*') ? 'active' : '' }}">
                                 <i class="fas fa-comments"></i>
-                                <span>الاستشارات</span>
+                                <span>{{ __('messages.consultations') }}</span>
                             </a>
                         </div>
                     </div>
                     <a href="{{ route('admin.tickets') }}"
                         class="nav-item {{ request()->routeIs('admin.tickets*') ? 'active' : '' }}">
                         <i class="fas fa-headset"></i>
-                        <span>الدعم والتذاكر</span>
+                        <span>{{ __('messages.support_tickets') }}</span>
                         @php
                             $openTicketsCount = \App\Models\Ticket::whereIn('status', ['open', 'in_progress'])->count();
                         @endphp
@@ -138,7 +138,7 @@
                         <div class="nav-group-header {{ request()->routeIs('admin.subscriptions*') || request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">
                             <i class="fas fa-crown"></i>
-                            <span>الاشتراكات</span>
+                            <span>{{ __('messages.subscriptions') }}</span>
                             <i class="fas fa-chevron-down nav-arrow"></i>
                         </div>
                         <div
@@ -146,12 +146,12 @@
                             <a href="{{ route('admin.subscriptions.index') }}"
                                 class="nav-item {{ request()->routeIs('admin.subscriptions*') && !request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}">
                                 <i class="fas fa-box"></i>
-                                <span>الباقات</span>
+                                <span>{{ __('messages.packages') }}</span>
                             </a>
                             <a href="{{ route('admin.subscription-requests.index') }}"
                                 class="nav-item {{ request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}">
                                 <i class="fas fa-file-invoice"></i>
-                                <span>طلبات الاشتراك</span>
+                                <span>{{ __('messages.subscription_requests') }}</span>
                                 @php
                                     $pendingRequestsCount = \App\Models\SubscriptionRequest::where('status', 'pending')->count();
                                 @endphp
@@ -165,22 +165,22 @@
                     <a href="{{ route('staff.dashboard') }}"
                         class="nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
                         <i class="fas fa-home"></i>
-                        <span>لوحة التحكم</span>
+                        <span>{{ __('messages.dashboard') }}</span>
                     </a>
                     <a href="{{ route('staff.my-bookings') }}"
                         class="nav-item {{ request()->routeIs('staff.my-bookings') ? 'active' : '' }}">
                         <i class="fas fa-calendar-check"></i>
-                        <span>حجوزاتي</span>
+                        <span>{{ __('messages.my_bookings') }}</span>
                     </a>
                     <a href="{{ route('staff.my-schedule') }}"
                         class="nav-item {{ request()->routeIs('staff.my-schedule') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt"></i>
-                        <span>أيام العمل</span>
+                        <span>{{ __('messages.work_days') }}</span>
                     </a>
                     <a href="{{ route('tickets.index') }}"
                         class="nav-item {{ request()->routeIs('tickets*') ? 'active' : '' }}">
                         <i class="fas fa-headset"></i>
-                        <span>الدعم والتذاكر</span>
+                        <span>{{ __('messages.support_tickets') }}</span>
                         @php
                             $userTicketsCount = \App\Models\Ticket::where('user_id', auth()->id())
                                 ->whereIn('status', ['open', 'in_progress'])->count();
@@ -195,7 +195,7 @@
                 <a href="{{ route('notifications.index') }}"
                     class="nav-item {{ request()->routeIs('notifications*') ? 'active' : '' }}">
                     <i class="fas fa-bell"></i>
-                    <span>الإشعارات</span>
+                    <span>{{ __('messages.notifications') }}</span>
                     @php
                         $unreadNotificationsCount = auth()->user()->unreadNotificationsCount();
                     @endphp
@@ -208,13 +208,13 @@
                     <a href="{{ route('admin.faqs.index') }}"
                         class="nav-item {{ request()->routeIs('admin.faqs*') ? 'active' : '' }}">
                         <i class="fas fa-question-circle"></i>
-                        <span>إدارة الأسئلة الشائعة</span>
+                        <span>{{ __('messages.faqs_management') }}</span>
                     </a>
                 @else
                     <a href="{{ route('faqs.index') }}"
                         class="nav-item {{ request()->routeIs('faqs.index') ? 'active' : '' }}">
                         <i class="fas fa-question-circle"></i>
-                        <span>الأسئلة الشائعة</span>
+                        <span>{{ __('messages.faqs') }}</span>
                     </a>
                 @endif
 
@@ -223,7 +223,7 @@
                     <a href="{{ route('tickets.index') }}"
                         class="nav-item {{ request()->routeIs('tickets*') ? 'active' : '' }}">
                         <i class="fas fa-headset"></i>
-                        <span>الدعم والتذاكر</span>
+                        <span>{{ __('messages.support_tickets') }}</span>
                         @php
                             $userTicketsCount = \App\Models\Ticket::where('user_id', auth()->id())
                                 ->whereIn('status', ['open', 'in_progress'])->count();
@@ -237,7 +237,7 @@
                 <a href="{{ route('settings.index') }}"
                     class="nav-item {{ request()->routeIs('settings.index') ? 'active' : '' }}">
                     <i class="fas fa-user-cog"></i>
-                    <span>الإعدادات</span>
+                    <span>{{ __('messages.settings') }}</span>
                 </a>
             </nav>
 
@@ -246,7 +246,7 @@
                     @csrf
                     <button type="submit" class="logout-btn">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>تسجيل الخروج</span>
+                        <span>{{ __('messages.logout') }}</span>
                     </button>
                 </form>
             </div>
@@ -274,7 +274,18 @@
                                 <span class="badge-notification">{{ $unreadCount }}</span>
                             @endif
                         </a>
-                        <button class="icon-btn settings-btn" title="الإعدادات">
+
+                        <div style="margin-inline-end: 15px;">
+                            @if(app()->getLocale() == 'ar')
+                                <a href="{{ route('switch-language', 'en') }}" class="btn btn-sm"
+                                    style="color: #666; font-weight: 600;">English</a>
+                            @else
+                                <a href="{{ route('switch-language', 'ar') }}" class="btn btn-sm"
+                                    style="color: #666; font-weight: 600;">العربية</a>
+                            @endif
+                        </div>
+
+                        <button class="icon-btn settings-btn" title="{{ __('messages.settings') }}">
                             <i class="fas fa-cog"></i>
                         </button>
                         <div class="user-profile">
@@ -285,9 +296,9 @@
                                 <div class="user-name">{{ auth()->user()->name }}</div>
                                 <div class="user-title">
                                     @if(auth()->user()->isAdmin())
-                                        مشرف رئيسي
+                                        {{ __('messages.main_supervisor') }}
                                     @elseif(auth()->user()->isStaff())
-                                        موظف
+                                        {{ __('messages.employee') }}
                                     @endif
                                 </div>
                             </div>

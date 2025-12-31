@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'المواعيد المتكررة')
-@section('page-title', 'المواعيد المتكررة للموظفين')
+@section('title', __('messages.recurring_appointments'))
+@section('page-title', __('messages.recurring_appointments'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>المواعيد المتكررة للموظفين</h2>
-            <p>إدارة المواعيد المتكررة التي يتم إنشاء الأوقات المتاحة منها تلقائياً</p>
+            <h2>{{ __('messages.recurring_appointments') }}</h2>
+            <p>{{ __('messages.manage_recurring_appointments_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('admin.time-slots.schedules.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> إضافة مواعيد متكررة
+                <i class="fas fa-plus"></i> {{ __('messages.add_recurring_appointments') }}
             </a>
-            <span class="total-count">إجمالي المواعيد: {{ $schedules->total() }}</span>
+            <span class="total-count">{{ __('messages.total_appointments') }}: {{ $schedules->total() }}</span>
         </div>
     </div>
 
@@ -22,9 +22,9 @@
         <form method="GET" action="{{ route('admin.time-slots.schedules') }}" class="filter-form">
             <div class="filter-inputs">
                 <div class="filter-group">
-                    <label for="employee_id">الموظف:</label>
+                    <label for="employee_id">{{ __('messages.employee') }}:</label>
                     <select name="employee_id" id="employee_id" class="filter-input">
-                        <option value="all">الكل</option>
+                        <option value="all">{{ __('messages.all') }}</option>
                         @foreach($employees as $employee)
                             <option value="{{ $employee->id }}" {{ request('employee_id') == $employee->id ? 'selected' : '' }}>
                                 {{ $employee->user->name }}
@@ -35,10 +35,10 @@
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-filter"></i> تطبيق
+                    <i class="fas fa-filter"></i> {{ __('messages.apply_filter') }}
                 </button>
                 <a href="{{ route('admin.time-slots.schedules') }}" class="btn btn-secondary">
-                    <i class="fas fa-redo"></i> إعادة تعيين
+                    <i class="fas fa-redo"></i> {{ __('messages.reset') }}
                 </a>
             </div>
         </form>
@@ -48,24 +48,32 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>الموظف</th>
-                    <th>أيام الأسبوع</th>
-                    <th>من</th>
-                    <th>إلى</th>
-                    <th>الحالة</th>
-                    <th>تاريخ الإنشاء</th>
-                    <th>الإجراءات</th>
+                    <th>{{ __('messages.employee') }}</th>
+                    <th>{{ __('messages.weekdays') }}</th>
+                    <th>{{ __('messages.from_hour') }}</th>
+                    <th>{{ __('messages.to_hour') }}</th>
+                    <th>{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.created_at') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($schedules as $schedule)
                     <tr>
-                        <td>{{ $schedule->employee->user->name ?? 'غير محدد' }}</td>
+                        <td>{{ $schedule->employee->user->name ?? __('messages.unspecified') }}</td>
                         <td>
                             <div class="days-badges">
                                 @php
                                     $days = is_string($schedule->days_of_week) ? json_decode($schedule->days_of_week, true) : $schedule->days_of_week;
-                                    $dayNames = [0 => 'أحد', 1 => 'إثنين', 2 => 'ثلاثاء', 3 => 'أربعاء', 4 => 'خميس', 5 => 'جمعة', 6 => 'سبت'];
+                                    $dayNames = [
+                                        0 => __('messages.sunday'),
+                                        1 => __('messages.monday'),
+                                        2 => __('messages.tuesday'),
+                                        3 => __('messages.wednesday'),
+                                        4 => __('messages.thursday'),
+                                        5 => __('messages.friday'),
+                                        6 => __('messages.saturday')
+                                    ];
                                 @endphp
                                 @foreach($days as $day)
                                     <span class="status-pill active" style="font-size: 11px;">{{ $dayNames[$day] ?? $day }}</span>
@@ -76,23 +84,23 @@
                         <td>{{ $schedule->end_time }}</td>
                         <td>
                             @if($schedule->is_active)
-                                <span class="status-pill completed">نشط</span>
+                                <span class="status-pill completed">{{ __('messages.active') }}</span>
                             @else
-                                <span class="status-pill cancelled">غير نشط</span>
+                                <span class="status-pill cancelled">{{ __('messages.inactive') }}</span>
                             @endif
                         </td>
                         <td>{{ $schedule->created_at->format('Y-m-d') }}</td>
                         <td>
                             <div style="display: flex; gap: 8px;">
                                 <a href="{{ route('admin.time-slots.schedules.edit', $schedule) }}"
-                                    class="calm-action-btn warning" title="تعديل">
+                                    class="calm-action-btn warning" title="{{ __('messages.edit') }}">
                                     <i class="far fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.time-slots.schedules.delete', $schedule) }}" method="POST"
-                                    class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه المواعيد المتكررة؟')">
+                                    class="d-inline" onsubmit="return confirm('{{ __('messages.delete_recurring_appointments_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="calm-action-btn danger" title="حذف">
+                                    <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
                                 </form>
@@ -104,8 +112,8 @@
                         <td colspan="7" class="text-center">
                             <div class="empty-state">
                                 <i class="fas fa-calendar-times"></i>
-                                <h3>لا توجد مواعيد متكررة</h3>
-                                <p>لم يتم إنشاء أي مواعيد متكررة بعد</p>
+                                <h3>{{ __('messages.no_recurring_appointments') }}</h3>
+                                <p>{{ __('messages.no_recurring_appointments_desc') }}</p>
                             </div>
                         </td>
                     </tr>

@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', 'حجوزاتي')
-@section('page-title', 'حجوزاتي')
+@section('title', __('messages.my_bookings'))
+@section('page-title', __('messages.my_bookings'))
 
 @section('content')
     <!-- Page Header -->
     <div class="page-header">
         <div class="page-header-left">
-            <h2>حجوزاتي</h2>
-            <p>قائمة بجميع الحجوزات المخصصة لك</p>
+            <h2>{{ __('messages.my_bookings') }}</h2>
+            <p>{{ __('messages.latest_my_bookings') }}</p>
         </div>
         <div class="page-header-right">
-            <span class="total-count">{{ $bookings->total() }} حجز</span>
+            <span class="total-count">{{ $bookings->total() }} {{ __('messages.bookings') }}</span>
         </div>
     </div>
 
@@ -21,13 +21,13 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th width="15%">العميل</th>
-                        <th width="15%">الخدمة</th>
-                        <th width="20%">التاريخ والوقت</th>
-                        <th width="10%">السعر</th>
-                        <th width="15%">حالة الحجز</th>
-                        <th width="15%">حالة الدفع</th>
-                        <th width="10%">الإجراءات</th>
+                        <th width="15%">{{ __('messages.client') }}</th>
+                        <th width="15%">{{ __('messages.service') }}</th>
+                        <th width="20%">{{ __('messages.datetime') }}</th>
+                        <th width="10%">{{ __('messages.price') }}</th>
+                        <th width="15%">{{ __('messages.booking_status') }}</th>
+                        <th width="15%">{{ __('messages.payment_status') }}</th>
+                        <th width="10%">{{ __('messages.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,9 +35,10 @@
                         <tr>
                             <td>
                                 <div class="user-info">
-                                    <div class="user-name">{{ $booking->customer->name ?? 'غير محدد' }}</div>
+                                    <div class="user-name">
+                                        {{ optional($booking->customer)->name ?? __('messages.unspecified') }}</div>
                                     <div class="user-details">
-                                        @if($booking->customer->phone)
+                                        @if(optional($booking->customer)->phone)
                                             <span><i class="fas fa-phone"></i> {{ $booking->customer->phone }}</span>
                                         @endif
                                     </div>
@@ -48,9 +49,9 @@
                                     <div class="service-name">
                                         @if($booking->booking_type === 'consultation')
                                             <i class="fas fa-comments" style="margin-left: 5px;"></i>
-                                            {{ $booking->consultation->name ?? 'غير محدد' }}
+                                            {{ optional($booking->consultation)->trans ? $booking->consultation->trans('name') : (optional($booking->consultation)->name ?? __('messages.unspecified')) }}
                                         @else
-                                            {{ $booking->service->name ?? 'غير محدد' }}
+                                            {{ optional($booking->service)->trans ? $booking->service->trans('name') : (optional($booking->service)->name ?? __('messages.unspecified')) }}
                                         @endif
                                     </div>
                                     <div class="service-duration">
@@ -63,7 +64,7 @@
                                 <div class="datetime-info">
                                     <div class="date">
                                         <i class="fas fa-calendar"></i>
-                                        {{ \Carbon\Carbon::parse($booking->booking_date)->format('Y-m-d') }}
+                                        {{ optional($booking->booking_date)->format('Y-m-d') }}
                                     </div>
                                     <div class="time-slots-list">
                                         @php
@@ -80,7 +81,8 @@
                                 </div>
                             </td>
                             <td>
-                                <strong class="price">{{ number_format($booking->total_price, 2) }} ر.س</strong>
+                                <strong class="price">{{ number_format($booking->total_price, 2) }}
+                                    {{ __('messages.sar') }}</strong>
                             </td>
                             <td>
                                 @php
@@ -89,19 +91,19 @@
                                 @endphp
 
                                 @if($actualStatus == 'completed')
-                                    <span class="status-pill completed">مكتمل</span>
+                                    <span class="status-pill completed">{{ __('messages.completed') }}</span>
                                 @elseif($actualStatus == 'in_progress')
-                                    <span class="status-pill confirmed" style="background: #e0f2fe; color: #0369a1;">قيد
-                                        التنفيذ</span>
+                                    <span class="status-pill confirmed"
+                                        style="background: #e0f2fe; color: #0369a1;">{{ __('messages.in_progress_status') }}</span>
                                     @if($timeDisplay && isset($timeDisplay['elapsed_formatted']))
                                         <div class="time-info" style="font-size: 10px; color: #64748b; margin-top: 4px;">
                                             <i class="far fa-clock"></i> {{ $timeDisplay['elapsed_formatted'] }}
                                         </div>
                                     @endif
                                 @elseif($actualStatus == 'cancelled')
-                                    <span class="status-pill cancelled">ملغي</span>
+                                    <span class="status-pill cancelled">{{ __('messages.cancelled') }}</span>
                                 @else
-                                    <span class="status-pill pending">قيد الانتظار</span>
+                                    <span class="status-pill pending">{{ __('messages.pending') }}</span>
                                     @if($timeDisplay && isset($timeDisplay['formatted']))
                                         <div class="time-info" style="font-size: 10px; color: #64748b; margin-top: 4px;">
                                             <i class="far fa-hourglass"></i> {{ $timeDisplay['formatted'] }}
@@ -111,16 +113,16 @@
                             </td>
                             <td>
                                 @if($booking->payment_status === 'paid')
-                                    <span class="status-pill completed">مدفوع</span>
+                                    <span class="status-pill completed">{{ __('messages.paid') }}</span>
                                 @elseif($booking->payment_status === 'unpaid')
-                                    <span class="status-pill pending">غير مدفوع</span>
+                                    <span class="status-pill pending">{{ __('messages.unpaid') }}</span>
                                 @else
-                                    <span class="status-pill cancelled">مسترد</span>
+                                    <span class="status-pill cancelled">{{ __('messages.refunded') }}</span>
                                 @endif
                             </td>
                             <td style="text-align: center;">
                                 <a href="{{ route('staff.my-bookings.show', $booking) }}" class="calm-action-btn"
-                                    title="عرض التفاصيل">
+                                    title="{{ __('messages.view_details') }}">
                                     <i class="far fa-eye"></i>
                                 </a>
                             </td>
@@ -130,8 +132,8 @@
                             <td colspan="7" class="text-center">
                                 <div class="empty-state">
                                     <i class="fas fa-calendar-times"></i>
-                                    <h3>لا توجد حجوزات</h3>
-                                    <p>لم يتم العثور على أي حجوزات مخصصة لك حالياً</p>
+                                    <h3>{{ __('messages.no_bookings') }}</h3>
+                                    <p>{{ __('messages.no_bookings_desc') }}</p>
                                 </div>
                             </td>
                         </tr>

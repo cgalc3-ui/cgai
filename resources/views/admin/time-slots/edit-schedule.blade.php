@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', 'تعديل مواعيد متكررة')
-@section('page-title', 'تعديل مواعيد متكررة')
+@section('title', __('messages.edit_recurring_appointments'))
+@section('page-title', __('messages.edit_recurring_appointments'))
 
 @section('content')
 <div class="page-header">
     <div class="page-header-left">
-        <h2>تعديل مواعيد متكررة</h2>
-        <p>تعديل المواعيد المتكررة للموظف</p>
+        <h2>{{ __('messages.edit_recurring_appointments') }}</h2>
+        <p>{{ __('messages.edit_recurring_appointments_desc') }}</p>
     </div>
     <div class="page-header-right">
         <a href="{{ route('admin.time-slots.schedules') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-right"></i> العودة
+            <i class="fas fa-arrow-right"></i> {{ __('messages.back') }}
         </a>
     </div>
 </div>
@@ -22,26 +22,26 @@
         @method('PUT')
 
         <div class="form-group">
-            <label for="employee_id">الموظف *</label>
+            <label for="employee_id">{{ __('messages.employee') }} *</label>
             <select id="employee_id" name="employee_id" class="form-control" required disabled>
-                <option value="{{ $schedule->employee_id }}">{{ $schedule->employee->user->name ?? 'غير محدد' }}</option>
+                <option value="{{ $schedule->employee_id }}">{{ $schedule->employee->user->name ?? __('messages.unspecified') }}</option>
             </select>
             <input type="hidden" name="employee_id" value="{{ $schedule->employee_id }}">
-            <small class="text-muted">لا يمكن تغيير الموظف بعد الإنشاء</small>
+            <small class="text-muted">{{ __('messages.cannot_change_employee_after_creation') }}</small>
         </div>
 
         <div class="form-group">
-            <label>أيام الأسبوع *</label>
+            <label>{{ __('messages.weekdays_label') }} *</label>
             <div class="days-checkboxes">
                 @php
                     $days = [
-                        0 => ['name' => 'الأحد', 'value' => 0],
-                        1 => ['name' => 'الإثنين', 'value' => 1],
-                        2 => ['name' => 'الثلاثاء', 'value' => 2],
-                        3 => ['name' => 'الأربعاء', 'value' => 3],
-                        4 => ['name' => 'الخميس', 'value' => 4],
-                        5 => ['name' => 'الجمعة', 'value' => 5],
-                        6 => ['name' => 'السبت', 'value' => 6],
+                        0 => ['name' => __('messages.sunday'), 'value' => 0],
+                        1 => ['name' => __('messages.monday'), 'value' => 1],
+                        2 => ['name' => __('messages.tuesday'), 'value' => 2],
+                        3 => ['name' => __('messages.wednesday'), 'value' => 3],
+                        4 => ['name' => __('messages.thursday'), 'value' => 4],
+                        5 => ['name' => __('messages.friday'), 'value' => 5],
+                        6 => ['name' => __('messages.saturday'), 'value' => 6],
                     ];
                     $scheduleDays = is_string($schedule->days_of_week) 
                         ? json_decode($schedule->days_of_week, true) 
@@ -63,7 +63,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="start_time">من *</label>
+                <label for="start_time">{{ __('messages.from_hour') }} *</label>
                 <input type="time" id="start_time" name="start_time" value="{{ old('start_time', $schedule->start_time) }}" class="form-control" required>
                 @error('start_time')
                     <span class="error-message">{{ $message }}</span>
@@ -71,7 +71,7 @@
             </div>
 
             <div class="form-group">
-                <label for="end_time">إلى *</label>
+                <label for="end_time">{{ __('messages.to_hour') }} *</label>
                 <input type="time" id="end_time" name="end_time" value="{{ old('end_time', $schedule->end_time) }}" class="form-control" required>
                 @error('end_time')
                     <span class="error-message">{{ $message }}</span>
@@ -82,21 +82,21 @@
         <div class="form-group">
             <label class="checkbox-label">
                 <input type="checkbox" name="is_active" value="1" {{ old('is_active', $schedule->is_active) ? 'checked' : '' }}>
-                <span>المواعيد نشطة (سيتم إنشاء الأوقات المتاحة تلقائياً)</span>
+                <span>{{ __('messages.appointments_active') }}</span>
             </label>
         </div>
 
         <div class="info-box">
             <i class="fas fa-info-circle"></i>
-            <p>سيتم إعادة إنشاء الأوقات المتاحة للـ 30 يوم القادمة بناءً على التعديلات الجديدة.</p>
+            <p>{{ __('messages.auto_recreate_time_slots_info') }}</p>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> حفظ
+                <i class="fas fa-save"></i> {{ __('messages.save') }}
             </button>
             <a href="{{ route('admin.time-slots.schedules') }}" class="btn btn-secondary">
-                <i class="fas fa-times"></i> إلغاء
+                <i class="fas fa-times"></i> {{ __('messages.cancel') }}
             </a>
         </div>
     </form>

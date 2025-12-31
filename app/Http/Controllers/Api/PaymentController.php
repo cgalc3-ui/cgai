@@ -29,7 +29,7 @@ class PaymentController extends Controller
         if (!$booking) {
             return response()->json([
                 'success' => false,
-                'message' => 'الحجز غير موجود'
+                'message' => __('messages.booking_not_found')
             ], 404);
         }
 
@@ -37,21 +37,21 @@ class PaymentController extends Controller
         if ($booking->customer_id !== $user->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذا الحجز'
+                'message' => __('messages.unauthorized_booking_access')
             ], 403);
         }
 
         if ($booking->payment_status === 'paid') {
             return response()->json([
                 'success' => false,
-                'message' => 'تم الدفع بالفعل'
+                'message' => __('messages.payment_already_paid')
             ], 400);
         }
 
         if ($booking->status === 'cancelled') {
             return response()->json([
                 'success' => false,
-                'message' => 'لا يمكن الدفع لحجز ملغي'
+                'message' => __('messages.payment_cannot_pay_cancelled')
             ], 422);
         }
 
@@ -90,14 +90,14 @@ class PaymentController extends Controller
                     if ($totalDurationInHours <= 0) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'المدة الزمنية للحجز غير صالحة'
+                            'message' => __('messages.booking_invalid_duration')
                         ], 422);
                     }
                     
                     if ($hourlyRate <= 0) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'سعر الساعة للخدمة غير صالح'
+                            'message' => __('messages.service_invalid_hourly_rate')
                         ], 422);
                     }
                     
@@ -110,19 +110,19 @@ class PaymentController extends Controller
                     } else {
                         return response()->json([
                             'success' => false,
-                            'message' => 'لا يمكن حساب السعر الإجمالي للحجز. يرجى التحقق من بيانات الحجز.'
+                            'message' => __('messages.payment_cannot_calculate_total')
                         ], 422);
                     }
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'الخدمة لا تحتوي على سعر ساعة محدد'
+                        'message' => __('messages.service_no_hourly_rate_specified')
                     ], 422);
                 }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الخدمة المرتبطة بالحجز غير موجودة'
+                    'message' => __('messages.service_not_found')
                 ], 422);
             }
         }
@@ -133,7 +133,7 @@ class PaymentController extends Controller
             if (!$auth || empty($auth['token'])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'فشل الاتصال بخادم الدفع'
+                    'message' => __('messages.payment_connection_failed')
                 ], 503);
             }
 
@@ -147,7 +147,7 @@ class PaymentController extends Controller
                 ]);
                 return response()->json([
                     'success' => false,
-                    'message' => 'فشل إنشاء طلب الدفع. يرجى التحقق من إعدادات PayMob أو مراجعة السجلات.'
+                    'message' => __('messages.payment_order_creation_failed') . '. ' . __('messages.check_paymob_settings')
                 ], 503);
             }
 
@@ -192,7 +192,7 @@ class PaymentController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'تم إنشاء رابط الدفع بنجاح',
+                'message' => __('messages.payment_link_created_success'),
                 'data' => [
                     'payment_url' => $paymentUrl,
                     'paymob_order_id' => $paymobOrderId
@@ -207,7 +207,7 @@ class PaymentController extends Controller
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'حدث خطأ أثناء معالجة الدفع'
+                'message' => __('messages.payment_processing_error')
             ], 500);
         }
     }
@@ -238,7 +238,7 @@ class PaymentController extends Controller
         
         if (!$tempBookingData && !$booking) {
             Log::error('PayMob Callback: Booking not found in cache or DB for order ' . $paymobOrderId);
-            return response()->json(['message' => 'Order not found'], 404);
+            return response()->json(['message' => __('messages.order_not_found')], 404);
         }
 
         // Validate HMAC (Optional but recommended)
@@ -266,7 +266,7 @@ class PaymentController extends Controller
                         \Illuminate\Support\Facades\Cache::forget($cacheKey);
                         Log::error('PayMob Callback: Time slots no longer available for temp booking ' . $tempBookingId);
                         return response()->json([
-                            'message' => 'بعض الأوقات لم تعد متاحة',
+                            'message' => __('messages.booking_time_slots_no_longer_available'),
                             'order_id' => $paymobOrderId
                         ], 422);
                     }
@@ -339,7 +339,7 @@ class PaymentController extends Controller
                         Log::error('Failed to send notification: ' . $e->getMessage());
                     }
 
-                    return response()->json(['message' => 'Payment Successful', 'booking_id' => $booking->id]);
+                    return response()->json(['message' => __('messages.payment_successful'), 'booking_id' => $booking->id]);
                 }
 
                 // للحجوزات القديمة (موجودة في قاعدة البيانات)
@@ -352,7 +352,7 @@ class PaymentController extends Controller
                 if ($booking->payment_status === 'paid') {
                     Log::info('PayMob Callback: Booking already paid ' . $booking->id);
                     return response()->json([
-                        'message' => 'تم الدفع بالفعل',
+                        'message' => __('messages.payment_already_paid'),
                         'booking_id' => $booking->id
                     ], 422);
                 }
@@ -443,7 +443,7 @@ class PaymentController extends Controller
                 ])
             ]);
 
-            return response()->json(['message' => 'Payment Failed', 'booking_id' => $booking->id], 400);
+            return response()->json(['message' => __('messages.payment_failed'), 'booking_id' => $booking->id], 400);
         }
     }
 }

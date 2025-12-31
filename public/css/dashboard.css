@@ -2593,3 +2593,100 @@ body {
     background: #f1f5f9;
     color: #475569;
 }
+/* LTR Overrides */
+html[dir='ltr'] body {
+    direction: ltr;
+}
+
+html[dir='ltr'] .sidebar {
+    right: auto;
+    left: 0;
+}
+
+html[dir='ltr'] .main-content {
+    margin-right: 0;
+    margin-left: 260px;
+}
+
+html[dir='ltr'] .dashboard-container.sidebar-collapsed .main-content {
+    margin-right: 0;
+    margin-left: 80px;
+}
+
+html[dir='ltr'] .nav-item {
+    border-right: none;
+    border-left: 3px solid transparent;
+}
+
+html[dir='ltr'] .nav-item.active {
+    border-right: none;
+    border-left: 4px solid var(--secondary-color);
+    padding-right: 20px; /* Reset padding */
+    padding-left: 25px;
+}
+
+html[dir='ltr'] .nav-item:hover {
+    padding-right: 20px;
+    padding-left: 25px;
+}
+
+html[dir='ltr'] .nav-badge,
+html[dir='ltr'] .nav-group-header .nav-arrow {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+html[dir='ltr'] .nav-item::before,
+html[dir='ltr'] .nav-group-header::before {
+    right: auto;
+    left: 0;
+}
+
+html[dir='ltr'] .nav-group-header {
+    border-right: none;
+    border-left: 3px solid transparent;
+}
+
+html[dir='ltr'] .nav-group-header.active {
+    border-right: none;
+    border-left: 4px solid var(--secondary-color);
+}
+
+html[dir='ltr'] .nav-group-header:hover {
+    padding-right: 20px;
+    padding-left: 25px;
+}
+
+html[dir='ltr'] .nav-group-items .nav-item {
+    padding-right: 20px;
+    padding-left: 50px;
+}
+
+html[dir='ltr'] .alert {
+    border-right: 1px solid;
+    border-left: 4px solid;
+}
+
+html[dir='ltr'] .user-profile {
+    margin-right: 0;
+    margin-left: 10px;
+}
+
+html[dir='ltr'] .icon-btn.sidebar-toggle {
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+html[dir='ltr'] .dashboard-description::before {
+    right: auto;
+    left: 0;
+}
+
+/* Fix table alignment in LTR */
+html[dir='ltr'] th, html[dir='ltr'] td {
+    text-align: left;
+}
+html[dir='ltr'] th.text-center, html[dir='ltr'] td.text-center {
+    text-align: center;
+}
+

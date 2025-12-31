@@ -5,13 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use App\Traits\Translatable;
+
 class Service extends Model
 {
+    use Translatable;
+
     protected $fillable = [
         'sub_category_id',
         'name',
+        'name_en',
         'slug',
         'description',
+        'description_en',
         'hourly_rate',
         'is_active',
     ];

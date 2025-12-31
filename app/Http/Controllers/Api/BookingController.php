@@ -30,7 +30,7 @@ class BookingController extends Controller
             if (!$customer->isCustomer()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'ليس لديك صلاحية للوصول',
+                    'message' => __('messages.unauthorized_access'),
                 ], 403);
             }
 
@@ -40,7 +40,7 @@ class BookingController extends Controller
             if (!$service->subCategory || !$service->subCategory->category_id) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الخدمة المختارة لا تحتوي على فئة محدد.',
+                    'message' => __('messages.service_no_category_specified'),
                 ], 422);
             }
 
@@ -50,7 +50,7 @@ class BookingController extends Controller
             if (!$hourlyRate) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الخدمة المختارة لا تحتوي على سعر ساعة محدد.',
+                    'message' => __('messages.service_no_hourly_rate_specified'),
                 ], 422);
             }
 
@@ -65,7 +65,7 @@ class BookingController extends Controller
             if ($timeSlots->count() !== count($requestedSlotIds)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'واحد أو أكثر من معرفات الوقت المحددة غير صالحة.',
+                    'message' => __('messages.booking_invalid_time_slot_ids'),
                 ], 422);
             }
 
@@ -75,7 +75,7 @@ class BookingController extends Controller
             if ($timeSlots->where('is_available', false)->isNotEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'بعض الوقت المحددة لم تعد متاحة. يرجى تحديث الصفحة والمحاولة مرة أخرى.',
+                    'message' => __('messages.booking_time_slots_unavailable'),
                 ], 422);
             }
 
@@ -84,7 +84,7 @@ class BookingController extends Controller
             if ($uniqueEmployees->count() > 1) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'يجب أن تكون جميع المدد الزمنية المختارة لنفس الموظف.',
+                    'message' => __('messages.booking_time_slots_different_employee'),
                 ], 422);
             }
             $employeeId = $uniqueEmployees->first();
@@ -93,7 +93,7 @@ class BookingController extends Controller
             if ($timeSlots->first(fn($slot) => $slot->date->format('Y-m-d') !== Carbon::parse($requestedBookingDate)->format('Y-m-d'))) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'المدد الزمنية المختارة لا تتطابق مع تاريخ الحجز المحدد.',
+                    'message' => __('messages.booking_time_slots_date_mismatch'),
                 ], 422);
             }
 
@@ -102,7 +102,7 @@ class BookingController extends Controller
             if (!$employee || !$employee->categories()->where('categories.id', $categoryId)->exists()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الموظف المتاح لا يقدم الفئة المطلوبة لهذه الخدمة.',
+                    'message' => __('messages.booking_employee_no_category'),
                 ], 422);
             }
 
@@ -124,14 +124,14 @@ class BookingController extends Controller
             if ($totalDurationInHours <= 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'المدة الزمنية للحجز غير صالحة',
+                    'message' => __('messages.booking_invalid_duration'),
                 ], 422);
             }
 
             if ($hourlyRate <= 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'سعر الساعة للخدمة غير صالح',
+                    'message' => __('messages.service_invalid_hourly_rate'),
                 ], 422);
             }
 
@@ -141,7 +141,7 @@ class BookingController extends Controller
             if ($totalPrice <= 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'السعر الإجمالي المحسوب غير صالح',
+                    'message' => __('messages.booking_invalid_total_price'),
                 ], 422);
             }
 
@@ -155,7 +155,7 @@ class BookingController extends Controller
             if ($timeSlots->where('is_available', false)->isNotEmpty()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'بعض الوقت المحددة لم تعد متاحة. يرجى تحديث الصفحة والمحاولة مرة أخرى.',
+                    'message' => __('messages.booking_time_slots_unavailable'),
                 ], 422);
             }
 
@@ -191,7 +191,7 @@ class BookingController extends Controller
                     if (!$auth || empty($auth['token'])) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'فشل الاتصال بخادم الدفع',
+                            'message' => __('messages.payment_connection_failed'),
                         ], 503);
                     }
 
@@ -216,7 +216,7 @@ class BookingController extends Controller
                         ]);
                         return response()->json([
                             'success' => false,
-                            'message' => 'فشل إنشاء طلب الدفع',
+                            'message' => __('messages.payment_order_creation_failed'),
                         ], 503);
                     }
 
@@ -260,7 +260,7 @@ class BookingController extends Controller
                         ]);
                         return response()->json([
                             'success' => false,
-                            'message' => 'فشل الحصول على مفتاح الدفع',
+                            'message' => __('messages.payment_key_creation_failed'),
                         ], 503);
                     }
 
@@ -282,7 +282,7 @@ class BookingController extends Controller
                     // إرجاع الاستجابة مع payment_url
                     return response()->json([
                         'success' => true,
-                        'message' => 'يرجى إتمام الدفع. سيتم تأكيد الحجز بعد إتمام الدفع.',
+                        'message' => __('messages.payment_complete_required'),
                         'data' => [
                             'temp_booking_id' => $tempBookingId,
                             'total_price' => $totalPrice,
@@ -293,7 +293,7 @@ class BookingController extends Controller
                     \Log::error('Failed to create payment URL: ' . $e->getMessage());
                     return response()->json([
                         'success' => false,
-                        'message' => 'فشل في إنشاء رابط الدفع: ' . $e->getMessage(),
+                        'message' => __('messages.payment_link_creation_failed') . ': ' . $e->getMessage(),
                     ], 500);
                 }
             }
@@ -301,7 +301,7 @@ class BookingController extends Controller
             // للدفع اليدوي، إرجاع temp_booking_id فقط
             return response()->json([
                 'success' => true,
-                'message' => 'تم حفظ بيانات الحجز. يرجى إتمام الدفع لتأكيد الحجز.',
+                'message' => __('messages.booking_saved_success'),
                 'data' => [
                     'temp_booking_id' => $tempBookingId,
                     'total_price' => $totalPrice,
@@ -335,7 +335,7 @@ class BookingController extends Controller
         if (!$tempBookingData) {
             return response()->json([
                 'success' => false,
-                'message' => 'بيانات الحجز غير موجودة أو انتهت صلاحيتها. يرجى إنشاء حجز جديد.',
+                'message' => __('messages.booking_data_not_found'),
             ], 404);
         }
 
@@ -343,7 +343,7 @@ class BookingController extends Controller
         if ($tempBookingData['customer_id'] !== $customer->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذا الحجز',
+                'message' => __('messages.unauthorized_booking_access'),
             ], 403);
         }
 
@@ -544,7 +544,7 @@ class BookingController extends Controller
         if (!$customer || !$customer->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'يجب تسجيل الدخول للوصول',
+                'message' => __('messages.login_required'),
             ], 401);
         }
 
@@ -557,7 +557,7 @@ class BookingController extends Controller
         if (!$service->subCategory || !$service->subCategory->category_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'الخدمة المختارة لا تحتوي على فئة',
+                'message' => __('messages.service_no_category'),
             ], 422);
         }
 
@@ -567,7 +567,7 @@ class BookingController extends Controller
         if (!$hourlyRate) {
             return response()->json([
                 'success' => false,
-                'message' => 'الخدمة المختارة لا تحتوي على سعر الساعة. يرجى إضافة سعر الساعة للخدمة أو إضافة مدة خدمة بساعة واحدة.',
+                'message' => __('messages.service_no_hourly_rate'),
             ], 422);
         }
 
@@ -698,7 +698,7 @@ class BookingController extends Controller
         if (!$customer || !$customer->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'يجب تسجيل الدخول للوصول',
+                'message' => __('messages.login_required'),
             ], 401);
         }
 
@@ -712,7 +712,7 @@ class BookingController extends Controller
         if (!$service->subCategory || !$service->subCategory->category_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'الخدمة المختارة لا تحتوي على فئة',
+                'message' => __('messages.service_no_category'),
             ], 422);
         }
 
@@ -722,7 +722,7 @@ class BookingController extends Controller
         if (!$hourlyRate) {
             return response()->json([
                 'success' => false,
-                'message' => 'الخدمة المختارة لا تحتوي على سعر الساعة. يرجى إضافة سعر الساعة للخدمة أو إضافة مدة خدمة بساعة واحدة.',
+                'message' => __('messages.service_no_hourly_rate'),
             ], 422);
         }
 
@@ -830,7 +830,7 @@ class BookingController extends Controller
         if (!$customer || !$customer->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'يجب تسجيل الدخول للوصول',
+                'message' => __('messages.login_required'),
             ], 401);
         }
 
@@ -843,7 +843,7 @@ class BookingController extends Controller
         if (!$consultation->category_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'الاستشارة المختارة لا تحتوي على فئة',
+                'message' => __('messages.consultation_no_category'),
             ], 422);
         }
 
@@ -1006,7 +1006,7 @@ class BookingController extends Controller
         if (!$customer || !$customer->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'يجب تسجيل الدخول للوصول',
+                'message' => __('messages.login_required'),
             ], 401);
         }
 
@@ -1020,7 +1020,7 @@ class BookingController extends Controller
         if (!$consultation->category_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'الاستشارة المختارة لا تحتوي على فئة',
+                'message' => __('messages.consultation_no_category'),
             ], 422);
         }
 
@@ -1167,7 +1167,7 @@ class BookingController extends Controller
         if ($booking->customer_id !== $customer->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذا الحجز',
+                'message' => __('messages.unauthorized_booking_access'),
             ], 403);
         }
 
@@ -1230,14 +1230,14 @@ class BookingController extends Controller
         if ($booking->customer_id !== $customer->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذا الحجز',
+                'message' => __('messages.unauthorized_booking_access'),
             ], 403);
         }
 
         if (in_array($booking->status, ['cancelled', 'completed'])) {
             return response()->json([
                 'success' => false,
-                'message' => 'لا يمكن تحديث الحجز في هذه الحالة',
+                'message' => __('messages.booking_cannot_update_status'),
             ], 422);
         }
 
@@ -1245,7 +1245,7 @@ class BookingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديث الحجز بنجاح',
+            'message' => __('messages.booking_updated_success'),
             'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot']),
         ]);
     }
@@ -1264,21 +1264,21 @@ class BookingController extends Controller
         if ($booking->customer_id !== $customer->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذا الحجز',
+                'message' => __('messages.unauthorized_booking_access'),
             ], 403);
         }
 
         if ($booking->status === 'cancelled') {
             return response()->json([
                 'success' => false,
-                'message' => 'الحجز ملغي بالفعل',
+                'message' => __('messages.booking_already_cancelled'),
             ], 422);
         }
 
         if ($booking->status === 'completed') {
             return response()->json([
                 'success' => false,
-                'message' => 'لا يمكن إلغاء حجز مكتمل',
+                'message' => __('messages.booking_cannot_cancel_completed'),
             ], 422);
         }
 
@@ -1296,7 +1296,7 @@ class BookingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم إلغاء الحجز بنجاح',
+            'message' => __('messages.booking_cancelled_success'),
             'data' => $booking->fresh()->load(['service.subCategory.category', 'employee.user', 'timeSlot']),
         ]);
     }
@@ -1325,7 +1325,7 @@ class BookingController extends Controller
         if (!$tempBookingData) {
             return response()->json([
                 'success' => false,
-                'message' => 'بيانات الحجز غير موجودة أو انتهت صلاحيتها. يرجى إنشاء حجز جديد.',
+                'message' => __('messages.booking_data_not_found'),
             ], 404);
         }
 
@@ -1333,7 +1333,7 @@ class BookingController extends Controller
         if ($tempBookingData['customer_id'] !== $customer->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول لهذا الحجز',
+                'message' => __('messages.unauthorized_booking_access'),
             ], 403);
         }
 
@@ -1352,7 +1352,7 @@ class BookingController extends Controller
                 \Illuminate\Support\Facades\Cache::forget($cacheKey);
                 return response()->json([
                     'success' => false,
-                    'message' => 'بعض الأوقات لم تعد متاحة. يرجى إنشاء حجز جديد.',
+                    'message' => __('messages.booking_time_slots_no_longer_available'),
                 ], 422);
             }
 
@@ -1432,7 +1432,7 @@ class BookingController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'تم الدفع بنجاح وتأكيد الحجز',
+                'message' => __('messages.booking_payment_success'),
                 'data' => $bookingFresh,
             ]);
         });
@@ -1517,7 +1517,7 @@ class BookingController extends Controller
             if (!$customer->isCustomer()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'ليس لديك صلاحية للوصول',
+                    'message' => __('messages.unauthorized_access'),
                 ], 403);
             }
 
@@ -1527,7 +1527,7 @@ class BookingController extends Controller
             if (!$consultation->is_active) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الاستشارة المختارة غير متاحة حالياً',
+                    'message' => __('messages.consultation_not_available'),
                 ], 422);
             }
 
@@ -1537,14 +1537,14 @@ class BookingController extends Controller
             if (!$timeSlot) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الوقت المختار غير موجود',
+                    'message' => __('messages.time_slot_not_found'),
                 ], 422);
             }
 
             if (!$timeSlot->is_available) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الوقت المختار لم يعد متاحاً',
+                    'message' => __('messages.time_slot_no_longer_available'),
                 ], 422);
             }
 
@@ -1565,7 +1565,7 @@ class BookingController extends Controller
             if (!$employee || !$employee->categories()->where('categories.id', $consultation->category_id)->exists()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'الموظف المتاح لا يقدم التخصص المطلوب لهذه الاستشارة',
+                    'message' => __('messages.employee_no_category_for_consultation'),
                 ], 422);
             }
 
@@ -1620,7 +1620,7 @@ class BookingController extends Controller
                     if (!$auth || empty($auth['token'])) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'فشل الاتصال بخادم الدفع',
+                            'message' => __('messages.payment_connection_failed'),
                         ], 503);
                     }
 
@@ -1644,7 +1644,7 @@ class BookingController extends Controller
                         ]);
                         return response()->json([
                             'success' => false,
-                            'message' => 'فشل إنشاء طلب الدفع',
+                            'message' => __('messages.payment_order_creation_failed'),
                         ], 503);
                     }
 
@@ -1688,7 +1688,7 @@ class BookingController extends Controller
                         ]);
                         return response()->json([
                             'success' => false,
-                            'message' => 'فشل إنشاء رابط الدفع',
+                            'message' => __('messages.payment_link_creation_failed'),
                         ], 503);
                     }
 
@@ -1697,7 +1697,7 @@ class BookingController extends Controller
                     if (!$paymentKey) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'فشل إنشاء رابط الدفع',
+                            'message' => __('messages.payment_link_creation_failed'),
                         ], 503);
                     }
 
@@ -1706,7 +1706,7 @@ class BookingController extends Controller
 
                     return response()->json([
                         'success' => true,
-                        'message' => 'تم إنشاء طلب الحجز بنجاح',
+                        'message' => __('messages.booking_created_success'),
                         'data' => [
                             'temp_booking_id' => $tempBookingId,
                             'payment_url' => $paymentUrl,
@@ -1717,7 +1717,7 @@ class BookingController extends Controller
                     \Log::error('Payment error for consultation: ' . $e->getMessage());
                     return response()->json([
                         'success' => false,
-                        'message' => 'حدث خطأ أثناء معالجة الدفع',
+                        'message' => __('messages.payment_processing_error'),
                     ], 500);
                 }
             }

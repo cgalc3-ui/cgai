@@ -1,16 +1,16 @@
 @extends('layouts.dashboard')
 
-@section('title', 'طلبات الاشتراك')
-@section('page-title', 'قائمة طلبات الاشتراك')
+@section('title', __('messages.subscription_requests'))
+@section('page-title', __('messages.subscription_requests_list'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>قائمة طلبات الاشتراك</h2>
-            <p>مراجعة وإدارة طلبات الاشتراك</p>
+            <h2>{{ __('messages.subscription_requests_list') }}</h2>
+            <p>{{ __('messages.manage_subscription_requests_desc') }}</p>
         </div>
         <div class="page-header-right">
-            <span class="total-count">إجمالي الطلبات: {{ $requests->total() }}</span>
+            <span class="total-count">{{ __('messages.total_requests') }}: {{ $requests->total() }}</span>
         </div>
     </div>
 
@@ -18,12 +18,12 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>المستخدم</th>
-                    <th>الباقة</th>
-                    <th class="text-center">الحالة</th>
-                    <th>تاريخ الطلب</th>
-                    <th>من وافق/رفض</th>
-                    <th class="text-center">الإجراءات</th>
+                    <th>{{ __('messages.user') }}</th>
+                    <th>{{ __('messages.package') }}</th>
+                    <th class="text-center">{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.request_date') }}</th>
+                    <th>{{ __('messages.processed_by') }}</th>
+                    <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,11 +33,11 @@
                         <td>{{ $request->subscription->name }}</td>
                         <td class="text-center">
                             @if($request->status == 'pending')
-                                <span class="status-pill pending">معلق</span>
+                                <span class="status-pill pending">{{ __('messages.pending') }}</span>
                             @elseif($request->status == 'approved')
-                                <span class="status-pill completed">موافق عليه</span>
+                                <span class="status-pill completed">{{ __('messages.approved') }}</span>
                             @else
-                                <span class="status-pill cancelled">مرفوض</span>
+                                <span class="status-pill cancelled">{{ __('messages.rejected') }}</span>
                             @endif
                         </td>
                         <td>{{ $request->created_at->format('Y-m-d H:i') }}</td>
@@ -45,7 +45,7 @@
                         <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.subscription-requests.show', $request) }}" class="calm-action-btn info"
-                                    title="عرض">
+                                    title="{{ __('messages.view') }}">
                                     <i class="far fa-eye"></i>
                                 </a>
                             </div>
@@ -53,7 +53,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">لا توجد طلبات اشتراك</td>
+                        <td colspan="6" class="text-center">{{ __('messages.no_subscription_requests') }}</td>
                     </tr>
                 @endforelse
             </tbody>

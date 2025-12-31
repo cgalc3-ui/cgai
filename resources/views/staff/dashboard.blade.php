@@ -1,21 +1,20 @@
 @extends('layouts.dashboard')
 
-@section('title', 'لوحة تحكم الموظفين')
-@section('page-title', 'لوحة تحكم الموظفين')
+@section('title', __('messages.staff_dashboard'))
+@section('page-title', __('messages.staff_dashboard'))
 
 @section('content')
     <div class="dashboard-description">
-        <h2>لوحة تحكم الموظفين</h2>
-        <p>إدارة العملاء ومتابعة الطلبات والمعاملات. الوصول السريع إلى المعلومات المهمة وإدارة العمليات اليومية.</p>
+        <h2>{{ __('messages.staff_dashboard') }}</h2>
+        <p>{{ __('messages.staff_dashboard_desc') }}</p>
     </div>
 
-    <!-- Statistics Cards -->
     <!-- Statistics Cards -->
     <div class="stats-grid">
         <!-- Total Customers -->
         <div class="stat-card">
             <div class="stat-card-title-row">
-                <h3 class="stat-card-title">إجمالي العملاء</h3>
+                <h3 class="stat-card-title">{{ __('messages.total_customers') }}</h3>
                 <i class="fas fa-ellipsis-h stat-card-more"></i>
             </div>
             <div class="stat-card-main">
@@ -29,7 +28,7 @@
                             <i class="fas fa-arrow-up"></i> +{{ number_format(5.2, 1) }}%
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">العملاء المسجلين في النظام</span>
+                    <span class="stat-card-subtitle">{{ __('messages.customers_registered') }}</span>
                 </div>
             </div>
             <div class="stat-card-chart">
@@ -43,7 +42,7 @@
         <!-- Total Bookings -->
         <div class="stat-card">
             <div class="stat-card-title-row">
-                <h3 class="stat-card-title">إجمالي الحجوزات</h3>
+                <h3 class="stat-card-title">{{ __('messages.total_bookings') }}</h3>
                 <i class="fas fa-ellipsis-h stat-card-more"></i>
             </div>
             <div class="stat-card-main">
@@ -57,7 +56,8 @@
                             <i class="fas fa-arrow-up"></i> +{{ number_format(3.8, 1) }}%
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }} حجز اليوم</span>
+                    <span
+                        class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }}{{ __('messages.booked_today') }}</span>
                 </div>
             </div>
             <div class="stat-card-chart">
@@ -71,7 +71,7 @@
         <!-- Pending Bookings -->
         <div class="stat-card">
             <div class="stat-card-title-row">
-                <h3 class="stat-card-title">حجوزات قيد الانتظار</h3>
+                <h3 class="stat-card-title">{{ __('messages.pending') }}</h3>
                 <i class="fas fa-ellipsis-h stat-card-more"></i>
             </div>
             <div class="stat-card-main">
@@ -85,7 +85,7 @@
                             <i class="fas fa-clock"></i>
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">تحتاج إلى مراجعة وتأكيد</span>
+                    <span class="stat-card-subtitle">{{ __('messages.bookings_needing_review') }}</span>
                 </div>
             </div>
             <div class="stat-card-chart">
@@ -100,20 +100,20 @@
     <!-- Recent Bookings Section -->
     <div class="section-container">
         <div class="section-header">
-            <h3>الحجوزات الخاصة بي</h3>
-            <p>آخر الحجوزات المخصصة لك</p>
+            <h3>{{ __('messages.my_bookings') }}</h3>
+            <p>{{ __('messages.latest_my_bookings') }}</p>
         </div>
 
         <div class="table-container">
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>العميل</th>
-                        <th>الخدمة</th>
-                        <th>التاريخ والوقت</th>
-                        <th>السعر</th>
-                        <th>حالة الحجز</th>
-                        <th>حالة الدفع</th>
+                        <th>{{ __('messages.client') }}</th>
+                        <th>{{ __('messages.service') }}</th>
+                        <th>{{ __('messages.datetime') }}</th>
+                        <th>{{ __('messages.price') }}</th>
+                        <th>{{ __('messages.booking_status') }}</th>
+                        <th>{{ __('messages.payment_status') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,9 +121,10 @@
                         <tr>
                             <td>
                                 <div class="user-info">
-                                    <div class="user-name">{{ $booking->customer->name ?? 'غير محدد' }}</div>
+                                    <div class="user-name">
+                                        {{ optional($booking->customer)->name ?? __('messages.unspecified') }}</div>
                                     <div class="user-details">
-                                        @if($booking->customer->phone)
+                                        @if(optional($booking->customer)->phone)
                                             <span><i class="fas fa-phone"></i> {{ $booking->customer->phone }}</span>
                                         @endif
                                     </div>
@@ -134,9 +135,9 @@
                                     <div class="service-name">
                                         @if($booking->booking_type === 'consultation')
                                             <i class="fas fa-comments" style="margin-left: 5px;"></i>
-                                            {{ $booking->consultation->name ?? 'غير محدد' }}
+                                            {{ optional($booking->consultation)->trans ? $booking->consultation->trans('name') : (optional($booking->consultation)->name ?? __('messages.unspecified')) }}
                                         @else
-                                            {{ $booking->service->name ?? 'غير محدد' }}
+                                            {{ optional($booking->service)->trans ? $booking->service->trans('name') : (optional($booking->service)->name ?? __('messages.unspecified')) }}
                                         @endif
                                     </div>
                                     <div class="service-duration">
@@ -156,39 +157,40 @@
                                 </div>
                             </td>
                             <td>
-                                <strong class="price">{{ number_format($booking->total_price, 2) }} ر.س</strong>
+                                <strong class="price">{{ number_format($booking->total_price, 2) }}
+                                    {{ __('messages.sar') }}</strong>
                             </td>
                             <td>
                                 @if($booking->status === 'pending')
                                     <span class="badge badge-warning">
-                                        <i class="fas fa-hourglass-half"></i> قيد الانتظار
+                                        <i class="fas fa-hourglass-half"></i> {{ __('messages.pending') }}
                                     </span>
                                 @elseif($booking->status === 'confirmed')
                                     <span class="badge badge-info">
-                                        <i class="fas fa-check-circle"></i> مؤكد
+                                        <i class="fas fa-check-circle"></i> {{ __('messages.confirmed') }}
                                     </span>
                                 @elseif($booking->status === 'completed')
                                     <span class="badge badge-success">
-                                        <i class="fas fa-check-double"></i> مكتمل
+                                        <i class="fas fa-check-double"></i> {{ __('messages.completed') }}
                                     </span>
                                 @else
                                     <span class="badge badge-danger">
-                                        <i class="fas fa-times-circle"></i> ملغي
+                                        <i class="fas fa-times-circle"></i> {{ __('messages.rejected') }}
                                     </span>
                                 @endif
                             </td>
                             <td>
                                 @if($booking->payment_status === 'paid')
                                     <span class="badge badge-success">
-                                        <i class="fas fa-check"></i> مدفوع
+                                        <i class="fas fa-check"></i> {{ __('messages.paid') }}
                                     </span>
                                 @elseif($booking->payment_status === 'unpaid')
                                     <span class="badge badge-warning">
-                                        <i class="fas fa-exclamation-triangle"></i> غير مدفوع
+                                        <i class="fas fa-exclamation-triangle"></i> {{ __('messages.unpaid') }}
                                     </span>
                                 @else
                                     <span class="badge badge-danger">
-                                        <i class="fas fa-undo"></i> مسترد
+                                        <i class="fas fa-undo"></i> {{ __('messages.refunded') }}
                                     </span>
                                 @endif
                             </td>
@@ -198,8 +200,8 @@
                             <td colspan="6" class="text-center">
                                 <div class="empty-state">
                                     <i class="fas fa-calendar-times"></i>
-                                    <h3>لا توجد حجوزات</h3>
-                                    <p>لم يتم العثور على أي حجوزات مخصصة لك</p>
+                                    <h3>{{ __('messages.no_bookings') }}</h3>
+                                    <p>{{ __('messages.no_bookings_desc') }}</p>
                                 </div>
                             </td>
                         </tr>
@@ -213,15 +215,15 @@
     <div class="actions-grid">
         <button class="action-btn" onclick="window.location.href='{{ route('staff.my-schedule') }}'">
             <i class="fas fa-calendar-alt"></i>
-            <span>أيام العمل</span>
+            <span>{{ __('messages.work_days') }}</span>
         </button>
         <button class="action-btn" onclick="openTicketsModal()">
             <i class="fas fa-headset"></i>
-            <span>التذاكر والدعم</span>
+            <span>{{ __('messages.tickets_support') }}</span>
         </button>
         <button class="action-btn" onclick="window.location.href='#'">
             <i class="fas fa-chart-line"></i>
-            <span>التقارير</span>
+            <span>{{ __('messages.reports') }}</span>
         </button>
     </div>
 
@@ -229,7 +231,7 @@
     <div id="ticketsModal" class="modal-overlay" style="display: none;">
         <div class="modal-container tickets-modal">
             <div class="modal-header">
-                <h2><i class="fas fa-headset"></i> التذاكر والدعم</h2>
+                <h2><i class="fas fa-headset"></i> {{ __('messages.tickets_support') }}</h2>
                 <button class="modal-close" onclick="closeTicketsModal()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -237,26 +239,26 @@
             <div class="modal-body">
                 <div class="tickets-filters">
                     <select id="ticketStatusFilter" onchange="loadTickets()">
-                        <option value="">جميع الحالات</option>
-                        <option value="open">مفتوحة</option>
-                        <option value="in_progress">قيد المعالجة</option>
-                        <option value="resolved">محلولة</option>
-                        <option value="closed">مغلقة</option>
+                        <option value="">{{ __('messages.all_statuses') }}</option>
+                        <option value="open">{{ __('messages.open') }}</option>
+                        <option value="in_progress">{{ __('messages.in_progress') }}</option>
+                        <option value="resolved">{{ __('messages.resolved') }}</option>
+                        <option value="closed">{{ __('messages.closed') }}</option>
                     </select>
                     <select id="ticketPriorityFilter" onchange="loadTickets()">
-                        <option value="">جميع الأولويات</option>
-                        <option value="low">منخفضة</option>
-                        <option value="medium">متوسطة</option>
-                        <option value="high">عالية</option>
-                        <option value="urgent">عاجلة</option>
+                        <option value="">{{ __('messages.all_priorities') }}</option>
+                        <option value="low">{{ __('messages.low') }}</option>
+                        <option value="medium">{{ __('messages.medium') }}</option>
+                        <option value="high">{{ __('messages.high') }}</option>
+                        <option value="urgent">{{ __('messages.urgent') }}</option>
                     </select>
                     <button class="btn btn-primary" onclick="openCreateTicketModal()">
-                        <i class="fas fa-plus"></i> تذكرة جديدة
+                        <i class="fas fa-plus"></i> {{ __('messages.new_ticket') }}
                     </button>
                 </div>
                 <div id="ticketsList" class="tickets-list-modal">
                     <div class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+                        <i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}
                     </div>
                 </div>
             </div>
@@ -267,7 +269,7 @@
     <div id="createTicketModal" class="modal-overlay" style="display: none;">
         <div class="modal-container create-ticket-modal">
             <div class="modal-header">
-                <h2><i class="fas fa-plus-circle"></i> إنشاء تذكرة جديدة</h2>
+                <h2><i class="fas fa-plus-circle"></i> {{ __('messages.create_new_ticket') }}</h2>
                 <button class="modal-close" onclick="closeCreateTicketModal()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -276,43 +278,45 @@
                 <form id="createTicketForm" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="ticketSubject">الموضوع <span class="required">*</span></label>
+                        <label for="ticketSubject">{{ __('messages.subject') }} <span class="required">*</span></label>
                         <input type="text" name="subject" id="ticketSubject" class="form-input" required>
                         <span class="error-message" id="subjectError"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="ticketPriority">الأولوية</label>
+                        <label for="ticketPriority">{{ __('messages.priority') }}</label>
                         <select name="priority" id="ticketPriority" class="form-select">
-                            <option value="low">منخفضة</option>
-                            <option value="medium" selected>متوسطة</option>
-                            <option value="high">عالية</option>
-                            <option value="urgent">عاجلة</option>
+                            <option value="low">{{ __('messages.low') }}</option>
+                            <option value="medium" selected>{{ __('messages.medium') }}</option>
+                            <option value="high">{{ __('messages.high') }}</option>
+                            <option value="urgent">{{ __('messages.urgent') }}</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="ticketDescription">الوصف <span class="required">*</span></label>
+                        <label for="ticketDescription">{{ __('messages.description') }} <span
+                                class="required">*</span></label>
                         <textarea name="description" id="ticketDescription" class="form-textarea" rows="6"
                             required></textarea>
                         <span class="error-message" id="descriptionError"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="ticketAttachments">المرفقات (صور)</label>
+                        <label for="ticketAttachments">{{ __('messages.attach_images') }}
+                            ({{ __('messages.optional') }})</label>
                         <input type="file" name="attachments[]" id="ticketAttachments" class="form-input" multiple
                             accept="image/*">
-                        <small class="form-help">يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)</small>
+                        <small class="form-help">{{ __('messages.attachment_help') }}</small>
                         <span class="error-message" id="attachmentsError"></span>
                     </div>
 
                     <div class="form-actions">
                         <button type="submit" class="btn-submit" id="submitTicketBtn">
                             <i class="fas fa-paper-plane"></i>
-                            إرسال التذكرة
+                            {{ __('messages.send_ticket') }}
                         </button>
                         <button type="button" class="btn-cancel" onclick="closeCreateTicketModal()">
-                            إلغاء
+                            {{ __('messages.cancel') }}
                         </button>
                     </div>
                 </form>
@@ -661,7 +665,7 @@
                 const status = document.getElementById('ticketStatusFilter').value;
                 const priority = document.getElementById('ticketPriorityFilter').value;
 
-                ticketsList.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+                ticketsList.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}</div>`;
 
                 let url = '{{ route("staff.tickets") }}?';
                 if (status) url += 'status=' + status + '&';
@@ -680,65 +684,66 @@
                             data.data.data.forEach(ticket => {
                                 const statusBadge = getStatusBadge(ticket.status);
                                 const priorityBadge = getPriorityBadge(ticket.priority);
-                                const createdAt = new Date(ticket.created_at).toLocaleDateString('ar-SA');
+                                const locale = '{{ app()->getLocale() === "ar" ? "ar-SA" : "en-US" }}';
+                                const createdAt = new Date(ticket.created_at).toLocaleDateString(locale);
 
                                 const ticketUrl = '{{ url("/tickets") }}/' + ticket.id;
                                 html += `
-                                                <div class="ticket-item-modal" onclick="window.location.href='${ticketUrl}'">
-                                                    <div class="ticket-item-header">
-                                                        <div>
-                                                            <h3 class="ticket-item-title">${ticket.subject}</h3>
-                                                            <div class="ticket-item-meta">
-                                                                <span>#${ticket.id}</span>
-                                                                <span><i class="fas fa-calendar"></i> ${createdAt}</span>
-                                                                ${statusBadge}
-                                                                ${priorityBadge}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <p class="ticket-item-description">${ticket.description ? ticket.description.substring(0, 100) + '...' : ''}</p>
-                                                </div>
-                                            `;
+                                                                                <div class="ticket-item-modal" onclick="window.location.href='${ticketUrl}'">
+                                                                                    <div class="ticket-item-header">
+                                                                                        <div>
+                                                                                            <h3 class="ticket-item-title">${ticket.subject}</h3>
+                                                                                            <div class="ticket-item-meta">
+                                                                                                <span>#${ticket.id}</span>
+                                                                                                <span><i class="fas fa-calendar"></i> ${createdAt}</span>
+                                                                                                ${statusBadge}
+                                                                                                ${priorityBadge}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <p class="ticket-item-description">${ticket.description ? ticket.description.substring(0, 100) + '...' : ''}</p>
+                                                                                </div>
+                                                                            `;
                             });
                             ticketsList.innerHTML = html;
                         } else {
                             ticketsList.innerHTML = `
-                                            <div class="empty-state-modal">
-                                                <i class="fas fa-inbox"></i>
-                                                <h3>لا توجد تذاكر</h3>
-                                                <p>لم يتم العثور على أي تذاكر دعم</p>
-                                            </div>
-                                        `;
+                                                                            <div class="empty-state-modal">
+                                                                                <i class="fas fa-inbox"></i>
+                                                                                <h3>{{ __('messages.no_tickets') }}</h3>
+                                                                                <p>{{ __('messages.no_tickets_found') }}</p>
+                                                                            </div>
+                                                                        `;
                         }
                     })
                     .catch(error => {
                         console.error('Error loading tickets:', error);
                         ticketsList.innerHTML = `
-                                        <div class="empty-state-modal">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            <h3>حدث خطأ</h3>
-                                            <p>فشل تحميل التذاكر. يرجى المحاولة مرة أخرى.</p>
-                                        </div>
-                                    `;
+                                                                        <div class="empty-state-modal">
+                                                                            <i class="fas fa-exclamation-triangle"></i>
+                                                                            <h3>{{ __('messages.error') }}</h3>
+                                                                            <p>{{ __('messages.error_loading_tickets') }}</p>
+                                                                        </div>
+                                                                    `;
                     });
             }
 
             function getStatusBadge(status) {
                 const badges = {
-                    'open': '<span class="badge badge-open">مفتوحة</span>',
-                    'in_progress': '<span class="badge badge-in_progress">قيد المعالجة</span>',
-                    'resolved': '<span class="badge badge-resolved">محلولة</span>',
-                    'closed': '<span class="badge badge-closed">مغلقة</span>'
+                    'open': `<span class="badge badge-open">{{ __('messages.open') }}</span>`,
+                    'in_progress': `<span class="badge badge-in_progress">{{ __('messages.in_progress') }}</span>`,
+                    'resolved': `<span class="badge badge-resolved">{{ __('messages.resolved') }}</span>`,
+                    'closed': `<span class="badge badge-closed">{{ __('messages.closed') }}</span>`
                 };
                 return badges[status] || '';
             }
 
             function getPriorityBadge(priority) {
                 const badges = {
-                    'urgent': '<span class="badge badge-urgent">عاجلة</span>',
-                    'high': '<span class="badge badge-high">عالية</span>',
-                    'medium': '<span class="badge badge-medium">متوسطة</span>',
-                    'low': '<span class="badge badge-low">منخفضة</span>'
+                    'urgent': `<span class="badge badge-urgent">{{ __('messages.urgent') }}</span>`,
+                    'high': `<span class="badge badge-high">{{ __('messages.high') }}</span>`,
+                    'medium': `<span class="badge badge-medium">{{ __('messages.medium') }}</span>`,
+                    'low': `<span class="badge badge-low">{{ __('messages.low') }}</span>`
                 };
                 return badges[priority] || '';
             }
@@ -793,7 +798,7 @@
 
                 // Disable submit button
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}`;
 
                 fetch('{{ route("tickets.store") }}', {
                     method: 'POST',
@@ -806,7 +811,7 @@
                     .then(response => {
                         if (!response.ok) {
                             return response.json().then(data => {
-                                throw { errors: data.errors || {}, message: data.message || 'حدث خطأ' };
+                                throw { errors: data.errors || {}, message: data.message || '{{ __('messages.error') }}' };
                             });
                         }
                         return response.json();
@@ -823,7 +828,7 @@
                                 setTimeout(() => loadTickets(), 300);
                             }
                             // Show success message
-                            alert('تم إنشاء التذكرة بنجاح');
+                            alert('{{ __('messages.success') }}');
                         } else {
                             // Show validation errors
                             if (data.errors) {
@@ -844,18 +849,18 @@
                                         : data.errors['attachments.*'];
                                 }
                             } else {
-                                alert('حدث خطأ: ' + (data.message || 'فشل إنشاء التذكرة'));
+                                alert('{{ __('messages.error') }}: ' + (data.message || '{{ __('messages.error') }}'));
                             }
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('حدث خطأ أثناء إنشاء التذكرة. يرجى المحاولة مرة أخرى.');
+                        alert('{{ __('messages.error') }}');
                     })
                     .finally(() => {
                         // Re-enable submit button
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التذكرة';
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> {{ __('messages.send_ticket') }}';
                     });
             });
 

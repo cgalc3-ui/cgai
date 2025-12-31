@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إنشاء عميل جديد')
-@section('page-title', 'إنشاء عميل جديد')
+@section('title', __('messages.add_new_customer'))
+@section('page-title', __('messages.add_new_customer'))
 
 @section('content')
 <div class="page-header">
     <div class="page-header-left">
-        <h2>إنشاء عميل جديد</h2>
-        <p>إضافة عميل جديد إلى النظام</p>
+        <h2>{{ __('messages.add_new_customer') }}</h2>
+        <p>{{ __('messages.add_new_customer_desc') }}</p>
     </div>
     <div class="page-header-right">
         <a href="{{ route('admin.users.customers') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-right"></i> العودة
+            <i class="fas fa-arrow-right"></i> {{ __('messages.back') }}
         </a>
     </div>
 </div>
@@ -22,11 +22,11 @@
         
         <div class="card">
             <div class="card-header">
-                <h3>المعلومات الأساسية</h3>
+                <h3>{{ __('messages.basic_information') }}</h3>
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <label for="name">الاسم *</label>
+                    <label for="name">{{ __('messages.name') }} *</label>
                     <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
                     @error('name')
                         <span class="error-message">{{ $message }}</span>
@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="email">البريد الإلكتروني</label>
+                    <label for="email">{{ __('messages.email') }}</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" class="form-control">
                     @error('email')
                         <span class="error-message">{{ $message }}</span>
@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="phone">رقم الهاتف *</label>
+                    <label for="phone">{{ __('messages.phone') }} *</label>
                     <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control" required>
                     @error('phone')
                         <span class="error-message">{{ $message }}</span>
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="password">كلمة المرور *</label>
+                    <label for="password">{{ __('messages.password') }} *</label>
                     <input type="password" id="password" name="password" class="form-control" required minlength="8">
                     @error('password')
                         <span class="error-message">{{ $message }}</span>
@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="date_of_birth">تاريخ الميلاد</label>
+                    <label for="date_of_birth">{{ __('messages.date_of_birth') }}</label>
                     <input type="date" id="date_of_birth" name="date_of_birth" value="{{ old('date_of_birth') }}" class="form-control" max="{{ date('Y-m-d') }}">
                     @error('date_of_birth')
                         <span class="error-message">{{ $message }}</span>
@@ -66,11 +66,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="gender">النوع</label>
+                    <label for="gender">{{ __('messages.gender') }}</label>
                     <select id="gender" name="gender" class="form-control">
-                        <option value="">اختر النوع</option>
-                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>ذكر</option>
-                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>أنثى</option>
+                        <option value="">{{ __('messages.select_gender') }}</option>
+                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>{{ __('messages.male') }}</option>
+                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>{{ __('messages.female') }}</option>
                     </select>
                     @error('gender')
                         <span class="error-message">{{ $message }}</span>
@@ -81,10 +81,10 @@
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> حفظ
+                <i class="fas fa-save"></i> {{ __('messages.save') }}
             </button>
             <a href="{{ route('admin.users.customers') }}" class="btn btn-secondary">
-                <i class="fas fa-times"></i> إلغاء
+                <i class="fas fa-times"></i> {{ __('messages.cancel') }}
             </a>
         </div>
     </form>

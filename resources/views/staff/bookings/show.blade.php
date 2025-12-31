@@ -1,19 +1,20 @@
 @extends('layouts.dashboard')
 
-@section('title', 'تفاصيل الحجز')
-@section('page-title', 'تفاصيل الحجز')
+@section('title', __('messages.booking_details'))
+@section('page-title', __('messages.booking_details'))
 
 @section('content')
     <div class="booking-modern-container">
         <!-- Header: Soft & Cohesive -->
         <header class="booking-m-header">
             <div class="m-header-main">
-                <h1 class="m-title">تفاصيل الحجز</h1>
-                <p class="m-subtitle">تاريخ التسجيل: {{ $booking->created_at->format('Y-m-d') }}</p>
+                <h1 class="m-title">{{ __('messages.booking_details') }}</h1>
+                <p class="m-subtitle">{{ __('messages.registration_date') }}: {{ $booking->created_at->format('Y-m-d') }}
+                </p>
             </div>
             <div class="m-header-actions">
                 <a href="{{ route('staff.my-bookings') }}" class="m-btn-back">
-                    <i class="fas fa-long-arrow-alt-right"></i> الرجوع لقائمة الحجوزات
+                    <i class="fas fa-long-arrow-alt-right"></i> {{ __('messages.back_to_bookings') }}
                 </a>
             </div>
         </header>
@@ -23,34 +24,34 @@
             <div class="m-stat-card">
                 <div class="m-stat-icon icon-blue"><i class="fas fa-tasks"></i></div>
                 <div class="m-stat-info">
-                    <span class="m-stat-label">حالة الحجز</span>
+                    <span class="m-stat-label">{{ __('messages.status') }}</span>
                     <span class="m-stat-status status-{{ $booking->actual_status }}">
                         @php
                             $actualStatus = $booking->actual_status;
                         @endphp
-                        @if($actualStatus === 'pending') ⏳ قيد الانتظار
-                        @elseif($actualStatus === 'in_progress') 🔄 قيد التنفيذ
-                        @elseif($actualStatus === 'completed') ✅ حجز مكتمل
-                        @else ❌ حجز ملغي @endif
+                        @if($actualStatus === 'pending') ⏳ {{ __('messages.pending') }}
+                        @elseif($actualStatus === 'in_progress') 🔄 {{ __('messages.in_progress_status') }}
+                        @elseif($actualStatus === 'completed') ✅ {{ __('messages.completed') }}
+                        @else ❌ {{ __('messages.cancelled') }} @endif
                     </span>
                 </div>
             </div>
             <div class="m-stat-card">
                 <div class="m-stat-icon icon-green"><i class="fas fa-wallet"></i></div>
                 <div class="m-stat-info">
-                    <span class="m-stat-label">حالة الدفع</span>
+                    <span class="m-stat-label">{{ __('messages.payment_status') }}</span>
                     <span class="m-stat-status payment-{{ $booking->payment_status }}">
-                        @if($booking->payment_status === 'paid') ✅ تم الدفع بنجاح
-                        @elseif($booking->payment_status === 'unpaid') ⏳ في انتظار الدفع
-                        @else 🔄 تم الاسترداد @endif
+                        @if($booking->payment_status === 'paid') ✅ {{ __('messages.paid') }}
+                        @elseif($booking->payment_status === 'unpaid') ⏳ {{ __('messages.unpaid') }}
+                        @else 🔄 {{ __('messages.refunded') }} @endif
                     </span>
                 </div>
             </div>
             <div class="m-stat-card">
                 <div class="m-stat-icon icon-purple"><i class="fas fa-tag"></i></div>
                 <div class="m-stat-info">
-                    <span class="m-stat-label">التكلفة الإجمالية</span>
-                    <span class="m-stat-value">{{ number_format($booking->total_price, 2) }} ر.س</span>
+                    <span class="m-stat-label">{{ __('messages.total_cost') }}</span>
+                    <span class="m-stat-value">{{ number_format($booking->total_price, 2) }} {{ __('messages.sar') }}</span>
                 </div>
             </div>
         </div>
@@ -61,20 +62,26 @@
                 <!-- Service Section -->
                 <div class="m-card">
                     <div class="m-card-header">
-                        <i class="fas fa-concierge-bell"></i> {{ $booking->booking_type === 'consultation' ? 'تفاصيل الاستشارة' : 'تفاصيل الخدمة' }}
+                        <i class="fas fa-concierge-bell"></i>
+                        {{ $booking->booking_type === 'consultation' ? __('messages.consultation_details') : __('messages.service_details') }}
                     </div>
                     <div class="m-service-box">
                         <div class="m-service-info">
-                            <h3>{{ $booking->bookable->name ?? '---' }}</h3>
+                            <h3>{{ optional($booking->bookable)->trans ? $booking->bookable->trans('name') : (optional($booking->bookable)->name ?? '---') }}
+                            </h3>
                             <div class="m-service-meta">
                                 @if($booking->booking_type === 'consultation')
-                                    <span><i class="far fa-folder"></i> {{ $booking->consultation->category->name ?? '' }}</span>
+                                    <span><i class="far fa-folder"></i>
+                                        {{ optional($booking->consultation->category)->trans ? $booking->consultation->category->trans('name') : (optional($booking->consultation->category)->name ?? '') }}</span>
                                     <span class="m-dot"></span>
                                     <span><i class="far fa-clock"></i> {{ $booking->formatted_duration }}</span>
                                     <span class="m-dot"></span>
-                                    <span><i class="fas fa-tag"></i> سعر ثابت: {{ number_format($booking->consultation->fixed_price ?? 0, 2) }} ر.س</span>
+                                    <span><i class="fas fa-tag"></i> {{ __('messages.price') }}:
+                                        {{ number_format($booking->consultation->fixed_price ?? 0, 2) }}
+                                        {{ __('messages.sar') }}</span>
                                 @else
-                                    <span><i class="far fa-folder"></i> {{ $booking->service->subCategory->name ?? '' }}</span>
+                                    <span><i class="far fa-folder"></i>
+                                        {{ optional($booking->service->subCategory)->trans ? $booking->service->subCategory->trans('name') : (optional($booking->service->subCategory)->name ?? '') }}</span>
                                     <span class="m-dot"></span>
                                     <span><i class="far fa-clock"></i>
                                         {{ $booking->formatted_duration }}</span>
@@ -88,20 +95,21 @@
                     <!-- Customer Card -->
                     <div class="m-card">
                         <div class="m-card-header">
-                            <i class="fas fa-user-circle"></i> بيانات العميل
+                            <i class="fas fa-user-circle"></i> {{ __('messages.customer_data') }}
                         </div>
                         <div class="m-contact-list">
                             <div class="m-contact-item">
-                                <span class="label">اسم العميل:</span>
-                                <span class="value">{{ $booking->customer->name ?? '---' }}</span>
+                                <span class="label">{{ __('messages.customer_name') }}:</span>
+                                <span class="value">{{ optional($booking->customer)->name ?? '---' }}</span>
                             </div>
                             <div class="m-contact-item">
-                                <span class="label">رقم الجوال:</span>
-                                <a href="tel:{{ $booking->customer->phone }}" class="value link">{{ $booking->customer->phone ?? '---' }}</a>
+                                <span class="label">{{ __('messages.phone_number') }}:</span>
+                                <a href="tel:{{ optional($booking->customer)->phone }}"
+                                    class="value link">{{ optional($booking->customer)->phone ?? '---' }}</a>
                             </div>
                             <div class="m-contact-item">
-                                <span class="label">البريد الالكتروني:</span>
-                                <span class="value">{{ $booking->customer->email ?? '---' }}</span>
+                                <span class="label">{{ __('messages.email') }}:</span>
+                                <span class="value">{{ optional($booking->customer)->email ?? '---' }}</span>
                             </div>
                         </div>
                     </div>
@@ -109,16 +117,16 @@
                     <!-- Employee Card -->
                     <div class="m-card">
                         <div class="m-card-header">
-                            <i class="fas fa-id-badge"></i> الموظف المسؤول
+                            <i class="fas fa-id-badge"></i> {{ __('messages.employee_in_charge') }}
                         </div>
                         <div class="m-contact-list">
                             <div class="m-contact-item">
-                                <span class="label">اسم الموظف:</span>
-                                <span class="value">{{ $booking->employee->user->name ?? '---' }}</span>
+                                <span class="label">{{ __('messages.employee_name') }}:</span>
+                                <span class="value">{{ optional($booking->employee->user)->name ?? '---' }}</span>
                             </div>
                             <div class="m-contact-item">
-                                <span class="label">التخصص:</span>
-                                <span class="value">مسؤول الخدمة المباشرة</span>
+                                <span class="label">{{ __('messages.specialization') }}:</span>
+                                <span class="value">{{ __('messages.direct_service_officer') }}</span>
                             </div>
                         </div>
                     </div>
@@ -127,28 +135,30 @@
                 <!-- Date & Time Card -->
                 <div class="m-card">
                     <div class="m-card-header">
-                        <i class="fas fa-calendar-alt"></i> جدول الحجز
+                        <i class="fas fa-calendar-alt"></i> {{ __('messages.booking_schedule') }}
                     </div>
                     <div class="m-time-display">
                         <div class="m-time-item">
-                            <label>تاريخ الحجز</label>
-                            <div class="val">{{ $booking->booking_date->format('Y-m-d') }}</div>
-                            <div class="day">{{ $booking->booking_date->locale('ar')->dayName }}</div>
+                            <label>{{ __('messages.date') }}</label>
+                            <div class="val">{{ optional($booking->booking_date)->format('Y-m-d') }}</div>
+                            <div class="day">{{ optional($booking->booking_date)->locale(app()->getLocale())->dayName }}
+                            </div>
                         </div>
                         <div class="m-time-line"></div>
                         <div class="m-time-item">
-                            <label>وقت الحضور والبدء</label>
+                            <label>{{ __('messages.attendance_start_time') }}</label>
                             <div class="val">{{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
                                 {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
                             </div>
-                            <div class="day">توقيت محلي</div>
+                            <div class="day">{{ __('messages.local_time') }}</div>
                         </div>
                     </div>
                 </div>
 
                 @if($booking->notes)
                     <div class="m-card m-notes-area">
-                        <div class="m-card-header"><i class="fas fa-comment-alt"></i> ملاحظات إضافية</div>
+                        <div class="m-card-header"><i class="fas fa-comment-alt"></i> {{ __('messages.additional_notes') }}
+                        </div>
                         <div class="notes-content">{{ $booking->notes }}</div>
                     </div>
                 @endif
@@ -157,8 +167,8 @@
             <!-- Sticky Info Side -->
             <aside class="m-side-column">
                 <div class="m-sticky-card">
-                    <div class="m-card-header">معلومات الحالة</div>
-                    
+                    <div class="m-card-header">{{ __('messages.status_info') }}</div>
+
                     @php
                         $actualStatus = $booking->actual_status;
                         $timeDisplay = $booking->time_display;
@@ -167,39 +177,41 @@
                     <div class="m-status-info">
                         @if($actualStatus === 'pending')
                             <div class="status-badge pending">
-                                <i class="fas fa-clock"></i> قيد الانتظار
+                                <i class="fas fa-clock"></i> {{ __('messages.pending') }}
                             </div>
                             @if($timeDisplay && isset($timeDisplay['formatted']))
                                 <div class="time-display-info">
                                     <i class="fas fa-hourglass-start"></i>
-                                    <span>يبدأ بعد: <strong>{{ $timeDisplay['formatted'] }}</strong></span>
+                                    <span>{{ __('messages.starts_after') }}: <strong>{{ $timeDisplay['formatted'] }}</strong></span>
                                 </div>
                             @endif
                         @elseif($actualStatus === 'in_progress')
                             <div class="status-badge in-progress">
-                                <i class="fas fa-play-circle"></i> قيد التنفيذ
+                                <i class="fas fa-play-circle"></i> {{ __('messages.in_progress_status') }}
                             </div>
                             @if($timeDisplay)
                                 @if(isset($timeDisplay['elapsed_formatted']))
                                     <div class="time-display-info">
                                         <i class="fas fa-clock"></i>
-                                        <span>منقضي: <strong>{{ $timeDisplay['elapsed_formatted'] }}</strong></span>
+                                        <span>{{ __('messages.elapsed') }}:
+                                            <strong>{{ $timeDisplay['elapsed_formatted'] }}</strong></span>
                                     </div>
                                 @endif
                                 @if(isset($timeDisplay['remaining_formatted']))
                                     <div class="time-display-info">
                                         <i class="fas fa-hourglass-end"></i>
-                                        <span>متبقي: <strong>{{ $timeDisplay['remaining_formatted'] }}</strong></span>
+                                        <span>{{ __('messages.remaining') }}:
+                                            <strong>{{ $timeDisplay['remaining_formatted'] }}</strong></span>
                                     </div>
                                 @endif
                             @endif
                         @elseif($actualStatus === 'completed')
                             <div class="status-badge completed">
-                                <i class="fas fa-check-double"></i> مكتمل
+                                <i class="fas fa-check-double"></i> {{ __('messages.completed') }}
                             </div>
                         @else
                             <div class="status-badge cancelled">
-                                <i class="fas fa-times-circle"></i> ملغي
+                                <i class="fas fa-times-circle"></i> {{ __('messages.cancelled') }}
                             </div>
                         @endif
                     </div>
@@ -572,4 +584,3 @@
         </style>
     @endpush
 @endsection
-

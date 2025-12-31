@@ -1,20 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'تفاصيل الحجز')
-@section('page-title', 'تفاصيل الحجز')
+@section('title', __('messages.booking_details'))
+@section('page-title', __('messages.booking_details'))
 
 @section('content')
     <div class="booking-modern-container">
         <!-- Header: Soft & Cohesive -->
         <header class="booking-m-header">
             <div class="m-header-main">
-
-                <h1 class="m-title">مراجعة بيانات الحجز</h1>
-                <p class="m-subtitle">تاريخ التسجيل: {{ $booking->created_at->format('Y-m-d') }}</p>
+                <h1 class="m-title">{{ __('messages.booking_review') }}</h1>
+                <p class="m-subtitle">{{ __('messages.registration_date') }}: {{ $booking->created_at->format('Y-m-d') }}</p>
             </div>
             <div class="m-header-actions">
                 <a href="{{ route('admin.bookings') }}" class="m-btn-back">
-                    <i class="fas fa-long-arrow-alt-right"></i> الرجوع لقائمة الحجوزات
+                    <i class="fas fa-long-arrow-alt-right"></i> {{ __('messages.back_to_bookings_list') }}
                 </a>
             </div>
         </header>
@@ -24,31 +23,31 @@
             <div class="m-stat-card">
                 <div class="m-stat-icon icon-blue"><i class="fas fa-tasks"></i></div>
                 <div class="m-stat-info">
-                    <span class="m-stat-label">حالة الحجز</span>
+                    <span class="m-stat-label">{{ __('messages.booking_status') }}</span>
                     <span class="m-stat-status status-{{ $booking->status }}">
-                        @if($booking->status === 'pending') قيد الانتظار
-                        @elseif($booking->status === 'confirmed') حجز مؤكد
-                        @elseif($booking->status === 'completed') حجز مكتمل
-                        @else حجز ملغي @endif
+                        @if($booking->status === 'pending') {{ __('messages.pending_wait') }}
+                        @elseif($booking->status === 'confirmed') {{ __('messages.confirmed_booking') }}
+                        @elseif($booking->status === 'completed') {{ __('messages.completed_booking') }}
+                        @else {{ __('messages.cancelled_booking') }} @endif
                     </span>
                 </div>
             </div>
             <div class="m-stat-card">
                 <div class="m-stat-icon icon-green"><i class="fas fa-wallet"></i></div>
                 <div class="m-stat-info">
-                    <span class="m-stat-label">حالة الدفع</span>
+                    <span class="m-stat-label">{{ __('messages.payment_status') }}</span>
                     <span class="m-stat-status payment-{{ $booking->payment_status }}">
-                        @if($booking->payment_status === 'paid') تم الدفع بنجاح
-                        @elseif($booking->payment_status === 'unpaid') في انتظار الدفع
-                        @else تم الاسترداد @endif
+                        @if($booking->payment_status === 'paid') {{ __('messages.paid_successfully') }}
+                        @elseif($booking->payment_status === 'unpaid') {{ __('messages.waiting_payment') }}
+                        @else {{ __('messages.refunded') }} @endif
                     </span>
                 </div>
             </div>
             <div class="m-stat-card">
                 <div class="m-stat-icon icon-purple"><i class="fas fa-tag"></i></div>
                 <div class="m-stat-info">
-                    <span class="m-stat-label">التكلفة الإجمالية</span>
-                    <span class="m-stat-value">{{ number_format($booking->total_price, 2) }} ر.س</span>
+                    <span class="m-stat-label">{{ __('messages.total_cost') }}</span>
+                    <span class="m-stat-value">{{ number_format($booking->total_price, 2) }} {{ __('messages.sar') }}</span>
                 </div>
             </div>
         </div>
@@ -59,20 +58,20 @@
                 <!-- Service Section -->
                 <div class="m-card">
                     <div class="m-card-header">
-                        <i class="fas fa-concierge-bell"></i> {{ $booking->booking_type === 'consultation' ? 'تفاصيل الاستشارة' : 'تفاصيل الخدمة' }}
+                        <i class="fas fa-concierge-bell"></i> {{ $booking->booking_type === 'consultation' ? __('messages.consultation_details') : __('messages.service_details') }}
                     </div>
                     <div class="m-service-box">
                         <div class="m-service-info">
-                            <h3>{{ $booking->bookable->name ?? '---' }}</h3>
+                            <h3>{{ $booking->bookable ? $booking->bookable->trans('name') : '---' }}</h3>
                             <div class="m-service-meta">
                                 @if($booking->booking_type === 'consultation')
-                                    <span><i class="far fa-folder"></i> {{ $booking->consultation->category->name ?? '' }}</span>
+                                    <span><i class="far fa-folder"></i> {{ $booking->consultation->category->trans('name') ?? '' }}</span>
                                     <span class="m-dot"></span>
                                     <span><i class="far fa-clock"></i> {{ $booking->formatted_duration }}</span>
                                     <span class="m-dot"></span>
-                                    <span><i class="fas fa-tag"></i> سعر ثابت: {{ number_format($booking->consultation->fixed_price ?? 0, 2) }} ر.س</span>
+                                    <span><i class="fas fa-tag"></i> {{ __('messages.fixed_price') }}: {{ number_format($booking->consultation->fixed_price ?? 0, 2) }} {{ __('messages.sar') }}</span>
                                 @else
-                                    <span><i class="far fa-folder"></i> {{ $booking->service->subCategory->name ?? '' }}</span>
+                                    <span><i class="far fa-folder"></i> {{ $booking->service->subCategory->trans('name') ?? '' }}</span>
                                     <span class="m-dot"></span>
                                     <span><i class="far fa-clock"></i>
                                         {{ $booking->formatted_duration }}</span>
@@ -86,20 +85,20 @@
                     <!-- Customer Card -->
                     <div class="m-card">
                         <div class="m-card-header">
-                            <i class="fas fa-user-circle"></i> بيانات العميل
+                            <i class="fas fa-user-circle"></i> {{ __('messages.customer_data') }}
                         </div>
                         <div class="m-contact-list">
                             <div class="m-contact-item">
-                                <span class="label">اسم العميل:</span>
+                                <span class="label">{{ __('messages.customer_name') }}:</span>
                                 <span class="value">{{ $booking->customer->name ?? '---' }}</span>
                             </div>
                             <div class="m-contact-item">
-                                <span class="label">رقم الجوال:</span>
+                                <span class="label">{{ __('messages.phone_number') }}:</span>
                                 <a href="tel:{{ $booking->customer->phone }}"
                                     class="value link">{{ $booking->customer->phone ?? '---' }}</a>
                             </div>
                             <div class="m-contact-item">
-                                <span class="label">البريد الالكتروني:</span>
+                                <span class="label">{{ __('messages.email') }}:</span>
                                 <span class="value">{{ $booking->customer->email ?? '---' }}</span>
                             </div>
                         </div>
@@ -108,16 +107,16 @@
                     <!-- Employee Card -->
                     <div class="m-card">
                         <div class="m-card-header">
-                            <i class="fas fa-id-badge"></i> الموظف المسؤول
+                            <i class="fas fa-id-badge"></i> {{ __('messages.employee_in_charge') }}
                         </div>
                         <div class="m-contact-list">
                             <div class="m-contact-item">
-                                <span class="label">اسم الموظف:</span>
+                                <span class="label">{{ __('messages.employee_name') }}:</span>
                                 <span class="value">{{ $booking->employee->user->name ?? '---' }}</span>
                             </div>
                             <div class="m-contact-item">
-                                <span class="label">التخصص:</span>
-                                <span class="value">مسؤول الخدمة المباشرة</span>
+                                <span class="label">{{ __('messages.specialization') }}:</span>
+                                <span class="value">{{ __('messages.direct_service_manager') }}</span>
                             </div>
                         </div>
                     </div>
@@ -126,28 +125,28 @@
                 <!-- Date & Time Card -->
                 <div class="m-card">
                     <div class="m-card-header">
-                        <i class="fas fa-calendar-alt"></i> جدول الحجز
+                        <i class="fas fa-calendar-alt"></i> {{ __('messages.booking_schedule') }}
                     </div>
                     <div class="m-time-display">
                         <div class="m-time-item">
-                            <label>تاريخ الحجز</label>
+                            <label>{{ __('messages.date') }}</label>
                             <div class="val">{{ $booking->booking_date->format('Y-m-d') }}</div>
-                            <div class="day">{{ $booking->booking_date->locale('ar')->dayName }}</div>
+                            <div class="day">{{ $booking->booking_date->locale(app()->getLocale())->dayName }}</div>
                         </div>
                         <div class="m-time-line"></div>
                         <div class="m-time-item">
-                            <label>وقت الحضور والبدء</label>
+                            <label>{{ __('messages.attendance_time') }}</label>
                             <div class="val">{{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
                                 {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
                             </div>
-                            <div class="day">توقيت محلي</div>
+                            <div class="day">{{ __('messages.local_time') }}</div>
                         </div>
                     </div>
                 </div>
 
                 @if($booking->notes)
                     <div class="m-card m-notes-area">
-                        <div class="m-card-header"><i class="fas fa-comment-alt"></i> ملاحظات إضافية</div>
+                        <div class="m-card-header"><i class="fas fa-comment-alt"></i> {{ __('messages.additional_notes') }}</div>
                         <div class="notes-content">{{ $booking->notes }}</div>
                     </div>
                 @endif
@@ -156,26 +155,22 @@
             <!-- Sticky Controls Side -->
             <aside class="m-side-column">
                 <div class="m-sticky-card">
-                    <div class="m-card-header">إجراءات إدارية</div>
+                    <div class="m-card-header">{{ __('messages.administrative_actions') }}</div>
 
                     <form method="POST" action="{{ route('admin.bookings.update-status', $booking) }}" class="m-admin-form">
                         @csrf @method('PUT')
                         <div class="m-form-group">
-                            <label>تحديث الحالة العامة</label>
+                            <label>{{ __('messages.update_general_status') }}</label>
                             <div class="m-select-wrapper">
                                 <select name="status">
-                                    <option value="pending" {{ $booking->status === 'pending' ? 'selected' : '' }}>⏳ قيد
-                                        الانتظار</option>
-                                    <option value="confirmed" {{ $booking->status === 'confirmed' ? 'selected' : '' }}>✅ حجز
-                                        مؤكد</option>
-                                    <option value="completed" {{ $booking->status === 'completed' ? 'selected' : '' }}>✨ حجز
-                                        مكتمل</option>
-                                    <option value="cancelled" {{ $booking->status === 'cancelled' ? 'selected' : '' }}>❌ حجز
-                                        ملغي</option>
+                                    <option value="pending" {{ $booking->status === 'pending' ? 'selected' : '' }}>⏳ {{ __('messages.pending_wait') }}</option>
+                                    <option value="confirmed" {{ $booking->status === 'confirmed' ? 'selected' : '' }}>✅ {{ __('messages.confirmed_booking') }}</option>
+                                    <option value="completed" {{ $booking->status === 'completed' ? 'selected' : '' }}>✨ {{ __('messages.completed_booking') }}</option>
+                                    <option value="cancelled" {{ $booking->status === 'cancelled' ? 'selected' : '' }}>❌ {{ __('messages.cancelled_booking') }}</option>
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" class="m-btn-save primary">حفظ التغييرات</button>
+                        <button type="submit" class="m-btn-save primary">{{ __('messages.save_changes') }}</button>
                     </form>
 
                     <div class="m-card-divider"></div>
@@ -184,27 +179,27 @@
                         class="m-admin-form">
                         @csrf @method('PUT')
                         <div class="m-form-group">
-                            <label>تحديث حالة الدفع</label>
+                            <label>{{ __('messages.update_payment_status') }}</label>
                             <div class="m-select-wrapper">
                                 <select name="payment_status">
                                     <option value="unpaid" {{ $booking->payment_status === 'unpaid' ? 'selected' : '' }}>🚩
-                                        غير مدفوع</option>
-                                    <option value="paid" {{ $booking->payment_status === 'paid' ? 'selected' : '' }}>💰 تم
-                                        الدفع</option>
+                                        {{ __('messages.unpaid') }}</option>
+                                    <option value="paid" {{ $booking->payment_status === 'paid' ? 'selected' : '' }}>💰
+                                        {{ __('messages.paid') }}</option>
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" class="m-btn-save secondary">تحديث الدفع</button>
+                        <button type="submit" class="m-btn-save secondary">{{ __('messages.update_payment') }}</button>
                     </form>
                 </div>
 
                 <div class="m-sticky-card m-quick-actions">
-                    <h4 class="m-side-title">أدوات إضافية</h4>
+                    <h4 class="m-side-title">{{ __('messages.additional_tools') }}</h4>
                     <button type="button" class="tool-btn" onclick="window.print()">
-                        <i class="fas fa-print"></i> طباعة الفاتورة
+                        <i class="fas fa-print"></i> {{ __('messages.print_invoice') }}
                     </button>
                     <button type="button" class="tool-btn">
-                        <i class="fas fa-paper-plane"></i> إرسال تذكير للعميل
+                        <i class="fas fa-paper-plane"></i> {{ __('messages.send_reminder') }}
                     </button>
                 </div>
             </aside>

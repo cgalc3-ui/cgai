@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إضافة سؤال جديد')
-@section('page-title', 'إضافة سؤال جديد')
+@section('title', __('messages.add_faq'))
+@section('page-title', __('messages.add_faq'))
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>إضافة سؤال جديد</h2>
-            <p>إنشاء سؤال شائع جديد في النظام</p>
+            <h2>{{ __('messages.add_faq') }}</h2>
+            <p>{{ __('messages.manage_faqs_desc') }}</p>
         </div>
         <div class="page-header-right">
             <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-right"></i> رجوع
+                <i class="fas fa-arrow-right"></i> {{ __('messages.cancel') }}
             </a>
         </div>
     </div>
@@ -21,21 +21,36 @@
             @csrf
 
             <div class="form-group">
-                <label for="question">السؤال <span class="required">*</span></label>
-                <input type="text" id="question" name="question" value="{{ old('question') }}" class="form-control" required
-                    placeholder="مثال: كيف يمكنني حجز موعد؟">
+                <label for="question">{{ __('messages.question') }} (AR) <span class="required">*</span></label>
+                <input type="text" id="question" name="question" value="{{ old('question') }}" class="form-control"
+                    required>
                 @error('question')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-group">
-                <label for="category">الفئة <span class="required">*</span></label>
+                <label for="question_en">{{ __('messages.question') }} (EN)</label>
+                <input type="text" id="question_en" name="question_en" value="{{ old('question_en') }}" class="form-control"
+                    style="direction: ltr; text-align: left;">
+                @error('question_en')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="category">{{ __('messages.category') }} <span class="required">*</span></label>
                 <select id="category" name="category" class="form-control" required>
-                    <option value="عام" {{ old('category') == 'عام' ? 'selected' : '' }}>عام</option>
-                    <option value="الحجوزات" {{ old('category') == 'الحجوزات' ? 'selected' : '' }}>الحجوزات</option>
-                    <option value="الدفع" {{ old('category') == 'الدفع' ? 'selected' : '' }}>الدفع</option>
-                    <option value="الحساب" {{ old('category') == 'الحساب' ? 'selected' : '' }}>الحساب</option>
+                    <option value="general" {{ old('category') == 'general' ? 'selected' : '' }}>{{ __('messages.general') }}
+                    </option>
+                    <option value="account" {{ old('category') == 'account' ? 'selected' : '' }}>{{ __('messages.account') }}
+                    </option>
+                    <option value="services" {{ old('category') == 'services' ? 'selected' : '' }}>
+                        {{ __('messages.services') }}</option>
+                    <option value="payment" {{ old('category') == 'payment' ? 'selected' : '' }}>{{ __('messages.payment') }}
+                    </option>
+                    <option value="technical" {{ old('category') == 'technical' ? 'selected' : '' }}>
+                        {{ __('messages.technical') }}</option>
                 </select>
                 @error('category')
                     <span class="error-message">{{ $message }}</span>
@@ -43,7 +58,7 @@
             </div>
 
             <div class="form-group">
-                <label for="answer">الإجابة <span class="required">*</span></label>
+                <label for="answer">{{ __('messages.answer') }} (AR) <span class="required">*</span></label>
                 <textarea id="answer" name="answer" class="form-control" rows="6" required>{{ old('answer') }}</textarea>
                 @error('answer')
                     <span class="error-message">{{ $message }}</span>
@@ -51,7 +66,16 @@
             </div>
 
             <div class="form-group">
-                <label for="sort_order">الترتيب</label>
+                <label for="answer_en">{{ __('messages.answer') }} (EN)</label>
+                <textarea id="answer_en" name="answer_en" class="form-control" rows="6"
+                    style="direction: ltr; text-align: left;">{{ old('answer_en') }}</textarea>
+                @error('answer_en')
+                    <span class="error-message">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="sort_order">{{ __('messages.sort_order') }}</label>
                 <input type="number" id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}"
                     class="form-control">
                 @error('sort_order')
@@ -62,16 +86,16 @@
             <div class="form-group">
                 <label class="checkbox-label">
                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-                    <span>نشط</span>
+                    <span>{{ __('messages.active') }}</span>
                 </label>
             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> حفظ السؤال
+                    <i class="fas fa-save"></i> {{ __('messages.save') }}
                 </button>
                 <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> إلغاء
+                    <i class="fas fa-times"></i> {{ __('messages.cancel') }}
                 </a>
             </div>
         </form>

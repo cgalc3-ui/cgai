@@ -29,7 +29,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم إنشاء الفئة بنجاح',
+            'message' => __('messages.category_created_success'),
             'data' => $category,
         ], 201);
     }
@@ -51,7 +51,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم تحديث الفئة بنجاح',
+            'message' => __('messages.category_updated_success'),
             'data' => $category->fresh(),
         ]);
     }
@@ -62,7 +62,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم حذف الفئة بنجاح',
+            'message' => __('messages.category_deleted_success'),
         ]);
     }
 }

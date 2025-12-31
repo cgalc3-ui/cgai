@@ -21,7 +21,7 @@ class RatingController extends Controller
         if (!$customer->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول',
+                'message' => __('messages.unauthorized_access'),
             ], 403);
         }
 
@@ -32,7 +32,7 @@ class RatingController extends Controller
         if ($booking->customer_id !== $customer->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'هذا الحجز لا ينتمي إليك',
+                'message' => __('messages.booking_not_belongs_to_customer'),
             ], 403);
         }
 
@@ -40,7 +40,7 @@ class RatingController extends Controller
         if ($booking->status !== 'completed' && $booking->actual_status !== 'completed') {
             return response()->json([
                 'success' => false,
-                'message' => 'يمكنك التقييم فقط للحجوزات المنتهية',
+                'message' => __('messages.rating_only_completed_bookings'),
             ], 422);
         }
 
@@ -52,7 +52,7 @@ class RatingController extends Controller
         if ($existingRating) {
             return response()->json([
                 'success' => false,
-                'message' => 'لقد قمت بتقييم هذا الحجز من قبل',
+                'message' => __('messages.rating_already_exists'),
             ], 422);
         }
 
@@ -68,7 +68,7 @@ class RatingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'تم إضافة التقييم بنجاح',
+            'message' => __('messages.rating_created_success'),
             'data' => $rating,
         ], 201);
     }
@@ -104,7 +104,7 @@ class RatingController extends Controller
         if (!$customer->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول',
+                'message' => __('messages.unauthorized_access'),
             ], 403);
         }
 
