@@ -34,8 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Bookings
         Route::get('/bookings', [BookingController::class, 'index']);
-        Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']);
-        Route::get('/bookings/available-time-slots', [BookingController::class, 'availableTimeSlots']);
+        Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']); // For services only
+        Route::get('/bookings/available-time-slots', [BookingController::class, 'availableTimeSlots']); // For services only
+        Route::get('/bookings/consultation/available-dates', [BookingController::class, 'availableConsultationDates']); // For consultations only
+        Route::get('/bookings/consultation/available-time-slots', [BookingController::class, 'availableConsultationTimeSlots']); // For consultations only
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::post('/bookings/consultation', [BookingController::class, 'storeConsultation']);
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);

@@ -572,8 +572,6 @@ class BookingController extends Controller
         }
 
         $categoryId = $service->subCategory->category_id;
-        // المدة ثابتة: ساعة واحدة
-        $durationInHours = 1;
 
         // Get employees with this category (with user data)
         $employeesWithUser = Employee::where('is_available', true)
@@ -603,12 +601,13 @@ class BookingController extends Controller
                     ->get();
             }
 
-            // إنشاء قائمة بالأوقات كل ساعة (من 8 صباحاً إلى 8 مساءً)
+            // إنشاء قائمة بالأوقات كل ساعة (من 10 صباحاً إلى 6 مساءً)
             $timeSlots = [];
-            $startHour = 10; // 8 AM
-            $endHour = 18; // 8 PM
+            $startHour = 10;
+            $endHour = 18;
             $hasAvailableSlots = false;
 
+            // للخدمات: استخدام الأوقات كل ساعة
             for ($hour = $startHour; $hour < $endHour; $hour++) {
                 $startTime = Carbon::createFromTime($hour, 0, 0);
                 $endTime = $startTime->copy()->addHour();
@@ -621,7 +620,6 @@ class BookingController extends Controller
                 // البحث عن time slots التي تغطي هذا الوقت
                 $isAvailable = false;
                 $timeSlotId = null;
-
 
                 // فقط إذا كان هناك موظفين متاحين
                 if (!$employeesWithUser->isEmpty()) {
@@ -728,10 +726,9 @@ class BookingController extends Controller
             ], 422);
         }
 
-        $date = Carbon::parse($request->date)->format('Y-m-d');
         $categoryId = $service->subCategory->category_id;
-        // المدة ثابتة: ساعة واحدة
-        $durationInHours = 1;
+
+        $date = Carbon::parse($request->date)->format('Y-m-d');
 
         $employees = Employee::where('is_available', true)
             ->whereHas('categories', function ($query) use ($categoryId) {
@@ -753,11 +750,12 @@ class BookingController extends Controller
             ->orderBy('start_time')
             ->get();
 
-        // إنشاء قائمة بالأوقات كل ساعة (من 8 صباحاً إلى 8 مساءً)
+        // إنشاء قائمة بالأوقات كل ساعة (من 10 صباحاً إلى 6 مساءً)
         $timeSlots = [];
-        $startHour = 8; // 8 AM
-        $endHour = 20; // 8 PM
+        $startHour = 10;
+        $endHour = 18;
 
+        // للخدمات: استخدام الأوقات كل ساعة
         for ($hour = $startHour; $hour < $endHour; $hour++) {
             $startTime = Carbon::createFromTime($hour, 0, 0);
             $endTime = $startTime->copy()->addHour();
@@ -814,6 +812,339 @@ class BookingController extends Controller
                 'is_available' => $isAvailable,
                 'employees' => $availableEmployees,
             ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $timeSlots,
+        ]);
+    }
+
+    /**
+     * Get available dates for a consultation
+     */
+    public function availableConsultationDates(Request $request)
+    {
+        $customer = $request->user();
+
+        if (!$customer || !$customer->isCustomer()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'يجب تسجيل الدخول للوصول',
+            ], 401);
+        }
+
+        $request->validate([
+            'consultation_id' => 'required|exists:consultations,id',
+        ]);
+
+        $consultation = Consultation::with('category')->findOrFail($request->consultation_id);
+
+        if (!$consultation->category_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الاستشارة المختارة لا تحتوي على فئة',
+            ], 422);
+        }
+
+        $categoryId = $consultation->category_id;
+
+        // Get employees with this category (with user data)
+        $employeesWithUser = Employee::where('is_available', true)
+            ->whereHas('categories', function ($query) use ($categoryId) {
+                $query->where('categories.id', $categoryId);
+            })
+            ->with('user')
+            ->get();
+
+        $employeesIds = $employeesWithUser->isEmpty() ? [] : $employeesWithUser->pluck('id')->toArray();
+
+        // Get all dates for the next 30 days (even if no employees available)
+        $startDate = Carbon::today();
+        $endDate = Carbon::today()->addDays(30); // Next 30 days
+        $availableDates = [];
+
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $dateStr = $currentDate->format('Y-m-d');
+
+            // Get all time slots for this date (only if there are employees)
+            $allTimeSlots = collect([]);
+            if (!empty($employeesIds)) {
+                $allTimeSlots = TimeSlot::whereIn('employee_id', $employeesIds)
+                    ->where('date', $dateStr)
+                    ->orderBy('start_time')
+                    ->get();
+            }
+
+            // إنشاء قائمة بالأوقات
+            $timeSlots = [];
+            $startHour = 10;
+            $endHour = 18;
+            $hasAvailableSlots = false;
+
+            // للاستشارات: استخدام time slots الموجودة مباشرة
+            if (!$allTimeSlots->isEmpty()) {
+                foreach ($allTimeSlots as $slot) {
+                    $slotStart = Carbon::parse($slot->start_time);
+                    $slotEnd = Carbon::parse($slot->end_time);
+                    
+                    $startTimeStr = $slotStart->format('H:i');
+                    $endTimeStr = $slotEnd->format('H:i');
+                    $startTimeFull = $slotStart->format('H:i:s');
+                    $endTimeFull = $slotEnd->format('H:i:s');
+
+                    // البحث عن موظف متاح لهذا time slot
+                    $isAvailable = false;
+                    $timeSlotId = null;
+
+                    if (!$employeesWithUser->isEmpty()) {
+                        foreach ($employeesWithUser as $employee) {
+                            if ($slot->employee_id === $employee->id) {
+                                // التحقق من أن time slot متاح
+                                $slotIsAvailable = $slot->is_available &&
+                                    $employee->isAvailableForTimeSlot(
+                                        $slot->id,
+                                        $dateStr,
+                                        $startTimeFull,
+                                        $endTimeFull
+                                    );
+
+                                if ($slotIsAvailable) {
+                                    $isAvailable = true;
+                                    $hasAvailableSlots = true;
+                                    $timeSlotId = $slot->id;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    $timeSlots[] = [
+                        'time_slot_id' => $timeSlotId,
+                        'start_time' => $startTimeStr,
+                        'end_time' => $endTimeStr,
+                        'is_available' => $isAvailable,
+                    ];
+                }
+
+                // إضافة الأوقات الفارغة (كل ساعة) إذا لم تكن موجودة في time slots
+                $existingSlots = collect($timeSlots);
+                for ($hour = $startHour; $hour < $endHour; $hour++) {
+                    $startTime = Carbon::createFromTime($hour, 0, 0);
+                    $endTime = $startTime->copy()->addHour();
+                    $startTimeStr = $startTime->format('H:i');
+                    $endTimeStr = $endTime->format('H:i');
+
+                    // التحقق إذا كان هذا الوقت موجود في time slots
+                    $exists = $existingSlots->contains(function ($slot) use ($startTimeStr, $endTimeStr) {
+                        return $slot['start_time'] === $startTimeStr && $slot['end_time'] === $endTimeStr;
+                    });
+
+                    if (!$exists) {
+                        $timeSlots[] = [
+                            'time_slot_id' => null,
+                            'start_time' => $startTimeStr,
+                            'end_time' => $endTimeStr,
+                            'is_available' => false,
+                        ];
+                    }
+                }
+
+                // ترتيب time slots حسب start_time
+                usort($timeSlots, function ($a, $b) {
+                    return strcmp($a['start_time'], $b['start_time']);
+                });
+            } else {
+                // إذا لم يكن هناك time slots، نعرض الأوقات كل ساعة
+                for ($hour = $startHour; $hour < $endHour; $hour++) {
+                    $startTime = Carbon::createFromTime($hour, 0, 0);
+                    $endTime = $startTime->copy()->addHour();
+                    $startTimeStr = $startTime->format('H:i');
+                    $endTimeStr = $endTime->format('H:i');
+
+                    $timeSlots[] = [
+                        'time_slot_id' => null,
+                        'start_time' => $startTimeStr,
+                        'end_time' => $endTimeStr,
+                        'is_available' => false,
+                    ];
+                }
+            }
+
+            // إضافة التاريخ دائماً (حتى لو لم يكن هناك موظفين متاحين)
+            $dateData = [
+                'date' => $dateStr,
+                'formatted_date' => $currentDate->format('Y-m-d'),
+                'day_name' => $this->getDayNameArabic($currentDate->dayOfWeek),
+                'time_slots' => $timeSlots,
+            ];
+
+            // إضافة رسالة إذا لم يكن هناك مواعيد متاحة
+            if (!$hasAvailableSlots) {
+                $dateData['message'] = 'لا يوجد مواعيد متاحة';
+            }
+
+            $availableDates[] = $dateData;
+
+            $currentDate->addDay();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $availableDates,
+        ]);
+    }
+
+    /**
+     * Get available time slots for a consultation on a specific date
+     */
+    public function availableConsultationTimeSlots(Request $request)
+    {
+        $customer = $request->user();
+
+        if (!$customer || !$customer->isCustomer()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'يجب تسجيل الدخول للوصول',
+            ], 401);
+        }
+
+        $request->validate([
+            'consultation_id' => 'required|exists:consultations,id',
+            'date' => 'required|date|after_or_equal:today',
+        ]);
+
+        $consultation = Consultation::with('category')->findOrFail($request->consultation_id);
+
+        if (!$consultation->category_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'الاستشارة المختارة لا تحتوي على فئة',
+            ], 422);
+        }
+
+        $date = Carbon::parse($request->date)->format('Y-m-d');
+        $categoryId = $consultation->category_id;
+
+        $employees = Employee::where('is_available', true)
+            ->whereHas('categories', function ($query) use ($categoryId) {
+                $query->where('categories.id', $categoryId);
+            })
+            ->with('user')
+            ->get();
+
+        if ($employees->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'data' => [],
+            ]);
+        }
+
+        // Get all time slots for this date
+        $allTimeSlots = TimeSlot::whereIn('employee_id', $employees->pluck('id'))
+            ->where('date', $date)
+            ->orderBy('start_time')
+            ->get();
+
+        // إنشاء قائمة بالأوقات
+        $timeSlots = [];
+        $startHour = 10;
+        $endHour = 18;
+
+        // للاستشارات: استخدام time slots الموجودة مباشرة
+        if (!$allTimeSlots->isEmpty()) {
+            foreach ($allTimeSlots as $slot) {
+                $slotStart = Carbon::parse($slot->start_time);
+                $slotEnd = Carbon::parse($slot->end_time);
+                
+                $startTimeStr = $slotStart->format('H:i');
+                $endTimeStr = $slotEnd->format('H:i');
+                $startTimeFull = $slotStart->format('H:i:s');
+                $endTimeFull = $slotEnd->format('H:i:s');
+
+                // البحث عن موظفين متاحين لهذا time slot
+                $availableEmployees = [];
+                $isAvailable = false;
+
+                foreach ($employees as $employee) {
+                    if ($slot->employee_id === $employee->id) {
+                        // التحقق من أن time slot متاح
+                        $slotIsAvailable = $slot->is_available &&
+                            $employee->isAvailableForTimeSlot(
+                                $slot->id,
+                                $date,
+                                $startTimeFull,
+                                $endTimeFull
+                            );
+
+                        if ($slotIsAvailable) {
+                            $isAvailable = true;
+                            $availableEmployees[] = [
+                                'id' => $employee->id,
+                                'name' => $employee->user->name,
+                                'time_slot_id' => $slot->id,
+                            ];
+                        }
+                    }
+                }
+
+                $timeSlots[] = [
+                    'time_slot_id' => $slot->id,
+                    'start_time' => $startTimeStr,
+                    'end_time' => $endTimeStr,
+                    'date' => $date,
+                    'is_available' => $isAvailable,
+                    'employees' => $availableEmployees,
+                ];
+            }
+
+            // إضافة الأوقات الفارغة (كل ساعة) إذا لم تكن موجودة في time slots
+            $existingSlots = collect($timeSlots);
+            for ($hour = $startHour; $hour < $endHour; $hour++) {
+                $startTime = Carbon::createFromTime($hour, 0, 0);
+                $endTime = $startTime->copy()->addHour();
+                $startTimeStr = $startTime->format('H:i');
+                $endTimeStr = $endTime->format('H:i');
+
+                // التحقق إذا كان هذا الوقت موجود في time slots
+                $exists = $existingSlots->contains(function ($slot) use ($startTimeStr, $endTimeStr) {
+                    return $slot['start_time'] === $startTimeStr && $slot['end_time'] === $endTimeStr;
+                });
+
+                if (!$exists) {
+                    $timeSlots[] = [
+                        'time_slot_id' => null,
+                        'start_time' => $startTimeStr,
+                        'end_time' => $endTimeStr,
+                        'date' => $date,
+                        'is_available' => false,
+                        'employees' => [],
+                    ];
+                }
+            }
+
+            // ترتيب time slots حسب start_time
+            usort($timeSlots, function ($a, $b) {
+                return strcmp($a['start_time'], $b['start_time']);
+            });
+        } else {
+            // إذا لم يكن هناك time slots، نعرض الأوقات كل ساعة
+            for ($hour = $startHour; $hour < $endHour; $hour++) {
+                $startTime = Carbon::createFromTime($hour, 0, 0);
+                $endTime = $startTime->copy()->addHour();
+                $startTimeStr = $startTime->format('H:i');
+                $endTimeStr = $endTime->format('H:i');
+
+                $timeSlots[] = [
+                    'time_slot_id' => null,
+                    'start_time' => $startTimeStr,
+                    'end_time' => $endTimeStr,
+                    'date' => $date,
+                    'is_available' => false,
+                    'employees' => [],
+                ];
+            }
         }
 
         return response()->json([
