@@ -24,7 +24,6 @@
                     <th>الاسم</th>
                     <th>الفئة</th>
                     <th>الفئة الفرعية</th>
-                    <th>التخصص</th>
                     <th>سعر الساعة</th>
                     <th>الحالة</th>
                     <th>تاريخ الإنشاء</th>
@@ -37,7 +36,6 @@
                         <td>{{ $service->name }}</td>
                         <td>{{ $service->subCategory->category->name }}</td>
                         <td>{{ $service->subCategory->name }}</td>
-                        <td>{{ $service->specialization->name ?? '-' }}</td>
                         <td>
                             @if($service->price)
                                 <span style="color: #28a745; font-weight: 600;">{{ number_format($service->price, 2) }}
@@ -73,7 +71,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center">لا توجد خدمات مسجلة</td>
+                        <td colspan="7" class="text-center">لا توجد خدمات مسجلة</td>
                     </tr>
                 @endforelse
             </tbody>

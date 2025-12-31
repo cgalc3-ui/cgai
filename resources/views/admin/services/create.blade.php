@@ -36,21 +36,6 @@
             </div>
 
             <div class="form-group">
-                <label for="specialization_id">التخصص</label>
-                <select id="specialization_id" name="specialization_id" class="form-control">
-                    <option value="">اختر التخصص (اختياري)</option>
-                    @foreach($specializations as $specialization)
-                        <option value="{{ $specialization->id }}" {{ old('specialization_id') == $specialization->id ? 'selected' : '' }}>
-                            {{ $specialization->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('specialization_id')
-                    <span class="error-message">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <div class="form-group">
                 <label for="name">الاسم <span class="required">*</span></label>
                 <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
                 @error('name')
