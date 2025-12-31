@@ -45,9 +45,9 @@
                     <th>الاسم</th>
                     <th>البريد الإلكتروني</th>
                     <th>رقم الهاتف</th>
-                    <th>الدور</th>
+                    <th class="text-center">الدور</th>
                     <th>تاريخ التسجيل</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,13 +56,13 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone ?? '-' }}</td>
-                        <td>
+                        <td class="text-center">
                             <span class="status-pill active">
                                 <i class="fas fa-user" style="margin-left: 5px;"></i> عميل
                             </span>
                         </td>
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
-                        <td>
+                        <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.users.customers.show', $user) }}" class="calm-action-btn" title="عرض">
                                     <i class="far fa-eye"></i>

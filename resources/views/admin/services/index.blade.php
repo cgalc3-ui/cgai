@@ -25,9 +25,9 @@
                     <th>الفئة</th>
                     <th>الفئة الفرعية</th>
                     <th>سعر الساعة</th>
-                    <th>الحالة</th>
+                    <th class="text-center">الحالة</th>
                     <th>تاريخ الإنشاء</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,7 +44,7 @@
                                 <span style="color: #999; font-style: italic;">غير محدد</span>
                             @endif
                         </td>
-                        <td>
+                        <td class="text-center">
                             @if($service->is_active)
                                 <span class="status-pill completed">نشط</span>
                             @else
@@ -52,8 +52,8 @@
                             @endif
                         </td>
                         <td>{{ $service->created_at->format('Y-m-d') }}</td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
+                        <td class="text-center">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.services.edit', $service) }}" class="calm-action-btn warning"
                                     title="تعديل">
                                     <i class="far fa-edit"></i>

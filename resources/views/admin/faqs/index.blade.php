@@ -26,9 +26,9 @@
                 <tr>
                     <th>السؤال</th>
                     <th>الفئة</th>
-                    <th>الترتيب</th>
-                    <th>الحالة</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الترتيب</th>
+                    <th class="text-center">الحالة</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,16 +36,16 @@
                     <tr>
                         <td>{{ Str::limit($faq->question, 60) }}</td>
                         <td><span class="status-pill active" style="font-size: 11px;">{{ $faq->category }}</span></td>
-                        <td>{{ $faq->sort_order }}</td>
-                        <td>
+                        <td class="text-center">{{ $faq->sort_order }}</td>
+                        <td class="text-center">
                             @if($faq->is_active)
                                 <span class="status-pill completed">نشط</span>
                             @else
                                 <span class="status-pill cancelled">غير نشط</span>
                             @endif
                         </td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
+                        <td class="text-center">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.faqs.edit', $faq) }}" class="calm-action-btn warning" title="تعديل">
                                     <i class="far fa-edit"></i>
                                 </a>

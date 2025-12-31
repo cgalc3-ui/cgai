@@ -26,9 +26,9 @@
                     <th>نوع المدة</th>
                     <th>الحد الأقصى للمديونين</th>
                     <th>الحد الأقصى للرسائل</th>
-                    <th>الذكاء الاصطناعي</th>
-                    <th>الحالة</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الذكاء الاصطناعي</th>
+                    <th class="text-center">الحالة</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,22 +39,22 @@
                         <td>{{ $subscription->duration_text }}</td>
                         <td>{{ $subscription->max_debtors == 0 ? 'غير محدود' : $subscription->max_debtors }}</td>
                         <td>{{ $subscription->max_messages == 0 ? 'غير محدود' : $subscription->max_messages }}</td>
-                        <td>
+                        <td class="text-center">
                             @if($subscription->ai_enabled)
                                 <span class="status-pill completed">مفعل</span>
                             @else
                                 <span class="status-pill cancelled">معطل</span>
                             @endif
                         </td>
-                        <td>
+                        <td class="text-center">
                             @if($subscription->is_active)
                                 <span class="status-pill completed">نشط</span>
                             @else
                                 <span class="status-pill cancelled">غير نشط</span>
                             @endif
                         </td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
+                        <td class="text-center">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.subscriptions.show', $subscription) }}" class="calm-action-btn info"
                                     title="عرض">
                                     <i class="far fa-eye"></i>
@@ -63,8 +63,8 @@
                                     title="تعديل">
                                     <i class="far fa-edit"></i>
                                 </a>
-                                <form action="{{ route('admin.subscriptions.destroy', $subscription) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('هل أنت متأكد من حذف هذه الباقة؟')">
+                                <form action="{{ route('admin.subscriptions.destroy', $subscription) }}" method="POST"
+                                    class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه الباقة؟')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="حذف">
@@ -87,4 +87,3 @@
         </div>
     </div>
 @endsection
-

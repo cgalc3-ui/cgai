@@ -45,10 +45,10 @@
                     <th>الاسم</th>
                     <th>البريد الإلكتروني</th>
                     <th>رقم الهاتف</th>
-                    <th>الدور</th>
+                    <th class="text-center">الدور</th>
                     <th>التخصصات</th>
                     <th>تاريخ التسجيل</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -57,7 +57,7 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone ?? '-' }}</td>
-                        <td>
+                        <td class="text-center">
                             <span class="status-pill active">
                                 <i class="fas fa-user-tie" style="margin-left: 5px;"></i> موظف
                             </span>
@@ -76,7 +76,7 @@
                             @endif
                         </td>
                         <td>{{ $user->created_at->format('Y-m-d') }}</td>
-                        <td>
+                        <td class="text-center">
                             <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.users.staff.show', $user) }}" class="calm-action-btn" title="عرض">
                                     <i class="far fa-eye"></i>
@@ -317,12 +317,12 @@
                 tagDiv.className = 'category-tag';
                 tagDiv.setAttribute('data-id', selectedId);
                 tagDiv.innerHTML = `
-                                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
-                                    <span>${selectedName}</span>
-                                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                `;
+                                            <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                                            <span>${selectedName}</span>
+                                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        `;
 
                 container.appendChild(tagDiv);
                 select.value = '';
@@ -353,12 +353,12 @@
                 tagDiv.className = 'category-tag';
                 tagDiv.setAttribute('data-id', selectedId);
                 tagDiv.innerHTML = `
-                                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
-                                    <span>${selectedName}</span>
-                                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                `;
+                                            <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                                            <span>${selectedName}</span>
+                                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        `;
 
                 container.appendChild(tagDiv);
                 select.value = '';
@@ -393,12 +393,12 @@
                             tagDiv.className = 'category-tag';
                             tagDiv.setAttribute('data-id', catId);
                             tagDiv.innerHTML = `
-                                                <input type="hidden" name="employee[categories][]" value="${catId}">
-                                                <span>${catName}</span>
-                                                <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            `;
+                                                        <input type="hidden" name="employee[categories][]" value="${catId}">
+                                                        <span>${catName}</span>
+                                                        <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    `;
                             container.appendChild(tagDiv);
                         }
                     });

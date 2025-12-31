@@ -24,9 +24,9 @@
                     <th>الاسم</th>
                     <th>الفئة الرئيسية</th>
                     <th>الوصف</th>
-                    <th>الحالة</th>
+                    <th class="text-center">الحالة</th>
                     <th>تاريخ الإنشاء</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,7 +35,7 @@
                         <td>{{ $subCategory->name }}</td>
                         <td>{{ $subCategory->category->name }}</td>
                         <td>{{ Str::limit($subCategory->description ?? '-', 50) }}</td>
-                        <td>
+                        <td class="text-center">
                             @if($subCategory->is_active)
                                 <span class="status-pill completed">نشط</span>
                             @else
@@ -43,8 +43,8 @@
                             @endif
                         </td>
                         <td>{{ $subCategory->created_at->format('Y-m-d') }}</td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
+                        <td class="text-center">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.sub-categories.edit', $subCategory) }}" class="calm-action-btn warning"
                                     title="تعديل">
                                     <i class="far fa-edit"></i>

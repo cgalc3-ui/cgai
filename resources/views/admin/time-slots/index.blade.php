@@ -88,8 +88,8 @@
                             <th>التاريخ</th>
                             <th>من</th>
                             <th>إلى</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
+                            <th class="text-center">الحالة</th>
+                            <th class="text-center">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,15 +125,15 @@
                                     <td>{{ \Carbon\Carbon::parse($timeSlot->date)->format('Y-m-d') }}</td>
                                     <td>{{ $hour['start']->format('h:i A') }}</td>
                                     <td>{{ $hour['end']->format('h:i A') }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         @if($timeSlot->is_available)
                                             <span class="status-pill completed">متاح</span>
                                         @else
                                             <span class="status-pill cancelled">غير متاح</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <div style="display: flex; gap: 8px;">
+                                    <td class="text-center">
+                                        <div style="display: flex; gap: 8px; justify-content: center;">
                                             <a href="{{ route('admin.time-slots.edit', $timeSlot) }}"
                                                 class="calm-action-btn warning" title="تعديل">
                                                 <i class="far fa-edit"></i>

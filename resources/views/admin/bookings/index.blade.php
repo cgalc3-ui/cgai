@@ -72,9 +72,9 @@
                     <th>الخدمة</th>
                     <th>التاريخ والوقت</th>
                     <th>السعر</th>
-                    <th>حالة الحجز</th>
-                    <th>حالة الدفع</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">حالة الحجز</th>
+                    <th class="text-center">حالة الدفع</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@
                         <td>
                             <strong class="price">{{ number_format($booking->total_price, 2) }} ر.س</strong>
                         </td>
-                        <td>
+                        <td class="text-center">
                             @if($booking->status === 'pending')
                                 <span class="status-pill pending">معلق</span>
                             @elseif($booking->status === 'confirmed')
@@ -147,7 +147,7 @@
                                 <span class="status-pill cancelled">ملغي</span>
                             @endif
                         </td>
-                        <td>
+                        <td class="text-center">
                             @if($booking->payment_status === 'paid')
                                 <span class="status-pill completed">مدفوع</span>
                             @elseif($booking->payment_status === 'unpaid')
@@ -156,7 +156,7 @@
                                 <span class="status-pill cancelled">مسترد</span>
                             @endif
                         </td>
-                        <td style="text-align: center;">
+                        <td class="text-center">
                             <a href="{{ route('admin.bookings.show', $booking) }}" class="calm-action-btn" title="عرض">
                                 <i class="far fa-eye"></i>
                             </a>

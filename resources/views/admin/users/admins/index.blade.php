@@ -45,9 +45,9 @@
                     <th>الاسم</th>
                     <th>البريد الإلكتروني</th>
                     <th>رقم الهاتف</th>
-                    <th>الدور</th>
+                    <th class="text-center">الدور</th>
                     <th>تاريخ التسجيل</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,8 +56,8 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone ?? '-' }}</td>
-                        <td>
-                            <span class="status-pill cancelled">
+                        <td class="text-center">
+                            <span class="status-pill active">
                                 <i class="fas fa-user-shield" style="margin-left: 5px;"></i> أدمن
                             </span>
                         </td>

@@ -25,9 +25,9 @@
                     <th>التخصص</th>
                     <th>السعر الثابت</th>
                     <th>المدة</th>
-                    <th>الحالة</th>
+                    <th class="text-center">الحالة</th>
                     <th>تاريخ الإنشاء</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,10 +36,11 @@
                         <td>{{ $consultation->name }}</td>
                         <td>{{ $consultation->category->name }}</td>
                         <td>
-                            <span style="color: #28a745; font-weight: 600;">{{ number_format($consultation->fixed_price, 2) }} ر.س</span>
+                            <span style="color: #28a745; font-weight: 600;">{{ number_format($consultation->fixed_price, 2) }}
+                                ر.س</span>
                         </td>
                         <td>حسب الـ Time Slot</td>
-                        <td>
+                        <td class="text-center">
                             @if($consultation->is_active)
                                 <span class="status-pill completed">نشط</span>
                             @else
@@ -47,14 +48,14 @@
                             @endif
                         </td>
                         <td>{{ $consultation->created_at->format('Y-m-d') }}</td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
+                        <td class="text-center">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.consultations.edit', $consultation) }}" class="calm-action-btn warning"
                                     title="تعديل">
                                     <i class="far fa-edit"></i>
                                 </a>
-                                <form action="{{ route('admin.consultations.destroy', $consultation) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('هل أنت متأكد من حذف هذه الاستشارة؟')">
+                                <form action="{{ route('admin.consultations.destroy', $consultation) }}" method="POST"
+                                    class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه الاستشارة؟')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="حذف">
@@ -77,4 +78,3 @@
         </div>
     </div>
 @endsection
-

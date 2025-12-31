@@ -20,10 +20,10 @@
                 <tr>
                     <th>المستخدم</th>
                     <th>الباقة</th>
-                    <th>الحالة</th>
+                    <th class="text-center">الحالة</th>
                     <th>تاريخ الطلب</th>
                     <th>من وافق/رفض</th>
-                    <th>الإجراءات</th>
+                    <th class="text-center">الإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +31,7 @@
                     <tr>
                         <td>{{ $request->user->name }}</td>
                         <td>{{ $request->subscription->name }}</td>
-                        <td>
+                        <td class="text-center">
                             @if($request->status == 'pending')
                                 <span class="status-pill pending">معلق</span>
                             @elseif($request->status == 'approved')
@@ -42,8 +42,8 @@
                         </td>
                         <td>{{ $request->created_at->format('Y-m-d H:i') }}</td>
                         <td>{{ $request->approver ? $request->approver->name : '-' }}</td>
-                        <td>
-                            <div style="display: flex; gap: 8px;">
+                        <td class="text-center">
+                            <div style="display: flex; gap: 8px; justify-content: center;">
                                 <a href="{{ route('admin.subscription-requests.show', $request) }}" class="calm-action-btn info"
                                     title="عرض">
                                     <i class="far fa-eye"></i>
@@ -64,4 +64,3 @@
         </div>
     </div>
 @endsection
-

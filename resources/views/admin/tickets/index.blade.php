@@ -57,11 +57,11 @@
                     <tr>
                         <th>العميل</th>
                         <th>الموضوع</th>
-                        <th>الحالة</th>
-                        <th>الأولوية</th>
+                        <th class="text-center">الحالة</th>
+                        <th class="text-center">الأولوية</th>
                         <th>معين ل</th>
                         <th>التاريخ</th>
-                        <th>الإجراءات</th>
+                        <th class="text-center">الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,7 +78,7 @@
                                     {{ \Illuminate\Support\Str::limit($ticket->subject, 50) }}
                                 </a>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if($ticket->status === 'open')
                                     <span class="status-pill pending">مفتوحة</span>
                                 @elseif($ticket->status === 'in_progress')
@@ -89,7 +89,7 @@
                                     <span class="status-pill cancelled">مغلقة</span>
                                 @endif
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if($ticket->priority === 'urgent')
                                     <span class="status-pill cancelled">عاجلة</span>
                                 @elseif($ticket->priority === 'high')
@@ -106,7 +106,7 @@
                             <td>
                                 {{ $ticket->created_at->format('Y-m-d') }}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a href="{{ route('admin.tickets.show', $ticket) }}" class="calm-action-btn" title="عرض">
                                     <i class="far fa-eye"></i>
                                 </a>
