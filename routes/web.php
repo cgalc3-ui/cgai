@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
+use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\SubscriptionRequestController;
 use App\Http\Controllers\Web\FaqController;
 use Illuminate\Support\Facades\Route;
 
@@ -99,6 +101,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // FAQs management
     Route::resource('faqs', AdminFaqController::class);
+
+    // Subscriptions management
+    Route::resource('subscriptions', SubscriptionController::class)->parameters([
+        'subscriptions' => 'subscription'
+    ]);
+
+    // Subscription requests management
+    Route::prefix('subscription-requests')->name('subscription-requests.')->group(function () {
+        Route::get('/', [SubscriptionRequestController::class, 'index'])->name('index');
+        Route::get('/{request}', [SubscriptionRequestController::class, 'show'])->name('show');
+        Route::post('/{request}/approve', [SubscriptionRequestController::class, 'approve'])->name('approve');
+        Route::post('/{request}/reject', [SubscriptionRequestController::class, 'reject'])->name('reject');
+    });
 });
 
 // Staff routes (requires staff or admin role)

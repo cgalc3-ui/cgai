@@ -129,6 +129,33 @@
                             <span class="nav-badge">{{ $openTicketsCount }}</span>
                         @endif
                     </a>
+                    <div class="nav-group">
+                        <div class="nav-group-header {{ request()->routeIs('admin.subscriptions*') || request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}"
+                            onclick="toggleNavGroup(this)">
+                            <i class="fas fa-crown"></i>
+                            <span>الاشتراكات</span>
+                            <i class="fas fa-chevron-down nav-arrow"></i>
+                        </div>
+                        <div
+                            class="nav-group-items {{ request()->routeIs('admin.subscriptions*') || request()->routeIs('admin.subscription-requests*') ? 'expanded' : '' }}">
+                            <a href="{{ route('admin.subscriptions.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.subscriptions*') && !request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}">
+                                <i class="fas fa-box"></i>
+                                <span>الباقات</span>
+                            </a>
+                            <a href="{{ route('admin.subscription-requests.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>طلبات الاشتراك</span>
+                                @php
+                                    $pendingRequestsCount = \App\Models\SubscriptionRequest::where('status', 'pending')->count();
+                                @endphp
+                                @if($pendingRequestsCount > 0)
+                                    <span class="nav-badge">{{ $pendingRequestsCount }}</span>
+                                @endif
+                            </a>
+                        </div>
+                    </div>
                 @elseif(auth()->user()->isStaff())
                     <a href="{{ route('staff.dashboard') }}"
                         class="nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">

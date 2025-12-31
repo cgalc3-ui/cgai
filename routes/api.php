@@ -6,6 +6,9 @@ use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Api\Public\SubscriptionController as PublicSubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +68,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{ticket}/status', [\App\Http\Controllers\Api\TicketController::class, 'updateStatus']);
     });
 
+    // Subscriptions routes
+    Route::prefix('subscriptions')->group(function () {
+        Route::get('/', [SubscriptionController::class, 'index']);
+        Route::get('/active', [SubscriptionController::class, 'active']);
+        Route::get('/requests', [SubscriptionController::class, 'requests']);
+        Route::get('/{subscription}', [SubscriptionController::class, 'show']);
+        Route::post('/', [SubscriptionController::class, 'store']);
+    });
+
 });
 
 // Payment Callback (Public)
@@ -86,5 +98,21 @@ Route::prefix('services')->group(function () {
 Route::prefix('faqs')->group(function () {
     Route::get('/', [FaqController::class, 'index']);
     Route::get('/category/{category}', [FaqController::class, 'getByCategory']);
+});
+
+// Public Subscriptions routes (for frontend React)
+Route::prefix('public/subscriptions')->group(function () {
+    Route::get('/', [PublicSubscriptionController::class, 'index']);
+    Route::get('/{subscription}', [PublicSubscriptionController::class, 'show']);
+});
+
+// Admin Subscriptions routes (requires authentication and admin role)
+Route::middleware('auth:sanctum')->prefix('admin/subscriptions')->group(function () {
+    Route::get('/', [AdminSubscriptionController::class, 'index']);
+    Route::post('/', [AdminSubscriptionController::class, 'store']);
+    Route::get('/{subscription}', [AdminSubscriptionController::class, 'show']);
+    Route::put('/{subscription}', [AdminSubscriptionController::class, 'update']);
+    Route::patch('/{subscription}', [AdminSubscriptionController::class, 'update']);
+    Route::delete('/{subscription}', [AdminSubscriptionController::class, 'destroy']);
 });
 
