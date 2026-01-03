@@ -40,14 +40,33 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2 class="logo">
+                    <i class="fas fa-layer-group"></i>
                     <span class="logo-full">{{ config('app.name') }}</span>
                     <span class="logo-mini">{{ substr(config('app.name'), 0, 2) }}</span>
                 </h2>
             </div>
 
+            <div class="sidebar-user">
+                <div class="user-avatar-wrapper">
+                    <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=3b82f6&color=fff' }}"
+                        alt="{{ auth()->user()->name }}" class="user-avatar">
+                </div>
+                <div class="user-info">
+                    <h4 class="user-name">{{ auth()->user()->name }}</h4>
+                    <p class="user-role">
+                        @if(auth()->user()->isAdmin())
+                            {{ __('messages.main_supervisor') }}
+                        @elseif(auth()->user()->isStaff())
+                            {{ __('messages.employee') }}
+                        @endif
+                    </p>
+                </div>
+            </div>
+
             <nav class="sidebar-nav">
+                <div class="nav-section-label">{{ __('messages.navigation') ?? 'NAVIGATION' }}</div>
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}"
+                    <a href="{{ route('admin.dashboard') }}" <a href="{{ route('admin.dashboard') }}"
                         class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i class="fas fa-home"></i>
                         <span>{{ __('messages.dashboard') }}</span>
@@ -123,17 +142,9 @@
                             </a>
                         </div>
                     </div>
-                    <a href="{{ route('admin.tickets') }}"
-                        class="nav-item {{ request()->routeIs('admin.tickets*') ? 'active' : '' }}">
-                        <i class="fas fa-headset"></i>
-                        <span>{{ __('messages.support_tickets') }}</span>
-                        @php
-                            $openTicketsCount = \App\Models\Ticket::whereIn('status', ['open', 'in_progress'])->count();
-                        @endphp
-                        @if($openTicketsCount > 0)
-                            <span class="nav-badge">{{ $openTicketsCount }}</span>
-                        @endif
                     </a>
+
+                    <div class="nav-section-label">{{ __('messages.more_menu') ?? 'MORE' }}</div>
                     <div class="nav-group">
                         <div class="nav-group-header {{ request()->routeIs('admin.subscriptions*') || request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">
@@ -210,11 +221,22 @@
                         <i class="fas fa-question-circle"></i>
                         <span>{{ __('messages.faqs_management') }}</span>
                     </a>
+                    <a href="{{ route('admin.help-guides.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.help-guides*') ? 'active' : '' }}">
+                        <i class="fas fa-book"></i>
+                        <span>{{ __('messages.help_guides_management') }}</span>
+                    </a>
                 @else
                     <a href="{{ route('faqs.index') }}"
                         class="nav-item {{ request()->routeIs('faqs.index') ? 'active' : '' }}">
                         <i class="fas fa-question-circle"></i>
                         <span>{{ __('messages.faqs') }}</span>
+                    </a>
+                    <!-- Help & Guide link for non-admin users -->
+                    <a href="{{ route('help-guide.index') }}"
+                        class="nav-item {{ request()->routeIs('help-guide*') ? 'active' : '' }}">
+                        <i class="fas fa-book"></i>
+                        <span>{{ __('messages.help_and_guide') }}</span>
                     </a>
                 @endif
 
@@ -251,6 +273,7 @@
                 </form>
             </div>
         </aside>
+        </aside>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -260,34 +283,44 @@
                     <button id="sidebarToggle" class="icon-btn sidebar-toggle">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h1 class="page-title">@yield('page-title', 'لوحة التحكم')</h1>
+                    <div class="breadcrumb-container">
+                        <h4 class="page-title">@yield('page-title', 'لوحة التحكم')</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="#">{{ config('app.name') }}</a></li>
+                                @yield('breadcrumbs')
+                            </ol>
+                        </nav>
+                    </div>
                 </div>
+                
+                <div class="top-bar-search d-none-mobile">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text"
+                            placeholder="{{ __('messages.search_placeholder') ?? 'Search something...' }}"
+                            class="search-field">
+                    </div>
+                </div>
+
                 <div class="top-bar-right">
                     <div class="top-bar-actions">
-                        <a href="{{ route('notifications.index') }}" class="icon-btn notification-btn"
-                            title="{{ __('messages.notifications') }}">
-                            <i class="fas fa-bell"></i>
-                            @php
-                                $unreadCount = auth()->user()->unreadNotificationsCount();
-                            @endphp
-                            @if($unreadCount > 0)
-                                <span class="badge-notification">{{ $unreadCount }}</span>
-                            @endif
-                        </a>
-
-                        <div class="language-dropdown" style="margin-inline-end: 15px; position: relative;">
-                            <button class="icon-btn language-btn" id="languageToggle" title="{{ __('messages.change_language') }}">
-                                <i class="fas fa-globe"></i>
+                        <div class="language-dropdown" style="position: relative;">
+                            <button class="icon-btn language-btn" id="languageToggle"
+                                title="{{ __('messages.change_language') }}">
+                                <i class="fas fa-globe globe-icon"></i>
                             </button>
                             <div class="language-menu" id="languageMenu">
-                                <a href="{{ route('switch-language', 'ar') }}" class="language-option {{ app()->getLocale() == 'ar' ? 'active' : '' }}">
+                                <a href="{{ route('switch-language', 'ar') }}"
+                                    class="language-option {{ app()->getLocale() == 'ar' ? 'active' : '' }}">
                                     <span class="language-flag">🇸🇦</span>
                                     <span class="language-name">{{ __('messages.arabic') }}</span>
                                     @if(app()->getLocale() == 'ar')
                                         <i class="fas fa-check"></i>
                                     @endif
                                 </a>
-                                <a href="{{ route('switch-language', 'en') }}" class="language-option {{ app()->getLocale() == 'en' ? 'active' : '' }}">
+                                <a href="{{ route('switch-language', 'en') }}"
+                                    class="language-option {{ app()->getLocale() == 'en' ? 'active' : '' }}">
                                     <span class="language-flag">🇬🇧</span>
                                     <span class="language-name">{{ __('messages.english') }}</span>
                                     @if(app()->getLocale() == 'en')
@@ -297,23 +330,29 @@
                             </div>
                         </div>
 
-                        <button class="icon-btn settings-btn" title="{{ __('messages.settings') }}">
+                        <a href="{{ route('notifications.index') }}" class="icon-btn notification-btn" title="{{ __('messages.notifications') }}">
+                            <i class="far fa-bell"></i>
+                            @php
+                                $unreadCount = auth()->user()->unreadNotificationsCount();
+                            @endphp
+                            @if($unreadCount > 0)
+                                <span class="badge-notification">{{ $unreadCount }}</span>
+                            @endif
+                        </a>
+
+                        <a href="{{ route('settings.index') }}" class="icon-btn d-none-mobile" title="{{ __('messages.settings') }}">
                             <i class="fas fa-cog"></i>
+                        </a>
+
+                        <button class="icon-btn theme-toggle" title="{{ __('messages.theme') ?? 'Theme' }}">
+                            <i class="far fa-moon"></i>
                         </button>
-                        <div class="user-profile">
-                            <div class="user-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="user-details">
-                                <div class="user-name">{{ auth()->user()->name }}</div>
-                                <div class="user-title">
-                                    @if(auth()->user()->isAdmin())
-                                        {{ __('messages.main_supervisor') }}
-                                    @elseif(auth()->user()->isStaff())
-                                        {{ __('messages.employee') }}
-                                    @endif
-                                </div>
-                            </div>
+
+                        <div class="user-profile-nav">
+                            <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=3b82f6&color=fff' }}"
+                                alt="{{ auth()->user()->name }}" class="nav-user-avatar">
+                            <span class="nav-user-name">{{ auth()->user()->name }}</span>
+                            <i class="fas fa-chevron-down nav-user-arrow"></i>
                         </div>
                     </div>
                 </div>
@@ -399,20 +438,20 @@
     </script>
     <script>
         // Language dropdown toggle
-        (function() {
+        (function () {
             const languageToggle = document.getElementById('languageToggle');
             const languageMenu = document.getElementById('languageMenu');
             const languageDropdown = document.querySelector('.language-dropdown');
 
             if (languageToggle && languageMenu) {
                 // Toggle dropdown
-                languageToggle.addEventListener('click', function(e) {
+                languageToggle.addEventListener('click', function (e) {
                     e.stopPropagation();
                     languageDropdown.classList.toggle('active');
                 });
 
                 // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
+                document.addEventListener('click', function (e) {
                     if (!languageDropdown.contains(e.target)) {
                         languageDropdown.classList.remove('active');
                     }
@@ -421,7 +460,7 @@
                 // Close dropdown when selecting a language
                 const languageOptions = languageMenu.querySelectorAll('.language-option');
                 languageOptions.forEach(option => {
-                    option.addEventListener('click', function() {
+                    option.addEventListener('click', function () {
                         // The page will reload after language change, so no need to manually close
                     });
                 });

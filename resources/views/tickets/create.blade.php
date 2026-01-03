@@ -1,15 +1,15 @@
 @extends('layouts.dashboard')
 
-@section('title', 'إنشاء تذكرة جديدة')
-@section('page-title', 'إنشاء تذكرة جديدة')
+@section('title', __('messages.create_new_ticket'))
+@section('page-title', __('messages.create_new_ticket'))
 
 @section('content')
     <div class="create-ticket-container">
         <div class="create-ticket-header">
-            <h2>إنشاء تذكرة دعم جديدة</h2>
+            <h2>{{ __('messages.create_ticket_title') }}</h2>
             <a href="{{ route('tickets.index') }}" class="btn-back">
                 <i class="fas fa-arrow-right"></i>
-                العودة للتذاكر
+                {{ __('messages.return_to_tickets') }}
             </a>
         </div>
 
@@ -17,7 +17,7 @@
             @csrf
 
             <div class="form-group">
-                <label for="subject">الموضوع <span class="required">*</span></label>
+                <label for="subject">{{ __('messages.subject') }} <span class="required">*</span></label>
                 <input type="text" name="subject" id="subject" class="form-input" 
                        value="{{ old('subject') }}" required>
                 @error('subject')
@@ -26,17 +26,17 @@
             </div>
 
             <div class="form-group">
-                <label for="priority">الأولوية</label>
+                <label for="priority">{{ __('messages.priority') }}</label>
                 <select name="priority" id="priority" class="form-select">
-                    <option value="low" {{ old('priority') === 'low' ? 'selected' : '' }}>منخفضة</option>
-                    <option value="medium" {{ old('priority', 'medium') === 'medium' ? 'selected' : '' }}>متوسطة</option>
-                    <option value="high" {{ old('priority') === 'high' ? 'selected' : '' }}>عالية</option>
-                    <option value="urgent" {{ old('priority') === 'urgent' ? 'selected' : '' }}>عاجلة</option>
+                    <option value="low" {{ old('priority') === 'low' ? 'selected' : '' }}>{{ __('messages.low') }}</option>
+                    <option value="medium" {{ old('priority', 'medium') === 'medium' ? 'selected' : '' }}>{{ __('messages.medium') }}</option>
+                    <option value="high" {{ old('priority') === 'high' ? 'selected' : '' }}>{{ __('messages.high') }}</option>
+                    <option value="urgent" {{ old('priority') === 'urgent' ? 'selected' : '' }}>{{ __('messages.urgent') }}</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="description">الوصف <span class="required">*</span></label>
+                <label for="description">{{ __('messages.description') }} <span class="required">*</span></label>
                 <textarea name="description" id="description" class="form-textarea" rows="6" required>{{ old('description') }}</textarea>
                 @error('description')
                     <span class="error-message">{{ $message }}</span>
@@ -44,10 +44,10 @@
             </div>
 
             <div class="form-group">
-                <label for="attachments">المرفقات (صور)</label>
+                <label for="attachments">{{ __('messages.attachments_label') }} ({{ __('messages.image') }})</label>
                 <input type="file" name="attachments[]" id="attachments" 
                        class="form-input" multiple accept="image/*">
-                <small class="form-help">يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)</small>
+                <small class="form-help">{{ __('messages.attachments_help_text') }}</small>
                 @error('attachments.*')
                     <span class="error-message">{{ $message }}</span>
                 @enderror
@@ -56,9 +56,9 @@
             <div class="form-actions">
                 <button type="submit" class="btn-submit">
                     <i class="fas fa-paper-plane"></i>
-                    إرسال التذكرة
+                    {{ __('messages.send_ticket_button') }}
                 </button>
-                <a href="{{ route('tickets.index') }}" class="btn-cancel">إلغاء</a>
+                <a href="{{ route('tickets.index') }}" class="btn-cancel">{{ __('messages.cancel') }}</a>
             </div>
         </form>
     </div>

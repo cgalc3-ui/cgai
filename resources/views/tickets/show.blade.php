@@ -1,21 +1,21 @@
 @extends('layouts.dashboard')
 
-@section('title', 'تفاصيل التذكرة')
-@section('page-title', 'تفاصيل التذكرة')
+@section('title', __('messages.ticket_details'))
+@section('page-title', __('messages.ticket_details'))
 
 @section('content')
     <div class="ticket-details-container">
         <!-- Header -->
         <div class="ticket-details-header">
             <div class="header-left">
-                <h2>{{ $ticket->subject }}</h2>
+                <h2>{{ $ticket->trans('subject') }}</h2>
                 <div class="ticket-meta-info">
                     <span class="ticket-date">
                         <i class="fas fa-calendar"></i> {{ $ticket->created_at->format('Y-m-d H:i') }}
                     </span>
                     @if($ticket->assignedUser)
                         <span class="ticket-assigned">
-                            <i class="fas fa-user"></i> معين ل: {{ $ticket->assignedUser->name }}
+                            <i class="fas fa-user"></i> {{ __('messages.assigned_to_label') }}: {{ $ticket->assignedUser->name }}
                         </span>
                     @endif
                 </div>
@@ -23,24 +23,24 @@
             <div class="header-right">
                 <a href="{{ route('tickets.index') }}" class="btn-back">
                     <i class="fas fa-arrow-right"></i>
-                    <span>العودة</span>
+                    <span>{{ __('messages.back') }}</span>
                 </a>
             </div>
         </div>
 
         <!-- Ticket Description -->
         <div class="ticket-description-section">
-            <h3>وصف التذكرة</h3>
-            <p class="ticket-description-text">{{ $ticket->description }}</p>
+            <h3>{{ __('messages.ticket_description') }}</h3>
+            <p class="ticket-description-text">{{ $ticket->trans('description') }}</p>
             
             @if($ticket->attachments->whereNull('message_id')->count() > 0)
                 <div class="ticket-attachments">
-                    <h4>المرفقات:</h4>
+                    <h4>{{ __('messages.attachments_label') }}:</h4>
                     <div class="attachments-grid">
                         @foreach($ticket->attachments->whereNull('message_id') as $attachment)
                             <div class="attachment-item">
                                 @if($attachment->isImage())
-                                    <a href="{{ Storage::url($attachment->file_path) }}" target="_blank" title="انقر لعرض الصورة بحجم كامل">
+                                    <a href="{{ Storage::url($attachment->file_path) }}" target="_blank" title="{{ __('messages.click_to_view_full_image') }}">
                                         <img src="{{ Storage::url($attachment->file_path) }}" 
                                              alt="{{ $attachment->file_name }}" 
                                              class="attachment-image"
@@ -65,51 +65,51 @@
         <div class="ticket-info-section">
             <div class="info-card">
                 <div class="info-item">
-                    <label>الحالة:</label>
+                    <label>{{ __('messages.status') }}:</label>
                     @if($ticket->status === 'open')
-                        <span class="badge badge-warning">مفتوحة</span>
+                        <span class="badge badge-warning">{{ __('messages.open') }}</span>
                     @elseif($ticket->status === 'in_progress')
-                        <span class="badge badge-info">قيد المعالجة</span>
+                        <span class="badge badge-info">{{ __('messages.in_progress') }}</span>
                     @elseif($ticket->status === 'resolved')
-                        <span class="badge badge-success">محلولة</span>
+                        <span class="badge badge-success">{{ __('messages.resolved') }}</span>
                     @else
-                        <span class="badge badge-secondary">مغلقة</span>
+                        <span class="badge badge-secondary">{{ __('messages.closed') }}</span>
                     @endif
                 </div>
                 <div class="info-item">
-                    <label>الأولوية:</label>
+                    <label>{{ __('messages.priority') }}:</label>
                     @if($ticket->priority === 'urgent')
-                        <span class="badge badge-danger">عاجلة</span>
+                        <span class="badge badge-danger">{{ __('messages.urgent') }}</span>
                     @elseif($ticket->priority === 'high')
-                        <span class="badge badge-warning">عالية</span>
+                        <span class="badge badge-warning">{{ __('messages.high') }}</span>
                     @elseif($ticket->priority === 'medium')
-                        <span class="badge badge-info">متوسطة</span>
+                        <span class="badge badge-info">{{ __('messages.medium') }}</span>
                     @else
-                        <span class="badge badge-secondary">منخفضة</span>
+                        <span class="badge badge-secondary">{{ __('messages.low') }}</span>
                     @endif
                 </div>
                 <div class="info-item">
-                    <label>العميل:</label>
+                    <label>{{ __('messages.client') }}:</label>
                     <span>{{ $ticket->user->name }}</span>
                 </div>
             </div>
 
             @if(auth()->user()->isAdminOrStaff())
                 <div class="admin-actions-card">
-                    <h3>إجراءات إدارية</h3>
+                    <h3>{{ __('messages.administrative_actions') }}</h3>
                     <form action="{{ route('tickets.update-status', $ticket) }}" method="POST" class="status-form">
                         @csrf
                         @method('PUT')
                         <div class="form-group">
-                            <label>تحديث الحالة:</label>
+                            <label>{{ __('messages.update_status') }}:</label>
                             <select name="status" class="form-select">
-                                <option value="open" {{ $ticket->status === 'open' ? 'selected' : '' }}>مفتوحة</option>
-                                <option value="in_progress" {{ $ticket->status === 'in_progress' ? 'selected' : '' }}>قيد المعالجة</option>
-                                <option value="resolved" {{ $ticket->status === 'resolved' ? 'selected' : '' }}>محلولة</option>
-                                <option value="closed" {{ $ticket->status === 'closed' ? 'selected' : '' }}>مغلقة</option>
+                                <option value="open" {{ $ticket->status === 'open' ? 'selected' : '' }}>{{ __('messages.open') }}</option>
+                                <option value="in_progress" {{ $ticket->status === 'in_progress' ? 'selected' : '' }}>{{ __('messages.in_progress') }}</option>
+                                <option value="resolved" {{ $ticket->status === 'resolved' ? 'selected' : '' }}>{{ __('messages.resolved') }}</option>
+                                <option value="closed" {{ $ticket->status === 'closed' ? 'selected' : '' }}>{{ __('messages.closed') }}</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn-update">تحديث</button>
+                        <button type="submit" class="btn-update">{{ __('messages.update_status') }}</button>
                     </form>
                 </div>
             @endif
@@ -117,17 +117,17 @@
 
         <!-- Messages -->
         <div class="messages-section">
-            <h3>المحادثة</h3>
+            <h3>{{ __('messages.conversation') }}</h3>
             <div class="messages-list">
                 @foreach($ticket->messages as $message)
                     @if(!$message->is_internal || auth()->user()->isAdminOrStaff())
                         <div class="message-item {{ $message->user_id === auth()->id() ? 'own-message' : '' }}">
                             <div class="message-header">
                                 <div class="message-user">
-                                    <strong>{{ $message->user->name }}</strong>
-                                    @if($message->is_internal)
-                                        <span class="badge-internal">ملاحظة داخلية</span>
-                                    @endif
+                                <strong>{{ $message->user->name }}</strong>
+                                @if($message->is_internal)
+                                    <span class="badge-internal">{{ __('messages.internal_note') }}</span>
+                                @endif
                                 </div>
                                 <span class="message-time">{{ $message->created_at->diffForHumans() }}</span>
                             </div>
@@ -138,7 +138,7 @@
                                         @foreach($message->attachments as $attachment)
                                             <div class="attachment-item">
                                                 @if($attachment->isImage())
-                                                    <a href="{{ Storage::url($attachment->file_path) }}" target="_blank" title="انقر لعرض الصورة بحجم كامل">
+                                                    <a href="{{ Storage::url($attachment->file_path) }}" target="_blank" title="{{ __('messages.click_to_view_full_image') }}">
                                                         <img src="{{ Storage::url($attachment->file_path) }}" 
                                                              alt="{{ $attachment->file_name }}" 
                                                              class="attachment-image"
@@ -165,30 +165,30 @@
 
         <!-- Reply Form -->
         <div class="reply-section">
-            <h3>إضافة رد</h3>
+            <h3>{{ __('messages.add_reply') }}</h3>
             <form action="{{ route('tickets.add-message', $ticket) }}" method="POST" enctype="multipart/form-data" class="reply-form">
                 @csrf
                 <div class="form-group">
                     <textarea name="message" class="form-textarea" rows="4" 
-                              placeholder="اكتب ردك هنا..." required></textarea>
+                              placeholder="{{ __('messages.reply_placeholder') }}" required></textarea>
                 </div>
                 @if(auth()->user()->isAdminOrStaff())
                     <div class="form-group">
                         <label class="checkbox-label">
                             <input type="checkbox" name="is_internal" value="1">
-                            <span>ملاحظة داخلية (لن يراها العميل)</span>
+                            <span>{{ __('messages.internal_note_desc') }}</span>
                         </label>
                     </div>
                 @endif
                 <div class="form-group">
-                    <label for="attachments">إرفاق صور (اختياري)</label>
+                    <label for="attachments">{{ __('messages.attach_images') }} ({{ __('messages.optional') }})</label>
                     <input type="file" name="attachments[]" id="attachments" 
                            class="form-input" multiple accept="image/*">
-                    <small class="form-help">يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)</small>
+                    <small class="form-help">{{ __('messages.attachments_help_text') }}</small>
                 </div>
                 <button type="submit" class="btn-send">
                     <i class="fas fa-paper-plane"></i>
-                    إرسال
+                    {{ __('messages.send') }}
                 </button>
             </form>
         </div>

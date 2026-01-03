@@ -40,33 +40,49 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Sidebar nav group toggle
-    const navGroupHeaders = document.querySelectorAll('.nav-group-header');
-    navGroupHeaders.forEach(header => {
-        header.addEventListener('click', () => {
-            const navGroup = header.closest('.nav-group');
-            const navGroupContent = navGroup.querySelector('.nav-group-content');
-            const navArrow = header.querySelector('.nav-arrow');
-
-            if (navGroupContent.style.display === 'block') {
-                navGroupContent.style.display = 'none';
-                navArrow.style.transform = 'rotate(0deg)';
-            } else {
-                navGroupContent.style.display = 'block';
-                navArrow.style.transform = 'rotate(-90deg)';
-            }
-        });
+    // Ensure active nav group is open on load
+    const activeHeaders = document.querySelectorAll('.nav-group-header.active');
+    activeHeaders.forEach(header => {
+        const navGroup = header.closest('.nav-group');
+        const navGroupItems = navGroup.querySelector('.nav-group-items');
+        const arrow = header.querySelector('.nav-arrow');
+        if (navGroupItems) {
+            navGroupItems.classList.add('expanded');
+            if (arrow) arrow.classList.add('rotated');
+        }
     });
 
-    // Ensure active nav group is open on load
-    const activeNavGroup = document.querySelector('.nav-group.active');
-    if (activeNavGroup) {
-        const navGroupContent = activeNavGroup.querySelector('.nav-group-content');
-        const navArrow = activeNavGroup.querySelector('.nav-arrow');
-        if (navGroupContent) {
-            navGroupContent.style.display = 'block';
-            navArrow.style.transform = 'rotate(-90deg)';
+    // Also check for sub-items that are active to keep parent open
+    const activeSubItems = document.querySelectorAll('.nav-group-items .nav-item.active');
+    activeSubItems.forEach(item => {
+        const navGroupItems = item.closest('.nav-group-items');
+        const navGroup = item.closest('.nav-group');
+        const header = navGroup ? navGroup.querySelector('.nav-group-header') : null;
+        const arrow = header ? header.querySelector('.nav-arrow') : null;
+
+        if (navGroupItems) {
+            navGroupItems.classList.add('expanded');
+            if (header) header.classList.add('active');
+            if (arrow) arrow.classList.add('rotated');
         }
+    });
+
+    // Language toggle
+    const languageToggle = document.getElementById('languageToggle');
+    const languageMenu = document.getElementById('languageMenu');
+
+    if (languageToggle && languageMenu) {
+        languageToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            languageMenu.classList.toggle('show');
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!languageToggle.contains(e.target) && !languageMenu.contains(e.target)) {
+                languageMenu.classList.remove('show');
+            }
+        });
     }
 
     // Modal functionality

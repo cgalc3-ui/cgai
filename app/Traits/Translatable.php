@@ -27,4 +27,15 @@ trait Translatable
         // Return default (Arabic) value
         return $this->attributes[$attribute] ?? null;
     }
+
+    /**
+     * Accessor for trans attribute - allows checking if trans method exists
+     * This prevents Laravel from calling trans() without arguments when accessed as property
+     *
+     * @return bool
+     */
+    public function getTransAttribute(): bool
+    {
+        return true;
+    }
 }

@@ -5,13 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Translatable;
 
 class Ticket extends Model
 {
+    use Translatable;
+
     protected $fillable = [
         'user_id',
         'subject',
+        'subject_en',
         'description',
+        'description_en',
         'status',
         'priority',
         'assigned_to',

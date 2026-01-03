@@ -500,6 +500,183 @@
 						"description": "الحصول على بيانات Dashboard العميل. يتطلب Token."
 					},
 					"response": []
+				},
+				{
+					"name": "4. Get Customer Bookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/bookings?status=pending&per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "فلترة حسب الحالة (pending, confirmed, completed, cancelled)"
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "عدد النتائج في الصفحة"
+								}
+							]
+						},
+						"description": "الحصول على جميع حجوزات العميل. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Get Customer Past Bookings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/past?status=completed&per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"past"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "completed",
+									"description": "فلترة حسب الحالة (completed, cancelled)"
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "عدد النتائج في الصفحة"
+								}
+							]
+						},
+						"description": "الحصول على الحجوزات السابقة للعميل (المكتملة أو الملغاة أو المنتهية). يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Get Customer Booking Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/bookings/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"bookings",
+								"1"
+							]
+						},
+						"description": "الحصول على تفاصيل حجز معين للعميل. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Get Help & Guide",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/help-guide",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"help-guide"
+							]
+						},
+						"description": "الحصول على قائمة المساعدات والدليل للعميل. يتم إرجاع المحتوى حسب دور المستخدم (admin, staff, customer). يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "8. Get Help & Guide by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/help-guide/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"help-guide",
+								"1"
+							]
+						},
+						"description": "الحصول على دليل معين حسب ID. يتم التحقق من دور المستخدم قبل إرجاع المحتوى. يتطلب Token."
+					},
+					"response": []
 				}
 			],
 			"description": "جميع endpoints الخاصة بالعميل"

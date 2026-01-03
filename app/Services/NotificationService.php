@@ -79,7 +79,9 @@ class NotificationService
      */
     public function bookingCreated($booking)
     {
-        $serviceName = $booking->service ? $booking->service->name : ($booking->consultation ? $booking->consultation->name : '');
+        $serviceName = $booking->service 
+            ? $booking->service->trans('name') 
+            : ($booking->consultation ? $booking->consultation->trans('name') : '');
         
         // Notify customer - Store translation keys, not translated text
         $this->notifyCustomer(
@@ -92,7 +94,7 @@ class NotificationService
                 'service_id' => $booking->service_id,
                 'consultation_id' => $booking->consultation_id,
                 'booking_date' => $booking->booking_date,
-                'service' => $serviceName, // Store service name in data for translation
+                'service' => $serviceName, // Store translated service name in data
             ]
         );
 
@@ -109,7 +111,7 @@ class NotificationService
                     'consultation_id' => $booking->consultation_id,
                     'customer_id' => $booking->customer_id,
                     'booking_date' => $booking->booking_date,
-                    'service' => $serviceName, // Store service name in data for translation
+                    'service' => $serviceName, // Store translated service name in data
                 ]
             );
         }
@@ -143,7 +145,9 @@ class NotificationService
 
         $titleKey = $statusKeys[$booking->status] ?? 'messages.booking_status_updated';
         
-        $serviceName = $booking->service ? $booking->service->name : ($booking->consultation ? $booking->consultation->name : '');
+        $serviceName = $booking->service 
+            ? $booking->service->trans('name') 
+            : ($booking->consultation ? $booking->consultation->trans('name') : '');
 
         // Notify customer - Store translation keys, not translated text
         $this->notifyCustomer(
@@ -155,7 +159,7 @@ class NotificationService
                 'booking_id' => $booking->id,
                 'old_status' => $oldStatus,
                 'new_status' => $booking->status,
-                'service' => $serviceName, // Store service name in data for translation
+                'service' => $serviceName, // Store translated service name in data
                 'status_key' => $titleKey, // Store status key for translation
             ]
         );
@@ -171,7 +175,7 @@ class NotificationService
                     'booking_id' => $booking->id,
                     'old_status' => $oldStatus,
                     'new_status' => $booking->status,
-                    'service' => $serviceName, // Store service name in data for translation
+                    'service' => $serviceName, // Store translated service name in data
                 ]
             );
         }

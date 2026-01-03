@@ -1,20 +1,20 @@
 @extends('layouts.dashboard')
 
-@section('title', 'الدعم والتذاكر')
-@section('page-title', 'الدعم والتذاكر')
+@section('title', __('messages.support_and_tickets'))
+@section('page-title', __('messages.support_and_tickets'))
 
 @section('content')
     <div class="tickets-container">
         <!-- Header -->
         <div class="tickets-header">
             <div class="header-left">
-                <h2>الدعم والتذاكر</h2>
-                <p>جميع تذاكر الدعم الخاصة بك</p>
+                <h2>{{ __('messages.support_and_tickets') }}</h2>
+                <p>{{ __('messages.all_your_support_tickets') }}</p>
             </div>
             <div class="header-right">
                 <button onclick="openCreateTicketModal()" class="btn-create-ticket">
                     <i class="fas fa-plus"></i>
-                    إنشاء تذكرة جديدة
+                    {{ __('messages.create_new_ticket') }}
                 </button>
             </div>
         </div>
@@ -23,28 +23,28 @@
         <div class="filters-container">
             <form method="GET" action="{{ route('tickets.index') }}" class="filters-form">
                 <div class="filter-group">
-                    <label>الحالة:</label>
+                    <label>{{ __('messages.status_label') }}:</label>
                     <select name="status" class="filter-select">
-                        <option value="">الكل</option>
-                        <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>مفتوحة</option>
-                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>قيد المعالجة
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>{{ __('messages.open') }}</option>
+                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>{{ __('messages.in_progress') }}
                         </option>
-                        <option value="resolved" {{ request('status') === 'resolved' ? 'selected' : '' }}>محلولة</option>
-                        <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>مغلقة</option>
+                        <option value="resolved" {{ request('status') === 'resolved' ? 'selected' : '' }}>{{ __('messages.resolved') }}</option>
+                        <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>{{ __('messages.closed') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>الأولوية:</label>
+                    <label>{{ __('messages.priority_label') }}:</label>
                     <select name="priority" class="filter-select">
-                        <option value="">الكل</option>
-                        <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>منخفضة</option>
-                        <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>متوسطة</option>
-                        <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>عالية</option>
-                        <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>عاجلة</option>
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>{{ __('messages.low') }}</option>
+                        <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>{{ __('messages.medium') }}</option>
+                        <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>{{ __('messages.high') }}</option>
+                        <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>{{ __('messages.urgent') }}</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-filter">تطبيق</button>
-                <a href="{{ route('tickets.index') }}" class="btn-clear">مسح</a>
+                <button type="submit" class="btn-filter">{{ __('messages.apply') }}</button>
+                <a href="{{ route('tickets.index') }}" class="btn-clear">{{ __('messages.clear_filter') }}</a>
             </form>
         </div>
 
@@ -55,7 +55,7 @@
                     <div class="ticket-header">
                         <div class="ticket-title-section">
                             <h3 class="ticket-title">
-                                <a href="{{ route('tickets.show', $ticket) }}">{{ $ticket->subject }}</a>
+                                <a href="{{ route('tickets.show', $ticket) }}">{{ $ticket->trans('subject') }}</a>
                             </h3>
                             <div class="ticket-meta">
                                 <span class="ticket-date">
@@ -66,49 +66,49 @@
                         </div>
                         <div class="ticket-status-section">
                             @if($ticket->status === 'open')
-                                <span class="status-pill pending">مفتوحة</span>
+                                <span class="status-pill pending">{{ __('messages.open') }}</span>
                             @elseif($ticket->status === 'in_progress')
-                                <span class="status-pill active">قيد المعالجة</span>
+                                <span class="status-pill active">{{ __('messages.in_progress') }}</span>
                             @elseif($ticket->status === 'resolved')
-                                <span class="status-pill confirmed">محلولة</span>
+                                <span class="status-pill confirmed">{{ __('messages.resolved') }}</span>
                             @else
-                                <span class="status-pill cancelled">مغلقة</span>
+                                <span class="status-pill cancelled">{{ __('messages.closed') }}</span>
                             @endif
                             @if($ticket->priority === 'urgent')
-                                <span class="status-pill cancelled">عاجلة</span>
+                                <span class="status-pill cancelled">{{ __('messages.urgent') }}</span>
                             @elseif($ticket->priority === 'high')
-                                <span class="status-pill pending">عالية</span>
+                                <span class="status-pill pending">{{ __('messages.high') }}</span>
                             @elseif($ticket->priority === 'medium')
-                                <span class="status-pill active">متوسطة</span>
+                                <span class="status-pill active">{{ __('messages.medium') }}</span>
                             @else
-                                <span class="status-pill completed">منخفضة</span>
+                                <span class="status-pill completed">{{ __('messages.low') }}</span>
                             @endif
                         </div>
                     </div>
                     <div class="ticket-body">
-                        <p class="ticket-description">{{ \Illuminate\Support\Str::limit($ticket->description, 150) }}</p>
+                        <p class="ticket-description">{{ \Illuminate\Support\Str::limit($ticket->trans('description'), 150) }}</p>
                         @if($ticket->latestMessage)
                             <div class="ticket-last-message">
                                 <i class="fas fa-comment"></i>
-                                آخر رد: {{ $ticket->latestMessage->created_at->diffForHumans() }}
+                                {{ __('messages.last_reply') }}: {{ $ticket->latestMessage->created_at->diffForHumans() }}
                             </div>
                         @endif
                     </div>
                     <div class="ticket-footer">
                         <a href="{{ route('tickets.show', $ticket) }}" class="btn-view-ticket">
                             <i class="fas fa-eye"></i>
-                            عرض التفاصيل
+                            {{ __('messages.view_details') }}
                         </a>
                     </div>
                 </div>
             @empty
                 <div class="empty-state">
                     <i class="fas fa-headset"></i>
-                    <h3>لا توجد تذاكر</h3>
-                    <p>لم يتم العثور على أي تذاكر دعم حالياً</p>
+                    <h3>{{ __('messages.no_tickets_message') }}</h3>
+                    <p>{{ __('messages.no_tickets_desc') }}</p>
                     <button onclick="openCreateTicketModal()" class="btn-create-ticket">
                         <i class="fas fa-plus"></i>
-                        إنشاء تذكرة جديدة
+                        {{ __('messages.create_new_ticket') }}
                     </button>
                 </div>
             @endforelse
@@ -544,7 +544,7 @@
     <div id="createTicketModal" class="modal-overlay" style="display: none;">
         <div class="modal-container">
             <div class="modal-header">
-                <h2><i class="fas fa-plus-circle"></i> إنشاء تذكرة جديدة</h2>
+                <h2><i class="fas fa-plus-circle"></i> {{ __('messages.create_new_ticket') }}</h2>
                 <button class="modal-close" onclick="closeCreateTicketModal()">
                     <i class="fas fa-times"></i>
                 </button>
@@ -553,43 +553,43 @@
                 <form id="createTicketForm" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="ticketSubject">الموضوع <span class="required">*</span></label>
+                        <label for="ticketSubject">{{ __('messages.subject') }} <span class="required">*</span></label>
                         <input type="text" name="subject" id="ticketSubject" class="form-input" required>
                         <span class="error-message" id="subjectError"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="ticketPriority">الأولوية</label>
+                        <label for="ticketPriority">{{ __('messages.priority') }}</label>
                         <select name="priority" id="ticketPriority" class="form-select">
-                            <option value="low">منخفضة</option>
-                            <option value="medium" selected>متوسطة</option>
-                            <option value="high">عالية</option>
-                            <option value="urgent">عاجلة</option>
+                            <option value="low">{{ __('messages.low') }}</option>
+                            <option value="medium" selected>{{ __('messages.medium') }}</option>
+                            <option value="high">{{ __('messages.high') }}</option>
+                            <option value="urgent">{{ __('messages.urgent') }}</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="ticketDescription">الوصف <span class="required">*</span></label>
+                        <label for="ticketDescription">{{ __('messages.description') }} <span class="required">*</span></label>
                         <textarea name="description" id="ticketDescription" class="form-textarea" rows="6"
                             required></textarea>
                         <span class="error-message" id="descriptionError"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="ticketAttachments">المرفقات (صور)</label>
+                        <label for="ticketAttachments">{{ __('messages.attachments_label') }} ({{ __('messages.image') }})</label>
                         <input type="file" name="attachments[]" id="ticketAttachments" class="form-input" multiple
                             accept="image/*">
-                        <small class="form-help">يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)</small>
+                        <small class="form-help">{{ __('messages.attachments_help_text') }}</small>
                         <span class="error-message" id="attachmentsError"></span>
                     </div>
 
                     <div class="form-actions">
                         <button type="submit" class="btn-submit" id="submitTicketBtn">
                             <i class="fas fa-paper-plane"></i>
-                            إرسال التذكرة
+                            {{ __('messages.send_ticket_button') }}
                         </button>
                         <button type="button" class="btn-cancel" onclick="closeCreateTicketModal()">
-                            إلغاء
+                            {{ __('messages.cancel') }}
                         </button>
                     </div>
                 </form>
@@ -628,7 +628,7 @@
 
                 // Disable submit button
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}';
 
                 fetch('{{ route("tickets.store") }}', {
                     method: 'POST',
@@ -672,7 +672,7 @@
                                         : data.errors['attachments.*'];
                                 }
                             } else {
-                                alert('حدث خطأ: ' + (data.message || 'فشل إنشاء التذكرة'));
+                                alert('{{ __('messages.error') }}: ' + (data.message || '{{ __('messages.ticket_created_success') }}'));
                             }
                         }
                     })
@@ -692,13 +692,13 @@
                                     : error.errors.attachments;
                             }
                         } else {
-                            alert('حدث خطأ أثناء إنشاء التذكرة. يرجى المحاولة مرة أخرى.');
+                            alert('{{ __('messages.error_loading_tickets') }}');
                         }
                     })
                     .finally(() => {
                         // Re-enable submit button
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التذكرة';
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> {{ __('messages.send_ticket_button') }}';
                     });
             });
 

@@ -15,7 +15,9 @@ class UpdateSubscriptionRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'name_en' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'duration_type' => 'required|in:monthly,3months,6months,yearly',
             'features' => 'required|array|min:1',

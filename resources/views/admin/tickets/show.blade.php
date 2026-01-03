@@ -8,7 +8,7 @@
         <!-- Header -->
         <div class="ticket-details-header">
             <div class="header-left">
-                <h2>{{ $ticket->subject }}</h2>
+                <h2>{{ $ticket->trans('subject') }}</h2>
                 <div class="ticket-meta-info">
                     <span class="ticket-date">
                         <i class="fas fa-calendar"></i> {{ $ticket->created_at->format('Y-m-d H:i') }}
@@ -80,7 +80,7 @@
         <div class="description-section">
             <h3>{{ __('messages.initial_description') }}</h3>
             <div class="description-content">
-                <p>{{ $ticket->description }}</p>
+                <p>{{ $ticket->trans('description') }}</p>
             </div>
         </div>
 

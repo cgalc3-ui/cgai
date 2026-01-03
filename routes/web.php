@@ -116,6 +116,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // FAQs management
     Route::resource('faqs', AdminFaqController::class);
 
+    // Help Guides management
+    Route::resource('help-guides', \App\Http\Controllers\Admin\HelpGuideController::class);
+
     // Subscriptions management
     Route::resource('subscriptions', SubscriptionController::class)->parameters([
         'subscriptions' => 'subscription'
@@ -174,10 +177,18 @@ Route::middleware('auth')->prefix('settings')->name('settings.')->group(function
 // FAQ route for all authenticated users
 Route::middleware('auth')->get('/faqs', [FaqController::class, 'index'])->name('faqs.index');
 
+// Help & Guide routes (for all authenticated users)
+Route::middleware('auth')->prefix('help-guide')->name('help-guide.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Web\HelpGuideController::class, 'index'])->name('index');
+});
+
 // Customer routes (public and authenticated)
 Route::prefix('customer')->name('customer.')->group(function () {
     // Authenticated routes
     Route::middleware('auth')->group(function () {
         // Customer routes here
+        Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('dashboard');
+        Route::get('/bookings', [CustomerController::class, 'bookings'])->name('bookings');
+        Route::get('/bookings/{booking}', [CustomerController::class, 'showBooking'])->name('bookings.show');
     });
 });

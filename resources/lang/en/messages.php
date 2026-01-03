@@ -85,6 +85,8 @@ return [
     'mark_all_as_read' => 'Mark All as Read',
     'view_booking' => 'View Booking',
     'mark_as_read' => 'Mark as Read',
+    'view_subscription_request' => 'View Subscription Request',
+    'view_subscription' => 'View Subscription',
     'delete_notification_confirm' => 'Are you sure you want to delete this notification?',
     'no_notifications' => 'No Notifications',
     'no_notifications_found' => 'No notifications found at the moment',
@@ -304,12 +306,12 @@ return [
     'edit_user_desc' => 'Edit user information and roles',
     'select_role' => 'Select Role',
     'specializations_help' => 'You can select more than one specialization (press Ctrl for multiple selection)',
-    
+
     // API Messages - Authentication & Authorization
     'unauthorized_access' => 'You do not have permission to access',
     'unauthorized_booking_access' => 'You do not have permission to access this booking',
     'login_required' => 'Login required to access',
-    
+
     // API Messages - Services
     'service_no_category' => 'The selected service does not have a category',
     'service_no_category_specified' => 'The selected service does not have a specified category.',
@@ -322,11 +324,11 @@ return [
     'service_created_success' => 'Service created successfully',
     'service_updated_success' => 'Service updated successfully',
     'service_deleted_success' => 'Service deleted successfully',
-    
+
     // API Messages - Consultations
     'consultation_no_category' => 'The selected consultation does not have a category',
     'consultation_not_available' => 'The selected consultation is not currently available',
-    
+
     // API Messages - Bookings
     'booking_invalid_time_slot_ids' => 'One or more of the specified time slot IDs are invalid.',
     'booking_time_slots_unavailable' => 'Some of the selected time slots are no longer available. Please refresh the page and try again.',
@@ -346,7 +348,7 @@ return [
     'booking_payment_success' => 'Payment successful and booking confirmed',
     'booking_time_slots_no_longer_available' => 'Some time slots are no longer available. Please create a new booking.',
     'booking_not_belongs_to_customer' => 'This booking does not belong to you',
-    
+
     // Notification Messages
     'booking_created_successfully' => 'Booking Created Successfully',
     'new_booking_created_for_service' => 'New booking created for service: :service',
@@ -377,12 +379,12 @@ return [
     'subscription_expiring_for_package' => 'Your subscription for package :package will expire in :expires_in',
     'new_support_ticket' => 'New Support Ticket',
     'new_support_ticket_from_user' => 'New support ticket opened by user: :user - Subject: :subject',
-    
+
     // API Messages - Time Slots
     'time_slot_not_found' => 'Selected time slot not found',
     'time_slot_no_longer_available' => 'Selected time slot is no longer available',
     'employee_no_category_for_consultation' => 'The available employee does not provide the required specialization for this consultation',
-    
+
     // API Messages - Payment
     'payment_connection_failed' => 'Failed to connect to payment server',
     'payment_order_creation_failed' => 'Failed to create payment order',
@@ -396,12 +398,12 @@ return [
     'payment_successful' => 'Payment successful',
     'payment_failed' => 'Payment failed',
     'payment_cannot_calculate_total' => 'Cannot calculate total price for booking. Please check booking data.',
-    
+
     // API Messages - Ratings
     'rating_only_completed_bookings' => 'You can only rate completed bookings',
     'rating_already_exists' => 'You have already rated this booking',
     'rating_created_success' => 'Rating added successfully',
-    
+
     // API Messages - Subscriptions
     'subscription_not_available' => 'Subscription package is not currently available',
     'subscription_request_pending' => 'You already have a pending subscription request',
@@ -412,24 +414,24 @@ return [
     'subscription_cannot_delete_requests' => 'Cannot delete subscription package because it is linked to subscription requests',
     'subscription_cannot_delete_active' => 'Cannot delete subscription package because it is linked to active subscriptions',
     'subscription_deleted_success' => 'Subscription package deleted successfully',
-    
+
     // API Messages - Tickets
     'ticket_created_success' => 'Ticket created successfully',
     'ticket_unauthorized_access' => 'You do not have permission to access this ticket',
     'ticket_message_sent_success' => 'Message sent successfully',
     'ticket_cannot_update_status' => 'You do not have permission to update ticket status',
     'ticket_status_updated_success' => 'Ticket status updated successfully',
-    
+
     // API Messages - Notifications
     'notification_unauthorized_access' => 'You do not have permission to access this notification',
     'notification_marked_read' => 'Notification marked as read',
     'notification_all_marked_read' => 'All notifications marked as read',
     'notification_cannot_delete' => 'You do not have permission to delete this notification',
     'notification_deleted_success' => 'Notification deleted successfully',
-    
+
     // API Messages - Employees
     'employee_not_found' => 'Employee record not found',
-    
+
     // API Messages - Categories & SubCategories
     'category_created_success' => 'Category created successfully',
     'category_updated_success' => 'Category updated successfully',
@@ -437,17 +439,17 @@ return [
     'subcategory_created_success' => 'Subcategory created successfully',
     'subcategory_updated_success' => 'Subcategory updated successfully',
     'subcategory_deleted_success' => 'Subcategory deleted successfully',
-    
+
     // API Messages - Auth
     'phone_not_registered' => 'Phone number not registered',
     'phone_already_registered' => 'Phone number already registered',
     'profile_updated_success' => 'Profile updated successfully',
-    
+
     // API Messages - General
     'invalid_data' => 'Invalid input data',
     'order_not_found' => 'Order not found',
     'booking_not_found' => 'Booking not found',
-    
+
     // Admin & Staff Views - Additional translations
     'services_list' => 'Services List',
     'manage_services_desc' => 'Manage and view all available services',
@@ -477,9 +479,31 @@ return [
     'attachment_help' => 'You can attach multiple images (JPG, PNG, GIF)',
     'back' => 'Back',
     'total_tickets' => 'Total Tickets',
+    'support_and_tickets' => 'Support & Tickets',
+    'all_your_support_tickets' => 'All your support tickets',
+    'create_new_ticket' => 'Create New Ticket',
+    'status_label' => 'Status',
+    'priority_label' => 'Priority',
+    'clear_filter' => 'Clear',
+    'view_details' => 'View Details',
+    'no_tickets_message' => 'No Tickets',
+    'no_tickets_desc' => 'No support tickets found at the moment',
+    'ticket_description' => 'Ticket Description',
+    'attachments_label' => 'Attachments',
+    'assigned_to_label' => 'Assigned to',
+    'return_to_tickets' => 'Back to Tickets',
+    'create_ticket_title' => 'Create New Support Ticket',
+    'send_ticket_button' => 'Send Ticket',
+    'send' => 'Send',
+    'last_reply' => 'Last Reply',
+    'ticket_description_label' => 'Description',
+    'attachments_help_text' => 'You can attach up to 5 images (max 5MB per image)',
+    'click_to_view_full_image' => 'Click to view full size image',
+    'unassigned' => 'Unassigned',
+    'no_tickets_desc_customer' => 'No support tickets found at the moment',
     'all' => 'All',
     'check_paymob_settings' => 'Please check PayMob settings or review logs',
-    
+
     // Admin & Staff Views - Additional missing keys
     'delete_service_confirm' => 'Are you sure you want to delete this service?',
     'no_services' => 'No services found',
@@ -512,7 +536,7 @@ return [
     'disabled' => 'Disabled',
     'unlimited' => 'Unlimited',
     'category' => 'Category',
-    
+
     // Dashboard & Navigation
     'time_slots' => 'Time Slots',
     'recurring_appointments' => 'Recurring Appointments',
@@ -522,7 +546,7 @@ return [
     'packages' => 'Packages',
     'faqs_management' => 'FAQs Management',
     'main_supervisor' => 'Main Supervisor',
-    
+
     // Categories
     'categories_list' => 'Categories List',
     'manage_categories_desc' => 'Manage and view all categories',
@@ -530,7 +554,7 @@ return [
     'total_categories' => 'Total Categories',
     'delete_category_confirm' => 'Are you sure you want to delete this category?',
     'no_categories' => 'No categories found',
-    
+
     // Sub Categories
     'sub_categories_list' => 'Sub Categories List',
     'manage_sub_categories_desc' => 'Manage and view all sub categories',
@@ -538,7 +562,7 @@ return [
     'total_sub_categories' => 'Total Sub Categories',
     'delete_sub_category_confirm' => 'Are you sure you want to delete this sub category?',
     'no_sub_categories' => 'No sub categories found',
-    
+
     // Additional missing keys
     'create_category_desc' => 'Create a new category in the system',
     'time_slots_list' => 'Time Slots List',
@@ -587,6 +611,7 @@ return [
     'edit_admin_desc' => 'Edit admin information',
     'add_new_customer_desc' => 'Add a new customer to the system',
     'quick_actions' => 'Quick Actions',
+    'request_status' => 'Request Status',
     'total_customers' => 'Total Customers',
     'verification_status' => 'Verification Status',
     'not_available' => 'Not Available',
@@ -665,4 +690,108 @@ return [
     'unknown' => 'Unknown',
     'joined' => 'Joined',
     'recently' => 'Recently',
+    'navigation' => 'Navigation',
+    'more_menu' => 'More',
+    'apps' => 'Apps',
+    'theme' => 'Theme',
+    'help_and_guide' => 'Help & Guide',
+    'help_guide_title' => 'User Guide',
+    'help_guide_desc' => 'Comprehensive guide to using the system',
+    'help_guide_admin_title' => 'Admin Guide',
+    'help_guide_staff_title' => 'Staff Guide',
+    'help_guide_customer_title' => 'Customer Guide',
+    'help_guide_manage_users' => 'User Management',
+    'help_guide_manage_bookings' => 'Bookings Management',
+    'help_guide_manage_services' => 'Services Management',
+    'help_guide_manage_subscriptions' => 'Subscriptions Management',
+    'help_guide_my_bookings' => 'My Bookings',
+    'help_guide_work_schedule' => 'Work Schedule',
+    'help_guide_support_tickets' => 'Support Tickets',
+    'help_guide_how_to_book' => 'How to Book',
+    'help_guide_track_bookings' => 'Track Bookings',
+    'help_guide_technical_support' => 'Technical Support',
+    'help_guide_manage_users_desc' => 'You can manage all users through:',
+    'help_guide_admins_desc' => 'Add, edit, and delete administrators',
+    'help_guide_staff_desc' => 'Manage employees and their specializations',
+    'help_guide_customers_desc' => 'View and manage customer data',
+    'help_guide_manage_bookings_desc' => 'You can track and manage all bookings:',
+    'help_guide_view_all_bookings' => 'View all bookings with filtering options',
+    'help_guide_update_booking_status' => 'Update booking status',
+    'help_guide_update_payment_status' => 'Update payment status',
+    'help_guide_print_invoices' => 'Print invoices',
+    'help_guide_manage_services_desc' => 'Manage categories, services, and consultations:',
+    'help_guide_create_categories' => 'Create and edit categories and sub-categories',
+    'help_guide_add_services' => 'Add new services with pricing',
+    'help_guide_manage_consultations' => 'Manage consultations',
+    'help_guide_manage_subscriptions_desc' => 'Manage subscription packages and requests:',
+    'help_guide_create_packages' => 'Create new packages',
+    'help_guide_review_requests' => 'Review subscription requests and approve or reject them',
+    'help_guide_track_active_subscriptions' => 'Track active subscriptions',
+    'help_guide_manage_tickets_desc' => 'Manage support tickets:',
+    'help_guide_view_all_tickets' => 'View all tickets',
+    'help_guide_reply_tickets' => 'Reply to tickets',
+    'help_guide_update_ticket_status' => 'Update ticket status',
+    'help_guide_add_internal_notes' => 'Add internal notes',
+    'help_guide_manage_faqs_desc' => 'Manage FAQs:',
+    'help_guide_add_faqs' => 'Add new FAQs',
+    'help_guide_edit_delete_faqs' => 'Edit and delete FAQs',
+    'help_guide_organize_faqs' => 'Organize FAQs by categories',
+    'help_guide_my_bookings_desc' => 'You can track bookings assigned to you:',
+    'help_guide_view_my_bookings' => 'View all bookings assigned to you',
+    'help_guide_view_booking_details' => 'Track details of each booking',
+    'help_guide_track_booking_status' => 'Track booking status',
+    'help_guide_track_customer_data' => 'Track customer data for each booking',
+    'help_guide_work_schedule_desc' => 'Manage work schedule:',
+    'help_guide_view_available_times' => 'View available times',
+    'help_guide_track_upcoming_bookings' => 'Track upcoming bookings',
+    'help_guide_view_schedule_by_date' => 'View work schedule by date',
+    'help_guide_track_booked_available' => 'Track booked and available times',
+    'help_guide_support_tickets_desc' => 'You can communicate with management through:',
+    'help_guide_create_ticket' => 'Create a new support ticket',
+    'help_guide_track_open_tickets' => 'Track open tickets',
+    'help_guide_reply_to_tickets' => 'Reply to tickets',
+    'help_guide_track_ticket_status' => 'Track ticket status',
+    'help_guide_notifications_desc' => 'Track notifications:',
+    'help_guide_view_all_notifications' => 'View all notifications',
+    'help_guide_track_unread_notifications' => 'Track unread notifications',
+    'help_guide_mark_notifications_read' => 'Mark notifications as read',
+    'help_guide_booking_steps' => 'Booking steps:',
+    'help_guide_choose_service' => 'Choose the required service or consultation',
+    'help_guide_choose_employee' => 'Choose the appropriate employee',
+    'help_guide_choose_date_time' => 'Choose the appropriate date and time',
+    'help_guide_review_booking' => 'Review booking details',
+    'help_guide_complete_payment' => 'Complete payment process',
+    'help_guide_receive_confirmation' => 'You will receive a confirmation notification',
+    'help_guide_track_bookings_desc' => 'You can track your bookings through:',
+    'help_guide_view_all_my_bookings' => 'View all your bookings (current and past)',
+    'help_guide_track_each_booking' => 'Track status of each booking',
+    'help_guide_track_payment_status' => 'Track payment status',
+    'help_guide_view_full_details' => 'View full booking details',
+    'help_guide_cancel_booking' => 'Cancel booking (if allowed)',
+    'help_guide_technical_support_desc' => 'To get help:',
+    'help_guide_attach_images' => 'Attach images when needed',
+    'help_guide_faqs_desc' => 'You can find answers to frequently asked questions:',
+    'help_guide_browse_faqs' => 'Browse FAQs by categories',
+    'help_guide_search_faq' => 'Search for a specific question',
+    'help_guide_read_detailed_answers' => 'Read detailed answers',
+    'help_guide_track_booking_updates' => 'Track booking updates',
+    'help_guides_management' => 'Help Guides Management',
+    'manage_help_guides_desc' => 'Manage help and guide content for users',
+    'add_help_guide' => 'Add Guide',
+    'edit_help_guide' => 'Edit Guide',
+    'edit_help_guide_desc' => 'Edit guide content',
+    'create_help_guide_desc' => 'Add a new guide for users',
+    'total_help_guides' => 'Total Guides',
+    'no_help_guides' => 'No guides registered',
+    'no_help_guides_available' => 'No guides available',
+    'help_guides_will_appear_here' => 'Guides will appear here when added',
+    'help_guide_created_success' => 'Guide created successfully',
+    'help_guide_updated_success' => 'Guide updated successfully',
+    'help_guide_deleted_success' => 'Guide deleted successfully',
+    'delete_help_guide_confirm' => 'Are you sure you want to delete this guide?',
+    'select_role' => 'Select Role',
+    'icon' => 'Icon',
+    'content' => 'Content',
+    'help_guide_content_help' => 'You can use simple HTML or plain text. Use &lt;ul&gt; and &lt;li&gt; for lists.',
+    'help_guide_icon_help' => 'Font Awesome icon (example: fas fa-users, fas fa-calendar-check)',
 ];

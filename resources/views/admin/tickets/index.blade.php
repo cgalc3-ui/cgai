@@ -82,7 +82,7 @@
                             </td>
                             <td>
                                 <a href="{{ route('admin.tickets.show', $ticket) }}" class="ticket-link">
-                                    {{ \Illuminate\Support\Str::limit($ticket->subject, 50) }}
+                                    {{ \Illuminate\Support\Str::limit($ticket->trans('subject'), 50) }}
                                 </a>
                             </td>
                             <td class="text-center">

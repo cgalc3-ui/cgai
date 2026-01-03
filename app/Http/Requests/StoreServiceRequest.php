@@ -16,8 +16,10 @@ class StoreServiceRequest extends FormRequest
         return [
             'sub_category_id' => 'required|exists:sub_categories,id',
             'name' => 'required|string|max:255',
+            'name_en' => 'nullable|string|max:255',
             'slug' => 'nullable|string|max:255|unique:services,slug',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
             'hourly_rate' => 'required|numeric|min:0',
             'is_active' => 'nullable|boolean',
         ];

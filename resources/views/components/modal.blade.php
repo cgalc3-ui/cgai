@@ -1,4 +1,4 @@
-<div class="modal-overlay" id="{{ $modalId ?? 'defaultModal' }}" style="display: none;">
+<div class="modal-overlay" id="{{ $modalId ?? 'defaultModal' }}">
     <div class="modal-container">
         <div class="modal-header">
             <h3 class="modal-title">{{ $title ?? __('messages.form') }}</h3>
@@ -20,7 +20,7 @@
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.5);
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
         z-index: 10000;
@@ -30,6 +30,7 @@
     }
 
     .modal-overlay.show {
+        display: flex;
         opacity: 1;
         visibility: visible;
     }

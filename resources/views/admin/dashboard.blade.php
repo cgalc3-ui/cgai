@@ -37,7 +37,7 @@
             <div class="stat-card-chart">
                 <svg viewBox="0 0 100 30" preserveAspectRatio="none">
                     <path d="M0,25 C10,20 20,28 30,22 C40,16 50,18 60,12 C70,6 80,10 90,8 C100,6 100,5 100,5" fill="none"
-                        stroke="#ec4899" stroke-width="2" stroke-linecap="round" />
+                        stroke="#f1556c" stroke-width="2" stroke-linecap="round" />
                 </svg>
             </div>
         </div>
@@ -59,13 +59,14 @@
                             <i class="fas fa-arrow-up"></i> +{{ number_format(8.2, 2) }}%
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }} {{ __('messages.today_bookings') }}</span>
+                    <span class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }}
+                        {{ __('messages.today_bookings') }}</span>
                 </div>
             </div>
             <div class="stat-card-chart">
                 <svg viewBox="0 0 100 30" preserveAspectRatio="none">
                     <path d="M0,20 C10,25 20,15 30,18 C40,21 50,10 60,15 C70,20 80,5 90,10 C100,15 100,10 100,10"
-                        fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
+                        fill="none" stroke="#4fc6e1" stroke-width="2" stroke-linecap="round" />
                 </svg>
             </div>
         </div>
@@ -87,13 +88,14 @@
                             <i class="fas fa-arrow-up"></i> +{{ number_format(12.1, 2) }}%
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ $recentCustomers->count() }} {{ __('messages.new_customers') }}</span>
+                    <span class="stat-card-subtitle">{{ $recentCustomers->count() }}
+                        {{ __('messages.new_customers') }}</span>
                 </div>
             </div>
             <div class="stat-card-chart">
                 <svg viewBox="0 0 100 30" preserveAspectRatio="none">
                     <path d="M0,28 C10,22 20,25 30,20 C40,15 50,22 60,18 C70,14 80,18 90,12 C100,6 100,5 100,5" fill="none"
-                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+                        stroke="#f7b84b" stroke-width="2" stroke-linecap="round" />
                 </svg>
             </div>
         </div>
@@ -115,13 +117,14 @@
                             <i class="fas fa-users"></i>
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ $stats['total_categories'] ?? 0 }} {{ __('messages.different_categories') }}</span>
+                    <span class="stat-card-subtitle">{{ $stats['total_categories'] ?? 0 }}
+                        {{ __('messages.different_categories') }}</span>
                 </div>
             </div>
             <div class="stat-card-chart">
                 <svg viewBox="0 0 100 30" preserveAspectRatio="none">
                     <path d="M0,15 C10,12 20,18 30,15 C40,12 50,20 60,15 C70,10 80,12 90,10 C100,8 100,10 100,10"
-                        fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" />
+                        fill="none" stroke="#6658dd" stroke-width="2" stroke-linecap="round" />
                 </svg>
             </div>
         </div>
@@ -193,7 +196,8 @@
                 style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
                 <h3 style="font-size: 18px; font-weight: 700; color: #1e293b;"><i class="fas fa-history color-emerald"></i>
                     {{ __('messages.recent_bookings') }}</h3>
-                <a href="{{ route('admin.bookings') }}" class="btn btn-sm btn-info" style="border-radius: 8px;">{{ __('messages.view_all') }}</a>
+                <a href="{{ route('admin.bookings') }}" class="btn btn-sm btn-info"
+                    style="border-radius: 8px;">{{ __('messages.view_all') }}</a>
             </div>
             <div class="card-body" style="padding: 0;">
                 <div class="table-container" style="box-shadow: none; border-radius: 0; border: none;">
@@ -242,8 +246,10 @@
                                     </td>
                                     <td style="text-align: center;">
                                         <div class="status-pill {{ $booking->status }}">
-                                            @if($booking->status == 'pending') {{ __('messages.pending') }} @elseif($booking->status == 'confirmed')
-                                            {{ __('messages.confirmed') }} @elseif($booking->status == 'completed') {{ __('messages.completed') }} @else {{ __('messages.cancelled') }} @endif
+                                            @if($booking->status == 'pending') {{ __('messages.pending') }}
+                                            @elseif($booking->status == 'confirmed')
+                                            {{ __('messages.confirmed') }} @elseif($booking->status == 'completed')
+                                            {{ __('messages.completed') }} @else {{ __('messages.cancelled') }} @endif
                                         </div>
                                     </td>
                                     <td style="text-align: center;">
@@ -364,7 +370,8 @@
             <div class="card-header"
                 style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
                 <h3 style="font-size: 18px; font-weight: 700; color: #1e293b;">
-                    <i class="fas fa-user-tie color-indigo" style="margin-left: 8px;"></i> {{ __('messages.recent_staff_added') }}
+                    <i class="fas fa-user-tie color-indigo" style="margin-left: 8px;"></i>
+                    {{ __('messages.recent_staff_added') }}
                 </h3>
                 <a href="{{ route('admin.users.staff') }}" class="btn-view-all">{{ __('messages.view_all') }}</a>
             </div>
@@ -377,10 +384,13 @@
                             </div>
                             <div class="item-details">
                                 <span class="item-title">{{ $staff->name }}</span>
-                                <span class="item-subtitle">{{ $staff->employee?->specialization ?? __('messages.staff_in_system') }}</span>
+                                <span
+                                    class="item-subtitle">{{ $staff->employee?->specialization ?? __('messages.staff_in_system') }}</span>
                             </div>
                             <div class="item-action" style="display: flex; align-items: center; gap: 10px;">
-                                <div class="status-pill confirmed" style="font-size: 10px; padding: 2px 8px;">{{ __('messages.active') }}</div>
+                                <div class="status-pill confirmed" style="font-size: 10px; padding: 2px 8px;">
+                                    {{ __('messages.active') }}
+                                </div>
                                 <a href="{{ route('admin.users.staff.edit', $staff->id) }}" class="calm-action-btn sm">
                                     <i class="far fa-edit"></i>
                                 </a>
@@ -396,7 +406,8 @@
             <div class="card-header"
                 style="display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;">
                 <h3 style="font-size: 18px; font-weight: 700; color: #1e293b;">
-                    <i class="fas fa-users color-emerald" style="margin-left: 8px;"></i> {{ __('messages.recent_customers_joined') }}
+                    <i class="fas fa-users color-emerald" style="margin-left: 8px;"></i>
+                    {{ __('messages.recent_customers_joined') }}
                 </h3>
                 <a href="{{ route('admin.users.customers') }}" class="btn-view-all">{{ __('messages.view_all') }}</a>
             </div>
@@ -414,7 +425,9 @@
                             </div>
                             <div class="item-action" style="display: flex; align-items: center; gap: 10px;">
                                 <div class="status-pill pending"
-                                    style="font-size: 10px; padding: 2px 8px; background: #f0fdf4; color: #16a34a;">{{ __('messages.customer_role') }}</div>
+                                    style="font-size: 10px; padding: 2px 8px; background: #f0fdf4; color: #16a34a;">
+                                    {{ __('messages.customer_role') }}
+                                </div>
                                 <a href="{{ route('admin.users.customers.show', $customer->id) }}" class="calm-action-btn sm">
                                     <i class="far fa-eye"></i>
                                 </a>
@@ -823,6 +836,11 @@
                 color: #6366f1;
             }
 
+            .tile-purple .action-icon-box {
+                background: rgba(139, 92, 246, 0.1);
+                color: #8b5cf6;
+            }
+
             .action-tile:hover .action-icon-box {
                 transform: scale(1.1);
             }
@@ -841,6 +859,10 @@
 
             .tile-indigo:hover {
                 background: linear-gradient(135deg, #fff 60%, rgba(99, 102, 241, 0.05) 100%);
+            }
+
+            .tile-purple:hover {
+                background: linear-gradient(135deg, #fff 60%, rgba(139, 92, 246, 0.05) 100%);
             }
 
             .action-info {

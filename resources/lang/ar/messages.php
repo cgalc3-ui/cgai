@@ -85,6 +85,8 @@ return [
     'mark_all_as_read' => 'تحديد الكل كمقروء',
     'view_booking' => 'عرض الحجز',
     'mark_as_read' => 'تحديد كمقروء',
+    'view_subscription_request' => 'عرض طلب الاشتراك',
+    'view_subscription' => 'عرض الاشتراك',
     'delete_notification_confirm' => 'هل أنت متأكد من حذف هذا الإشعار؟',
     'no_notifications' => 'لا توجد إشعارات',
     'no_notifications_found' => 'لم يتم العثور على أي إشعارات حالياً',
@@ -304,12 +306,12 @@ return [
     'edit_user_desc' => 'تعديل معلومات المستخدم والأدوار',
     'select_role' => 'اختر الدور',
     'specializations_help' => 'يمكنك اختيار أكثر من تخصص (اضغط Ctrl للاختيار المتعدد)',
-    
+
     // API Messages - Authentication & Authorization
     'unauthorized_access' => 'ليس لديك صلاحية للوصول',
     'unauthorized_booking_access' => 'ليس لديك صلاحية للوصول لهذا الحجز',
     'login_required' => 'يجب تسجيل الدخول للوصول',
-    
+
     // API Messages - Services
     'service_no_category' => 'الخدمة المختارة لا تحتوي على فئة',
     'service_no_category_specified' => 'الخدمة المختارة لا تحتوي على فئة محدد.',
@@ -322,11 +324,11 @@ return [
     'service_created_success' => 'تم إنشاء الخدمة بنجاح',
     'service_updated_success' => 'تم تحديث الخدمة بنجاح',
     'service_deleted_success' => 'تم حذف الخدمة بنجاح',
-    
+
     // API Messages - Consultations
     'consultation_no_category' => 'الاستشارة المختارة لا تحتوي على فئة',
     'consultation_not_available' => 'الاستشارة المختارة غير متاحة حالياً',
-    
+
     // API Messages - Bookings
     'booking_invalid_time_slot_ids' => 'واحد أو أكثر من معرفات الوقت المحددة غير صالحة.',
     'booking_time_slots_unavailable' => 'بعض الوقت المحددة لم تعد متاحة. يرجى تحديث الصفحة والمحاولة مرة أخرى.',
@@ -346,7 +348,7 @@ return [
     'booking_payment_success' => 'تم الدفع بنجاح وتأكيد الحجز',
     'booking_time_slots_no_longer_available' => 'بعض الأوقات لم تعد متاحة. يرجى إنشاء حجز جديد.',
     'booking_not_belongs_to_customer' => 'هذا الحجز لا ينتمي إليك',
-    
+
     // Notification Messages
     'booking_created_successfully' => 'تم إنشاء الحجز بنجاح',
     'new_booking_created_for_service' => 'تم إنشاء حجز جديد للخدمة: :service',
@@ -377,12 +379,12 @@ return [
     'subscription_expiring_for_package' => 'اشتراكك في باقة :package سينتهي في :expires_in',
     'new_support_ticket' => 'تذكرة دعم جديدة',
     'new_support_ticket_from_user' => 'تم فتح تذكرة دعم جديدة من المستخدم: :user - الموضوع: :subject',
-    
+
     // API Messages - Time Slots
     'time_slot_not_found' => 'الوقت المختار غير موجود',
     'time_slot_no_longer_available' => 'الوقت المختار لم يعد متاحاً',
     'employee_no_category_for_consultation' => 'الموظف المتاح لا يقدم التخصص المطلوب لهذه الاستشارة',
-    
+
     // API Messages - Payment
     'payment_connection_failed' => 'فشل الاتصال بخادم الدفع',
     'payment_order_creation_failed' => 'فشل إنشاء طلب الدفع',
@@ -396,12 +398,12 @@ return [
     'payment_successful' => 'تم الدفع بنجاح',
     'payment_failed' => 'فشل الدفع',
     'payment_cannot_calculate_total' => 'لا يمكن حساب السعر الإجمالي للحجز. يرجى التحقق من بيانات الحجز.',
-    
+
     // API Messages - Ratings
     'rating_only_completed_bookings' => 'يمكنك التقييم فقط للحجوزات المنتهية',
     'rating_already_exists' => 'لقد قمت بتقييم هذا الحجز من قبل',
     'rating_created_success' => 'تم إضافة التقييم بنجاح',
-    
+
     // API Messages - Subscriptions
     'subscription_not_available' => 'الباقة غير متاحة حالياً',
     'subscription_request_pending' => 'لديك طلب اشتراك معلق بالفعل',
@@ -412,24 +414,24 @@ return [
     'subscription_cannot_delete_requests' => 'لا يمكن حذف الباقة لأنها مرتبطة بطلبات اشتراك',
     'subscription_cannot_delete_active' => 'لا يمكن حذف الباقة لأنها مرتبطة باشتراكات نشطة',
     'subscription_deleted_success' => 'تم حذف الباقة بنجاح',
-    
+
     // API Messages - Tickets
     'ticket_created_success' => 'تم إنشاء التذكرة بنجاح',
     'ticket_unauthorized_access' => 'ليس لديك صلاحية للوصول لهذه التذكرة',
     'ticket_message_sent_success' => 'تم إرسال الرسالة بنجاح',
     'ticket_cannot_update_status' => 'ليس لديك صلاحية لتحديث حالة التذكرة',
     'ticket_status_updated_success' => 'تم تحديث حالة التذكرة بنجاح',
-    
+
     // API Messages - Notifications
     'notification_unauthorized_access' => 'ليس لديك صلاحية للوصول لهذا الإشعار',
     'notification_marked_read' => 'تم تحديد الإشعار كمقروء',
     'notification_all_marked_read' => 'تم تحديد جميع الإشعارات كمقروءة',
     'notification_cannot_delete' => 'ليس لديك صلاحية لحذف هذا الإشعار',
     'notification_deleted_success' => 'تم حذف الإشعار بنجاح',
-    
+
     // API Messages - Employees
     'employee_not_found' => 'ملف الموظف غير موجود',
-    
+
     // API Messages - Categories & SubCategories
     'category_created_success' => 'تم إنشاء الفئة بنجاح',
     'category_updated_success' => 'تم تحديث الفئة بنجاح',
@@ -437,17 +439,17 @@ return [
     'subcategory_created_success' => 'تم إنشاء الفئة الفرعية بنجاح',
     'subcategory_updated_success' => 'تم تحديث الفئة الفرعية بنجاح',
     'subcategory_deleted_success' => 'تم حذف الفئة الفرعية بنجاح',
-    
+
     // API Messages - Auth
     'phone_not_registered' => 'رقم الهاتف غير مسجل',
     'phone_already_registered' => 'رقم الهاتف مسجل بالفعل',
     'profile_updated_success' => 'تم تحديث الملف الشخصي بنجاح',
-    
+
     // API Messages - General
     'invalid_data' => 'البيانات المدخلة غير صحيحة',
     'order_not_found' => 'Order not found',
     'booking_not_found' => 'الحجز غير موجود',
-    
+
     // Admin & Staff Views - Additional translations
     'services_list' => 'قائمة الخدمات',
     'manage_services_desc' => 'إدارة وعرض جميع الخدمات المتاحة',
@@ -478,9 +480,31 @@ return [
     'attachment_help' => 'يمكنك إرفاق صور متعددة (JPG, PNG, GIF)',
     'back' => 'رجوع',
     'total_tickets' => 'إجمالي التذاكر',
+    'support_and_tickets' => 'الدعم والتذاكر',
+    'all_your_support_tickets' => 'جميع تذاكر الدعم الخاصة بك',
+    'create_new_ticket' => 'إنشاء تذكرة جديدة',
+    'status_label' => 'الحالة',
+    'priority_label' => 'الأولوية',
+    'clear_filter' => 'مسح',
+    'view_details' => 'عرض التفاصيل',
+    'no_tickets_message' => 'لا توجد تذاكر',
+    'no_tickets_desc' => 'لم يتم العثور على أي تذاكر دعم حالياً',
+    'ticket_description' => 'وصف التذكرة',
+    'attachments_label' => 'المرفقات',
+    'assigned_to_label' => 'معين ل',
+    'return_to_tickets' => 'العودة للتذاكر',
+    'create_ticket_title' => 'إنشاء تذكرة دعم جديدة',
+    'send_ticket_button' => 'إرسال التذكرة',
+    'send' => 'إرسال',
+    'last_reply' => 'آخر رد',
+    'ticket_description_label' => 'الوصف',
+    'attachments_help_text' => 'يمكنك إرفاق حتى 5 صور (حجم كل صورة حتى 5MB)',
+    'click_to_view_full_image' => 'انقر لعرض الصورة بحجم كامل',
+    'unassigned' => 'غير معين',
+    'no_tickets_desc_customer' => 'لم يتم العثور على أي تذاكر دعم حالياً',
     'all' => 'الكل',
     'check_paymob_settings' => 'يرجى التحقق من إعدادات PayMob أو مراجعة السجلات',
-    
+
     // Admin & Staff Views - Additional missing keys
     'delete_service_confirm' => 'هل أنت متأكد من حذف هذه الخدمة؟',
     'no_services' => 'لا توجد خدمات',
@@ -513,7 +537,7 @@ return [
     'disabled' => 'معطل',
     'unlimited' => 'غير محدود',
     'category' => 'الفئة',
-    
+
     // Dashboard & Navigation
     'time_slots' => 'الأوقات المتاحة',
     'recurring_appointments' => 'المواعيد المتكررة',
@@ -523,7 +547,7 @@ return [
     'packages' => 'الباقات',
     'faqs_management' => 'إدارة الأسئلة الشائعة',
     'main_supervisor' => 'المشرف الرئيسي',
-    
+
     // Categories
     'categories_list' => 'قائمة الفئات',
     'manage_categories_desc' => 'إدارة وعرض جميع الفئات',
@@ -531,7 +555,7 @@ return [
     'total_categories' => 'إجمالي الفئات',
     'delete_category_confirm' => 'هل أنت متأكد من حذف هذه الفئة؟',
     'no_categories' => 'لا توجد فئات',
-    
+
     // Sub Categories
     'sub_categories_list' => 'قائمة الفئات الفرعية',
     'manage_sub_categories_desc' => 'إدارة وعرض جميع الفئات الفرعية',
@@ -539,7 +563,7 @@ return [
     'total_sub_categories' => 'إجمالي الفئات الفرعية',
     'delete_sub_category_confirm' => 'هل أنت متأكد من حذف هذه الفئة الفرعية؟',
     'no_sub_categories' => 'لا توجد فئات فرعية',
-    
+
     // Additional missing keys
     'create_category_desc' => 'إنشاء فئة جديدة في النظام',
     'time_slots_list' => 'قائمة الأوقات المتاحة',
@@ -588,6 +612,7 @@ return [
     'edit_admin_desc' => 'تعديل معلومات الأدمن',
     'add_new_customer_desc' => 'إضافة عميل جديد إلى النظام',
     'quick_actions' => 'إجراءات سريعة',
+    'request_status' => 'حالة الطلب',
     'total_customers' => 'إجمالي العملاء',
     'verification_status' => 'حالة التحقق',
     'not_available' => 'غير متوفر',
@@ -666,4 +691,108 @@ return [
     'unknown' => 'مجهول',
     'joined' => 'انضم',
     'recently' => 'مؤخراً',
+    'navigation' => 'التنقل',
+    'more_menu' => 'المزيد',
+    'apps' => 'التطبيقات',
+    'theme' => 'المظهر',
+    'help_and_guide' => 'المساعدات والدليل',
+    'help_guide_title' => 'دليل الاستخدام',
+    'help_guide_desc' => 'دليل شامل لاستخدام النظام',
+    'help_guide_admin_title' => 'دليل الإدارة',
+    'help_guide_staff_title' => 'دليل الموظفين',
+    'help_guide_customer_title' => 'دليل العملاء',
+    'help_guide_manage_users' => 'إدارة المستخدمين',
+    'help_guide_manage_bookings' => 'إدارة الحجوزات',
+    'help_guide_manage_services' => 'إدارة الخدمات',
+    'help_guide_manage_subscriptions' => 'إدارة الاشتراكات',
+    'help_guide_my_bookings' => 'حجوزاتي',
+    'help_guide_work_schedule' => 'جدول العمل',
+    'help_guide_support_tickets' => 'التذاكر والدعم',
+    'help_guide_how_to_book' => 'كيفية الحجز',
+    'help_guide_track_bookings' => 'متابعة الحجوزات',
+    'help_guide_technical_support' => 'الدعم الفني',
+    'help_guide_manage_users_desc' => 'يمكنك إدارة جميع المستخدمين من خلال:',
+    'help_guide_admins_desc' => 'إضافة وتعديل وحذف المشرفين',
+    'help_guide_staff_desc' => 'إدارة الموظفين وتخصصاتهم',
+    'help_guide_customers_desc' => 'عرض وإدارة بيانات العملاء',
+    'help_guide_manage_bookings_desc' => 'يمكنك متابعة وإدارة جميع الحجوزات:',
+    'help_guide_view_all_bookings' => 'عرض جميع الحجوزات مع إمكانية الفلترة',
+    'help_guide_update_booking_status' => 'تحديث حالة الحجز',
+    'help_guide_update_payment_status' => 'تحديث حالة الدفع',
+    'help_guide_print_invoices' => 'طباعة الفواتير',
+    'help_guide_manage_services_desc' => 'إدارة الفئات والخدمات والاستشارات:',
+    'help_guide_create_categories' => 'إنشاء وتعديل الفئات والفئات الفرعية',
+    'help_guide_add_services' => 'إضافة خدمات جديدة مع تحديد الأسعار',
+    'help_guide_manage_consultations' => 'إدارة الاستشارات',
+    'help_guide_manage_subscriptions_desc' => 'إدارة باقات الاشتراكات وطلبات الاشتراك:',
+    'help_guide_create_packages' => 'إنشاء باقات جديدة',
+    'help_guide_review_requests' => 'مراجعة طلبات الاشتراك والموافقة عليها أو رفضها',
+    'help_guide_track_active_subscriptions' => 'متابعة الاشتراكات النشطة',
+    'help_guide_manage_tickets_desc' => 'إدارة تذاكر الدعم:',
+    'help_guide_view_all_tickets' => 'عرض جميع التذاكر',
+    'help_guide_reply_tickets' => 'الرد على التذاكر',
+    'help_guide_update_ticket_status' => 'تحديث حالة التذكرة',
+    'help_guide_add_internal_notes' => 'إضافة ملاحظات داخلية',
+    'help_guide_manage_faqs_desc' => 'إدارة الأسئلة الشائعة:',
+    'help_guide_add_faqs' => 'إضافة أسئلة شائعة جديدة',
+    'help_guide_edit_delete_faqs' => 'تعديل وحذف الأسئلة',
+    'help_guide_organize_faqs' => 'تنظيم الأسئلة حسب الفئات',
+    'help_guide_my_bookings_desc' => 'يمكنك متابعة الحجوزات المخصصة لك:',
+    'help_guide_view_my_bookings' => 'عرض جميع الحجوزات المخصصة لك',
+    'help_guide_view_booking_details' => 'متابعة تفاصيل كل حجز',
+    'help_guide_track_booking_status' => 'متابعة حالة الحجز',
+    'help_guide_track_customer_data' => 'متابعة بيانات العميل لكل حجز',
+    'help_guide_work_schedule_desc' => 'إدارة جدول أوقات العمل:',
+    'help_guide_view_available_times' => 'عرض الأوقات المتاحة',
+    'help_guide_track_upcoming_bookings' => 'متابعة الحجوزات القادمة',
+    'help_guide_view_schedule_by_date' => 'عرض جدول العمل حسب التاريخ',
+    'help_guide_track_booked_available' => 'متابعة الأوقات المحجوزة والمتاحة',
+    'help_guide_support_tickets_desc' => 'يمكنك التواصل مع الإدارة من خلال:',
+    'help_guide_create_ticket' => 'إنشاء تذكرة دعم جديدة',
+    'help_guide_track_open_tickets' => 'متابعة التذاكر المفتوحة',
+    'help_guide_reply_to_tickets' => 'الرد على التذاكر',
+    'help_guide_track_ticket_status' => 'متابعة حالة التذكرة',
+    'help_guide_notifications_desc' => 'متابعة الإشعارات:',
+    'help_guide_view_all_notifications' => 'عرض جميع الإشعارات',
+    'help_guide_track_unread_notifications' => 'متابعة الإشعارات غير المقروءة',
+    'help_guide_mark_notifications_read' => 'تحديد الإشعارات كمقروءة',
+    'help_guide_booking_steps' => 'خطوات الحجز:',
+    'help_guide_choose_service' => 'اختر الخدمة أو الاستشارة المطلوبة',
+    'help_guide_choose_employee' => 'اختر الموظف المناسب',
+    'help_guide_choose_date_time' => 'اختر التاريخ والوقت المناسب',
+    'help_guide_review_booking' => 'راجع تفاصيل الحجز',
+    'help_guide_complete_payment' => 'أكمل عملية الدفع',
+    'help_guide_receive_confirmation' => 'ستتلقى إشعاراً بتأكيد الحجز',
+    'help_guide_track_bookings_desc' => 'يمكنك متابعة حجوزاتك من خلال:',
+    'help_guide_view_all_my_bookings' => 'عرض جميع حجوزاتك (الحالية والسابقة)',
+    'help_guide_track_each_booking' => 'متابعة حالة كل حجز',
+    'help_guide_track_payment_status' => 'متابعة حالة الدفع',
+    'help_guide_view_full_details' => 'عرض تفاصيل الحجز الكاملة',
+    'help_guide_cancel_booking' => 'إلغاء الحجز (إذا كان مسموحاً)',
+    'help_guide_technical_support_desc' => 'للحصول على المساعدة:',
+    'help_guide_attach_images' => 'إرفاق صور عند الحاجة',
+    'help_guide_faqs_desc' => 'يمكنك العثور على إجابات للأسئلة الشائعة:',
+    'help_guide_browse_faqs' => 'تصفح الأسئلة الشائعة حسب الفئات',
+    'help_guide_search_faq' => 'البحث عن سؤال معين',
+    'help_guide_read_detailed_answers' => 'قراءة الإجابات التفصيلية',
+    'help_guide_track_booking_updates' => 'متابعة تحديثات الحجوزات',
+    'help_guides_management' => 'إدارة المساعدات والدليل',
+    'manage_help_guides_desc' => 'إدارة محتوى المساعدات والدليل للمستخدمين',
+    'add_help_guide' => 'إضافة دليل',
+    'edit_help_guide' => 'تعديل الدليل',
+    'edit_help_guide_desc' => 'تعديل محتوى الدليل',
+    'create_help_guide_desc' => 'إضافة دليل جديد للمستخدمين',
+    'total_help_guides' => 'إجمالي الأدلة',
+    'no_help_guides' => 'لا توجد أدلة مسجلة',
+    'no_help_guides_available' => 'لا توجد أدلة متاحة',
+    'help_guides_will_appear_here' => 'ستظهر الأدلة هنا عند إضافتها',
+    'help_guide_created_success' => 'تم إضافة الدليل بنجاح',
+    'help_guide_updated_success' => 'تم تحديث الدليل بنجاح',
+    'help_guide_deleted_success' => 'تم حذف الدليل بنجاح',
+    'delete_help_guide_confirm' => 'هل أنت متأكد من حذف هذا الدليل؟',
+    'select_role' => 'اختر الدور',
+    'icon' => 'الأيقونة',
+    'content' => 'المحتوى',
+    'help_guide_content_help' => 'يمكنك استخدام HTML بسيط أو نص عادي. استخدم &lt;ul&gt; و &lt;li&gt; للقوائم.',
+    'help_guide_icon_help' => 'أيقونة Font Awesome (مثال: fas fa-users, fas fa-calendar-check)',
 ];

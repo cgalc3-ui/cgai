@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Bookings
         Route::get('/bookings', [BookingController::class, 'index']);
+        Route::get('/bookings/past', [BookingController::class, 'pastBookings']);
         Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']); // For services only
         Route::get('/bookings/available-time-slots', [BookingController::class, 'availableTimeSlots']); // For services only
         Route::get('/bookings/consultation/available-dates', [BookingController::class, 'availableConsultationDates']); // For consultations only
@@ -51,6 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // Ratings
         Route::post('/ratings', [RatingController::class, 'store']);
         Route::get('/ratings/my-ratings', [RatingController::class, 'myRatings']);
+
+        // Help & Guide
+        Route::get('/help-guide', [\App\Http\Controllers\Api\HelpGuideController::class, 'index']);
+        Route::get('/help-guide/{id}', [\App\Http\Controllers\Api\HelpGuideController::class, 'show']);
     });
 
     // Employee routes

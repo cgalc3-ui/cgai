@@ -535,6 +535,136 @@ class BookingController extends Controller
     }
 
     /**
+     * Get past bookings for customer
+     */
+    public function pastBookings(Request $request)
+    {
+        $customer = $request->user();
+
+        if (!$customer->isCustomer()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ليس لديك صلاحية للوصول',
+            ], 403);
+        }
+
+        $now = Carbon::now();
+
+        $query = Booking::where('customer_id', $customer->id)
+            ->with([
+                'service' => function($q) {
+                    $q->with('subCategory.category');
+                },
+                'consultation' => function($q) {
+                    $q->with('category');
+                },
+                'employee.user',
+                'timeSlots',
+                'rating'
+            ])
+            ->where(function($q) use ($now) {
+                // Past bookings: completed, cancelled, or booking date/time has passed
+                $q->whereIn('status', ['completed', 'cancelled'])
+                  ->orWhere(function($subQ) use ($now) {
+                      // Booking date has passed
+                      $subQ->whereDate('booking_date', '<', $now->format('Y-m-d'))
+                           ->orWhere(function($dateQ) use ($now) {
+                               // Same date but end time has passed
+                               $dateQ->whereDate('booking_date', '=', $now->format('Y-m-d'))
+                                     ->whereTime('end_time', '<', $now->format('H:i:s'));
+                           });
+                  });
+            });
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        $bookings = $query->orderBy('booking_date', 'desc')
+            ->orderBy('start_time', 'desc')
+            ->paginate($request->get('per_page', 15));
+
+        // Format the response
+        $formattedBookings = $bookings->getCollection()->map(function ($booking) {
+            return [
+                'id' => $booking->id,
+                'customer_id' => $booking->customer_id,
+                'employee_id' => $booking->employee_id,
+                'service_id' => $booking->service_id,
+                'consultation_id' => $booking->consultation_id,
+                'booking_type' => $booking->booking_type,
+                'booking_date' => $booking->booking_date,
+                'start_time' => $booking->start_time,
+                'end_time' => $booking->end_time,
+                'total_price' => $booking->total_price,
+                'status' => $booking->status,
+                'actual_status' => $booking->actual_status,
+                'payment_status' => $booking->payment_status,
+                'payment_id' => $booking->payment_id,
+                'paid_at' => $booking->paid_at,
+                'notes' => $booking->notes,
+                'created_at' => $booking->created_at,
+                'updated_at' => $booking->updated_at,
+                'service' => $booking->service ? [
+                    'id' => $booking->service->id,
+                    'name' => $booking->service->trans('name'),
+                    'name_en' => $booking->service->name_en,
+                    'description' => $booking->service->trans('description'),
+                    'description_en' => $booking->service->description_en,
+                    'price' => $booking->service->price, 
+                ] : null,
+                'consultation' => $booking->consultation ? [
+                    'id' => $booking->consultation->id,
+                    'name' => $booking->consultation->trans('name'),
+                    'name_en' => $booking->consultation->name_en,
+                    'description' => $booking->consultation->trans('description'),
+                    'description_en' => $booking->consultation->description_en,
+                    'price' => $booking->consultation->price,
+                    'category' => $booking->consultation->category ? [
+                        'id' => $booking->consultation->category->id,
+                        'name' => $booking->consultation->category->trans('name'),
+                    ] : null,
+                ] : null,
+                'employee' => $booking->employee && $booking->employee->user ? [
+                    'name' => $booking->employee->user->name,
+                ] : null,
+                'time_slots' => $booking->timeSlots->map(function ($timeSlot) {
+                    return [
+                        'id' => $timeSlot->id,
+                        'date' => $timeSlot->date,
+                        'start_time' => $timeSlot->start_time,
+                        'end_time' => $timeSlot->end_time,
+                    ];
+                }),
+                'has_rating' => $booking->rating !== null,
+                'rating' => $booking->rating ? [
+                    'id' => $booking->rating->id,
+                    'rating' => $booking->rating->rating,
+                    'comment' => $booking->rating->comment,
+                    'created_at' => $booking->rating->created_at,
+                ] : null,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $formattedBookings,
+            'pagination' => [
+                'current_page' => $bookings->currentPage(),
+                'last_page' => $bookings->lastPage(),
+                'per_page' => $bookings->perPage(),
+                'total' => $bookings->total(),
+                'from' => $bookings->firstItem(),
+                'to' => $bookings->lastItem(),
+            ],
+        ]);
+    }
+
+    /**
      * Get available dates for a service
      */
     public function availableDates(Request $request)

@@ -85,24 +85,20 @@ class Notification extends Model
      */
     public function getTranslatedTitleAttribute()
     {
-        $title = $this->title;
-        
         // Check if title is a translation key (starts with 'messages.')
-        if (strpos($title, 'messages.') === 0) {
-            $params = $this->getTranslationParams('title');
-            $translated = __($title, $params);
-            // If translation exists, return it, otherwise return original
-            return ($translated !== $title) ? $translated : $title;
-        }
-        
-        // Try to match old patterns (Arabic or English) and translate them
-        $translated = $this->translateWithParams($title, $this->data ?? []);
-        if ($translated !== $title && !empty($translated)) {
+        if (strpos($this->title, 'messages.') === 0) {
+            $translated = __($this->title);
+            
+            // If translation exists and has placeholders, replace them with data
+            if ($this->data && is_array($this->data)) {
+                $translated = $this->replacePlaceholders($translated);
+            }
+            
             return $translated;
         }
         
-        // Return as is (for old notifications with direct text)
-        return $title;
+        // If not a translation key, return as is
+        return $this->title;
     }
 
     /**
@@ -110,187 +106,98 @@ class Notification extends Model
      */
     public function getTranslatedMessageAttribute()
     {
-        $message = $this->message;
-        
         // Check if message is a translation key (starts with 'messages.')
-        if (strpos($message, 'messages.') === 0) {
-            $params = $this->getTranslationParams('message');
-            $translated = __($message, $params);
-            // If translation exists and is different from key, return it
-            if ($translated !== $message && !empty($translated)) {
-                return $translated;
+        if (strpos($this->message, 'messages.') === 0) {
+            $translated = __($this->message);
+            
+            // If translation exists and has placeholders, replace them with data
+            if ($this->data && is_array($this->data)) {
+                $translated = $this->replacePlaceholders($translated);
             }
-        }
-        
-        // Try to match old patterns (Arabic or English) and translate them
-        $translated = $this->translateWithParams($message, $this->data ?? []);
-        if ($translated !== $message && !empty($translated)) {
+            
             return $translated;
         }
         
-        // Return as is (for old notifications with direct text)
-        return $message;
+        // If not a translation key, return as is
+        return $this->message;
     }
 
     /**
-     * Get translation parameters from data
+     * Replace placeholders in translated text with data values
      */
-    protected function getTranslationParams($type)
+    private function replacePlaceholders($text)
     {
-        if (!$this->data) {
-            return [];
+        if (!is_array($this->data)) {
+            return $text;
         }
 
-        $params = [];
-        
-        // Extract service/consultation name
-        if (isset($this->data['service_id'])) {
-            $service = \App\Models\Service::find($this->data['service_id']);
-            if ($service) {
-                $params['service'] = $service->name;
-            }
-        }
-        
-        if (isset($this->data['consultation_id'])) {
-            $consultation = \App\Models\Consultation::find($this->data['consultation_id']);
-            if ($consultation) {
-                $params['service'] = $consultation->name;
-            }
-        }
-        
-        // Extract customer name
-        if (isset($this->data['customer_id'])) {
-            $customer = \App\Models\User::find($this->data['customer_id']);
-            if ($customer) {
-                $params['customer'] = $customer->name;
-            }
-        }
-        
-        // Extract booking ID
-        if (isset($this->data['booking_id'])) {
-            $params['booking_id'] = $this->data['booking_id'];
-        }
-        
-        // Extract status
-        if (isset($this->data['status_key'])) {
-            $params['status'] = __($this->data['status_key']);
-        } elseif (isset($this->data['new_status'])) {
-            $statusKey = 'messages.booking_' . $this->data['new_status'];
-            $translated = __($statusKey);
-            $params['status'] = ($translated !== $statusKey) ? $translated : $this->data['new_status'];
-        }
-        
-        // Extract service name from data if stored directly
+        // Replace service name
         if (isset($this->data['service'])) {
-            $params['service'] = $this->data['service'];
+            $text = str_replace(':service', $this->data['service'], $text);
         }
-        
-        // Extract customer name from data if stored directly
-        if (isset($this->data['customer'])) {
-            $params['customer'] = $this->data['customer'];
-        }
-        
-        // Extract package name from data if stored directly
-        if (isset($this->data['package'])) {
-            $params['package'] = $this->data['package'];
-        }
-        
-        // Extract user name from data if stored directly
-        if (isset($this->data['user'])) {
-            $params['user'] = $this->data['user'];
-        }
-        
-        // Extract subject from data if stored directly
-        if (isset($this->data['subject'])) {
-            $params['subject'] = $this->data['subject'];
-        }
-        
-        // Extract expires_in from data if stored directly
-        if (isset($this->data['expires_in'])) {
-            $params['expires_in'] = $this->data['expires_in'];
-        }
-        
-        // Extract name from data if stored directly (for subscriptions)
-        if (isset($this->data['name'])) {
-            $params['name'] = $this->data['name'];
-        }
-        
-        return $params;
-    }
 
-    /**
-     * Translate with parameters
-     */
-    protected function translateWithParams($text, $data)
-    {
-        // Try to find translation key pattern for old Arabic and English notifications
-        $patterns = [
-            // Arabic patterns
-            '/طلب اشتراك جديد/' => 'messages.new_subscription_request',
-            '/طلب اشتراك جديد من المستخدم: (.+)/' => ['key' => 'messages.new_subscription_request_from_user', 'params' => ['user' => 1]],
-            '/تم إنشاء باقة جديدة/' => 'messages.new_subscription_package_created',
-            '/تم إنشاء باقة جديدة: (.+)/' => ['key' => 'messages.new_subscription_package_created_with_name', 'params' => ['name' => 1]],
-            '/تم قبول طلب الاشتراك/' => 'messages.subscription_request_approved',
-            '/تم قبول طلب الاشتراك في باقة: (.+)/' => ['key' => 'messages.subscription_request_approved_for_package', 'params' => ['package' => 1]],
-            '/تم رفض طلب الاشتراك/' => 'messages.subscription_request_rejected',
-            '/تم رفض طلب الاشتراك في باقة: (.+)\. السبب: (.+)/' => ['key' => 'messages.subscription_request_rejected_for_package', 'params' => ['package' => 1, 'reason' => 2]],
-            '/تم إنشاء حجز جديد للخدمة: (.+)/' => ['key' => 'messages.new_booking_created_for_service', 'params' => ['service' => 1]],
-            '/تم تعيين حجز جديد للخدمة: (.+)/' => ['key' => 'messages.new_booking_assigned_for_service', 'params' => ['service' => 1]],
-            '/تم إنشاء حجز جديد من العميل: (.+)/' => ['key' => 'messages.new_booking_created_by_customer', 'params' => ['customer' => 1]],
-            '/تم تحديث حالة حجزك للخدمة: (.+) إلى: (.+)/' => ['key' => 'messages.booking_status_updated_for_service', 'params' => ['service' => 1, 'status' => 2]],
-            '/تم تحديث حالة الحجز للخدمة: (.+)/' => ['key' => 'messages.booking_status_updated_for_service_employee', 'params' => ['service' => 1]],
-            '/تم استلام الدفع بنجاح للحجز رقم: (\d+)/' => ['key' => 'messages.payment_received_successfully_for_booking', 'params' => ['booking_id' => 1]],
-            '/تم استلام دفعة من العميل: (.+)/' => ['key' => 'messages.payment_received_from_customer', 'params' => ['customer' => 1]],
-            '/حجز جديد/' => 'messages.new_booking',
-            '/تم استلام دفعة/' => 'messages.payment_received_admin',
-            '/اشتراكك على وشك الانتهاء/' => 'messages.subscription_expiring_soon',
-            '/اشتراكك في باقة (.+) سينتهي في (.+)/' => ['key' => 'messages.subscription_expiring_for_package', 'params' => ['package' => 1, 'expires_in' => 2]],
-            '/تذكرة دعم جديدة/' => 'messages.new_support_ticket',
-            '/تم فتح تذكرة دعم جديدة من المستخدم: (.+) - الموضوع: (.+)/' => ['key' => 'messages.new_support_ticket_from_user', 'params' => ['user' => 1, 'subject' => 2]],
-            // English patterns (for old notifications)
-            '/^New Subscription Request$/i' => 'messages.new_subscription_request',
-            '/New Subscription Request from user: (.+)/i' => ['key' => 'messages.new_subscription_request_from_user', 'params' => ['user' => 1]],
-            '/^New Subscription Package Created$/i' => 'messages.new_subscription_package_created',
-            '/New subscription package created: (.+)/i' => ['key' => 'messages.new_subscription_package_created_with_name', 'params' => ['name' => 1]],
-            '/^New Booking$/i' => 'messages.new_booking',
-            '/New booking created by customer: (.+)/i' => ['key' => 'messages.new_booking_created_by_customer', 'params' => ['customer' => 1]],
-            '/^Payment Received$/i' => 'messages.payment_received_admin',
-            '/Payment received from customer: (.+)/i' => ['key' => 'messages.payment_received_from_customer', 'params' => ['customer' => 1]],
-        ];
-        
-        foreach ($patterns as $pattern => $keyConfig) {
-            if (preg_match($pattern, $text, $matches)) {
-                $key = is_array($keyConfig) ? $keyConfig['key'] : $keyConfig;
-                $params = [];
-                
-                if (is_array($keyConfig) && isset($keyConfig['params'])) {
-                    foreach ($keyConfig['params'] as $paramName => $matchIndex) {
-                        if (isset($matches[$matchIndex])) {
-                            $params[$paramName] = $matches[$matchIndex];
-                        }
-                    }
-                } else {
-                    // Simple pattern matching
-                    if (isset($matches[1])) {
-                        if (is_numeric($matches[1])) {
-                            $params['booking_id'] = $matches[1];
-                        } else {
-                            $params['service'] = $matches[1];
-                        }
-                    }
-                    if (isset($matches[2])) {
-                        $params['status'] = $matches[2];
-                    }
-                }
-                
-                $translated = __($key, $params);
-                // Only return if translation is different (meaning it was found)
-                if ($translated !== $key) {
-                    return $translated;
-                }
+        // Replace customer name
+        if (isset($this->data['customer'])) {
+            $text = str_replace(':customer', $this->data['customer'], $text);
+        }
+
+        // Replace amount
+        if (isset($this->data['amount'])) {
+            $amount = is_numeric($this->data['amount']) 
+                ? number_format($this->data['amount'], 2) 
+                : $this->data['amount'];
+            $text = str_replace(':amount', $amount, $text);
+        }
+
+        // Replace booking date
+        if (isset($this->data['booking_date'])) {
+            $bookingDate = is_string($this->data['booking_date']) 
+                ? $this->data['booking_date'] 
+                : (is_object($this->data['booking_date']) && method_exists($this->data['booking_date'], 'format')
+                    ? $this->data['booking_date']->format('Y-m-d')
+                    : $this->data['booking_date']);
+            $text = str_replace(':date', $bookingDate, $text);
+        }
+
+        // Replace booking ID
+        if (isset($this->data['booking_id'])) {
+            $text = str_replace(':booking_id', $this->data['booking_id'], $text);
+        }
+
+        // Replace status (translate status if status_key exists)
+        if (isset($this->data['status_key'])) {
+            $statusText = __($this->data['status_key']);
+            $text = str_replace(':status', $statusText, $text);
+        } elseif (isset($this->data['new_status'])) {
+            // Try to translate status directly
+            $statusKey = 'messages.' . $this->data['new_status'];
+            if (__($statusKey) !== $statusKey) {
+                $text = str_replace(':status', __($statusKey), $text);
+            } else {
+                $text = str_replace(':status', $this->data['new_status'], $text);
             }
         }
-        
+
+        // Replace user name
+        if (isset($this->data['user'])) {
+            $text = str_replace(':user', $this->data['user'], $text);
+        }
+
+        // Replace package name
+        if (isset($this->data['package'])) {
+            $text = str_replace(':package', $this->data['package'], $text);
+        }
+
+        // Replace reason
+        if (isset($this->data['reason'])) {
+            $text = str_replace(':reason', $this->data['reason'], $text);
+        }
+
+        // Replace expires_in
+        if (isset($this->data['expires_in'])) {
+            $text = str_replace(':expires_in', $this->data['expires_in'], $text);
+        }
+
         return $text;
     }
 }

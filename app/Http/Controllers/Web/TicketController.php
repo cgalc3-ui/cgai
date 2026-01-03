@@ -70,14 +70,29 @@ class TicketController extends Controller
         $user = auth()->user();
 
         return DB::transaction(function () use ($request, $user) {
-            // Create ticket
-            $ticket = Ticket::create([
+            $locale = app()->getLocale();
+            
+            // Create ticket with translation support
+            $ticketData = [
                 'user_id' => $user->id,
-                'subject' => $request->subject,
-                'description' => $request->description,
                 'priority' => $request->priority ?? 'medium',
                 'status' => 'open',
-            ]);
+            ];
+            
+            // Save based on current locale
+            if ($locale === 'en') {
+                $ticketData['subject_en'] = $request->subject;
+                $ticketData['description_en'] = $request->description;
+                // Keep Arabic fields empty or copy if needed
+                $ticketData['subject'] = $request->subject; // Fallback
+                $ticketData['description'] = $request->description; // Fallback
+            } else {
+                // Arabic (default)
+                $ticketData['subject'] = $request->subject;
+                $ticketData['description'] = $request->description;
+            }
+            
+            $ticket = Ticket::create($ticketData);
 
             // Create initial message
             $message = TicketMessage::create([
