@@ -1,15 +1,15 @@
 @extends('layouts.dashboard')
 
-@section('title', 'الإشعارات')
-@section('page-title', 'الإشعارات')
+@section('title', __('messages.notifications'))
+@section('page-title', __('messages.notifications'))
 
 @section('content')
     <div class="notifications-container">
         <!-- Header -->
         <div class="notifications-header">
             <div class="header-left">
-                <h2>الإشعارات</h2>
-                <p>جميع إشعاراتك في مكان واحد</p>
+                <h2>{{ __('messages.notifications') }}</h2>
+                <p>{{ __('messages.all_notifications_in_one_place') }}</p>
             </div>
             <div class="header-right">
                 @if($unreadCount > 0)
@@ -17,7 +17,7 @@
                         @csrf
                         <button type="submit" class="btn-mark-all-read">
                             <i class="fas fa-check-double"></i>
-                            تحديد الكل كمقروء
+                            {{ __('messages.mark_all_as_read') }}
                         </button>
                     </form>
                 @endif
@@ -44,12 +44,12 @@
                     </div>
                     <div class="notification-content">
                         <div class="notification-header">
-                            <h3 class="notification-title">{{ $notification->title }}</h3>
+                            <h3 class="notification-title">{{ $notification->translated_title }}</h3>
                             <span class="notification-time">
                                 {{ $notification->created_at->diffForHumans() }}
                             </span>
                         </div>
-                        <p class="notification-message">{{ $notification->message }}</p>
+                        <p class="notification-message">{{ $notification->translated_message }}</p>
                         @if($notification->data)
                             <div class="notification-data">
                                 @if(isset($notification->data['booking_id']))
@@ -65,7 +65,7 @@
                                     @endphp
                                     @if($bookingRoute)
                                         <a href="{{ $bookingRoute }}" class="notification-link">
-                                            عرض الحجز
+                                            {{ __('messages.view_booking') }}
                                         </a>
                                     @endif
                                 @endif
@@ -76,7 +76,7 @@
                         @if(!$notification->read)
                             <form action="{{ route('notifications.mark-read', $notification) }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn-mark-read" title="تحديد كمقروء">
+                                <button type="submit" class="btn-mark-read" title="{{ __('messages.mark_as_read') }}">
                                     <i class="fas fa-check"></i>
                                 </button>
                             </form>
@@ -84,7 +84,7 @@
                         <form action="{{ route('notifications.destroy', $notification) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-delete" title="حذف" onclick="return confirm('هل أنت متأكد من حذف هذا الإشعار؟')">
+                            <button type="submit" class="btn-delete" title="{{ __('messages.delete') }}" onclick="return confirm('{{ __('messages.delete_notification_confirm') }}')">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
@@ -93,8 +93,8 @@
             @empty
                 <div class="empty-state">
                     <i class="fas fa-bell-slash"></i>
-                    <h3>لا توجد إشعارات</h3>
-                    <p>لم يتم العثور على أي إشعارات حالياً</p>
+                    <h3>{{ __('messages.no_notifications') }}</h3>
+                    <p>{{ __('messages.no_notifications_found') }}</p>
                 </div>
             @endforelse
         </div>

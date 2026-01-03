@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
-@section('title', 'الإعدادات الشخصية')
-@section('page-title', 'الإعدادات الشخصية')
+@section('title', __('messages.settings'))
+@section('page-title', __('messages.settings'))
 
 @section('content')
     <div class="settings-container">
@@ -15,8 +15,8 @@
             <!-- Profile Settings Card -->
             <div class="card settings-card">
                 <div class="card-header">
-                    <h3><i class="fas fa-user-cog"></i> البيانات الشخصية</h3>
-                    <p>تحديث معلوماتك الأساسية ورقم الهاتف</p>
+                    <h3><i class="fas fa-user-cog"></i> {{ __('messages.personal_information') }}</h3>
+                    <p>{{ __('messages.update_basic_info_and_phone') }}</p>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('settings.profile.update') }}" method="POST">
@@ -24,7 +24,7 @@
                         @method('PUT')
 
                         <div class="form-group">
-                            <label for="name">الاسم الكامل</label>
+                            <label for="name">{{ __('messages.full_name') }}</label>
                             <input type="text" name="name" id="name"
                                 class="form-control @error('name') is-invalid @enderror"
                                 value="{{ old('name', $user->name) }}" required>
@@ -35,7 +35,7 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="email">البريد الإلكتروني</label>
+                                <label for="email">{{ __('messages.email') }}</label>
                                 <input type="email" name="email" id="email"
                                     class="form-control @error('email') is-invalid @enderror"
                                     value="{{ old('email', $user->email) }}" required>
@@ -45,7 +45,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="phone">رقم الهاتف</label>
+                                <label for="phone">{{ __('messages.phone') }}</label>
                                 <input type="text" name="phone" id="phone"
                                     class="form-control @error('phone') is-invalid @enderror"
                                     value="{{ old('phone', $user->phone) }}" required>
@@ -57,14 +57,14 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="gender">الجنس</label>
+                                <label for="gender">{{ __('messages.gender') }}</label>
                                 <select name="gender" id="gender"
                                     class="form-control @error('gender') is-invalid @enderror">
-                                    <option value="">اختر الجنس</option>
-                                    <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>ذكر
+                                    <option value="">{{ __('messages.select_gender') }}</option>
+                                    <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>{{ __('messages.male') }}
                                     </option>
                                     <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected' : '' }}>
-                                        أنثى</option>
+                                        {{ __('messages.female') }}</option>
                                 </select>
                                 @error('gender')
                                     <span class="error-text">{{ $message }}</span>
@@ -72,7 +72,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="date_of_birth">تاريخ الميلاد</label>
+                                <label for="date_of_birth">{{ __('messages.date_of_birth') }}</label>
                                 <input type="date" name="date_of_birth" id="date_of_birth"
                                     class="form-control @error('date_of_birth') is-invalid @enderror"
                                     value="{{ old('date_of_birth', $user->date_of_birth ? $user->date_of_birth->format('Y-m-d') : '') }}">
@@ -83,7 +83,7 @@
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                            <button type="submit" class="btn btn-primary">{{ __('messages.save_changes') }}</button>
                         </div>
                     </form>
                 </div>
@@ -92,8 +92,8 @@
             <!-- Password Change Card -->
             <div class="card settings-card">
                 <div class="card-header">
-                    <h3><i class="fas fa-lock"></i> تغيير كلمة المرور</h3>
-                    <p>تأكد من استخدام كلمة مرور قوية لحماية حسابك</p>
+                    <h3><i class="fas fa-lock"></i> {{ __('messages.change_password') }}</h3>
+                    <p>{{ __('messages.use_strong_password_to_protect_account') }}</p>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('settings.password.update') }}" method="POST">
@@ -101,7 +101,7 @@
                         @method('PUT')
 
                         <div class="form-group">
-                            <label for="current_password">كلمة المرور الحالية</label>
+                            <label for="current_password">{{ __('messages.current_password') }}</label>
                             <input type="password" name="current_password" id="current_password"
                                 class="form-control @error('current_password') is-invalid @enderror" required>
                             @error('current_password')
@@ -110,7 +110,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="password">كلمة المرور الجديدة</label>
+                            <label for="password">{{ __('messages.new_password') }}</label>
                             <input type="password" name="password" id="password"
                                 class="form-control @error('password') is-invalid @enderror" required>
                             @error('password')
@@ -119,13 +119,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="password_confirmation">تأكيد كلمة المرور الجديدة</label>
+                            <label for="password_confirmation">{{ __('messages.confirm_new_password') }}</label>
                             <input type="password" name="password_confirmation" id="password_confirmation"
                                 class="form-control" required>
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-warning">تغيير كلمة المرور</button>
+                            <button type="submit" class="btn btn-warning">{{ __('messages.change_password') }}</button>
                         </div>
                     </form>
                 </div>

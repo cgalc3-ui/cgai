@@ -17,9 +17,17 @@ class ServiceController extends Controller
         return view('admin.services.index', compact('services'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $subCategories = SubCategory::where('is_active', true)->with('category')->orderBy('name')->get();
+        $view = view('admin.services.create-modal', compact('subCategories'));
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => $view->render()
+            ]);
+        }
+        
         return view('admin.services.create', compact('subCategories'));
     }
 
@@ -33,13 +41,30 @@ class ServiceController extends Controller
         }
 
         $service = Service::create($data);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.service_created'),
+                'redirect' => route('admin.services.index')
+            ]);
+        }
+        
         return redirect()->route('admin.services.index')
-            ->with('success', 'تم إنشاء الخدمة بنجاح');
+            ->with('success', __('messages.service_created'));
     }
 
-    public function edit(Service $service)
+    public function edit(Request $request, Service $service)
     {
         $subCategories = SubCategory::where('is_active', true)->with('category')->orderBy('name')->get();
+        $view = view('admin.services.edit-modal', compact('service', 'subCategories'));
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => $view->render()
+            ]);
+        }
+        
         return view('admin.services.edit', compact('service', 'subCategories'));
     }
 
@@ -53,8 +78,17 @@ class ServiceController extends Controller
         }
 
         $service->update($data);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.service_updated'),
+                'redirect' => route('admin.services.index')
+            ]);
+        }
+        
         return redirect()->route('admin.services.index')
-            ->with('success', 'تم تحديث الخدمة بنجاح');
+            ->with('success', __('messages.service_updated'));
     }
 
 

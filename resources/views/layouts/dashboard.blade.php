@@ -265,7 +265,7 @@
                 <div class="top-bar-right">
                     <div class="top-bar-actions">
                         <a href="{{ route('notifications.index') }}" class="icon-btn notification-btn"
-                            title="الإشعارات">
+                            title="{{ __('messages.notifications') }}">
                             <i class="fas fa-bell"></i>
                             @php
                                 $unreadCount = auth()->user()->unreadNotificationsCount();
@@ -275,14 +275,26 @@
                             @endif
                         </a>
 
-                        <div style="margin-inline-end: 15px;">
-                            @if(app()->getLocale() == 'ar')
-                                <a href="{{ route('switch-language', 'en') }}" class="btn btn-sm"
-                                    style="color: #666; font-weight: 600;">English</a>
-                            @else
-                                <a href="{{ route('switch-language', 'ar') }}" class="btn btn-sm"
-                                    style="color: #666; font-weight: 600;">العربية</a>
-                            @endif
+                        <div class="language-dropdown" style="margin-inline-end: 15px; position: relative;">
+                            <button class="icon-btn language-btn" id="languageToggle" title="{{ __('messages.change_language') }}">
+                                <i class="fas fa-globe"></i>
+                            </button>
+                            <div class="language-menu" id="languageMenu">
+                                <a href="{{ route('switch-language', 'ar') }}" class="language-option {{ app()->getLocale() == 'ar' ? 'active' : '' }}">
+                                    <span class="language-flag">🇸🇦</span>
+                                    <span class="language-name">{{ __('messages.arabic') }}</span>
+                                    @if(app()->getLocale() == 'ar')
+                                        <i class="fas fa-check"></i>
+                                    @endif
+                                </a>
+                                <a href="{{ route('switch-language', 'en') }}" class="language-option {{ app()->getLocale() == 'en' ? 'active' : '' }}">
+                                    <span class="language-flag">🇬🇧</span>
+                                    <span class="language-name">{{ __('messages.english') }}</span>
+                                    @if(app()->getLocale() == 'en')
+                                        <i class="fas fa-check"></i>
+                                    @endif
+                                </a>
+                            </div>
                         </div>
 
                         <button class="icon-btn settings-btn" title="{{ __('messages.settings') }}">
@@ -383,6 +395,37 @@
 
             // Update on page load
             updateNotificationCount();
+        })();
+    </script>
+    <script>
+        // Language dropdown toggle
+        (function() {
+            const languageToggle = document.getElementById('languageToggle');
+            const languageMenu = document.getElementById('languageMenu');
+            const languageDropdown = document.querySelector('.language-dropdown');
+
+            if (languageToggle && languageMenu) {
+                // Toggle dropdown
+                languageToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    languageDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!languageDropdown.contains(e.target)) {
+                        languageDropdown.classList.remove('active');
+                    }
+                });
+
+                // Close dropdown when selecting a language
+                const languageOptions = languageMenu.querySelectorAll('.language-option');
+                languageOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        // The page will reload after language change, so no need to manually close
+                    });
+                });
+            }
         })();
     </script>
     @stack('scripts')

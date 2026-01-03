@@ -18,7 +18,7 @@
     </div>
 
     <!-- Filter Section -->
-    <div class="filter-container">
+    <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
         <form method="GET" action="{{ route('admin.bookings') }}" class="filter-form">
             <div class="filter-inputs">
                 <div class="filter-group">

@@ -108,9 +108,14 @@ class TicketController extends Controller
                 $notificationService = app(\App\Services\NotificationService::class);
                 $notificationService->notifyAdmins(
                     'new_ticket',
-                    'تذكرة دعم جديدة',
-                    "تم فتح تذكرة دعم جديدة من المستخدم: {$user->name} - الموضوع: {$ticket->subject}",
-                    ['ticket_id' => $ticket->id, 'user_id' => $user->id]
+                    'messages.new_support_ticket',
+                    'messages.new_support_ticket_from_user',
+                    [
+                        'ticket_id' => $ticket->id,
+                        'user_id' => $user->id,
+                        'user' => $user->name,
+                        'subject' => $ticket->subject,
+                    ]
                 );
             }
 
