@@ -9,7 +9,7 @@
         <header class="booking-m-header">
             <div class="m-header-main">
                 <h1 class="m-title">{{ __('messages.booking_review') }}</h1>
-                <p class="m-subtitle">{{ __('messages.registration_date') }}: {{ $booking->created_at ? $booking->created_at->format('Y-m-d') : '---' }}</p>
+                <p class="m-subtitle">{{ __('messages.registration_date') }}: {{ $booking->created_at->format('Y-m-d') }}</p>
             </div>
             <div class="m-header-actions">
                 <a href="{{ route('admin.bookings') }}" class="m-btn-back">
@@ -130,18 +130,14 @@
                     <div class="m-time-display">
                         <div class="m-time-item">
                             <label>{{ __('messages.date') }}</label>
-                            <div class="val">{{ $booking->booking_date ? $booking->booking_date->format('Y-m-d') : '---' }}</div>
-                            <div class="day">{{ $booking->booking_date ? $booking->booking_date->locale(app()->getLocale())->dayName : '---' }}</div>
+                            <div class="val">{{ $booking->booking_date->format('Y-m-d') }}</div>
+                            <div class="day">{{ $booking->booking_date->locale(app()->getLocale())->dayName }}</div>
                         </div>
                         <div class="m-time-line"></div>
                         <div class="m-time-item">
                             <label>{{ __('messages.attendance_time') }}</label>
-                            <div class="val">
-                                @if($booking->start_time && $booking->end_time)
-                                    {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
-                                @else
-                                    ---
-                                @endif
+                            <div class="val">{{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
+                                {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
                             </div>
                             <div class="day">{{ __('messages.local_time') }}</div>
                         </div>

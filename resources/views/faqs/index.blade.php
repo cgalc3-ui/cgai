@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', __('messages.faqs'))
-@section('page-title', __('messages.faqs'))
+@section('title', 'الأسئلة الشائعة')
+@section('page-title', 'الأسئلة الشائعة')
 
 @section('content')
     <div class="faq-container">
-        @if(empty($translatedFaqs))
+        @if($faqs->isEmpty())
             <div class="empty-state">
                 <i class="fas fa-question-circle"></i>
-                <h3>{{ __('messages.no_faqs_available') }}</h3>
+                <h3>لا توجد أسئلة شائعة حالياً</h3>
             </div>
         @else
-            @foreach($translatedFaqs as $category => $items)
+            @foreach($faqs as $category => $items)
                 <div class="faq-section">
                     <h2 class="faq-category-title">{{ $category }}</h2>
                     <div class="faq-list">

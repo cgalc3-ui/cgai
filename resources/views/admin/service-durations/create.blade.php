@@ -1,17 +1,17 @@
 @extends('layouts.dashboard')
 
-@section('title', __('messages.add_service_duration'))
-@section('page-title', __('messages.add_service_duration'))
+@section('title', 'إضافة مدة خدمة جديدة')
+@section('page-title', 'إضافة مدة خدمة جديدة')
 
 @section('content')
 <div class="page-header">
     <div class="page-header-left">
-        <h2>{{ __('messages.add_service_duration') }}</h2>
-        <p>{{ __('messages.create_service_duration_desc') }}</p>
+        <h2>إضافة مدة خدمة جديدة</h2>
+        <p>إنشاء مدة خدمة جديدة في النظام</p>
     </div>
     <div class="page-header-right">
         <a href="{{ route('admin.service-durations.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-right"></i> {{ __('messages.back') }}
+            <i class="fas fa-arrow-right"></i> رجوع
         </a>
     </div>
 </div>
@@ -21,9 +21,9 @@
         @csrf
         
         <div class="form-group">
-            <label for="service_id">{{ __('messages.service') }} <span class="required">*</span></label>
+            <label for="service_id">الخدمة <span class="required">*</span></label>
             <select id="service_id" name="service_id" class="form-control" required>
-                <option value="">{{ __('messages.select_service') }}</option>
+                <option value="">اختر الخدمة</option>
                 @foreach($services as $service)
                     <option value="{{ $service->id }}" {{ old('service_id') == $service->id ? 'selected' : '' }}>
                         {{ $service->subCategory->category->name }} - {{ $service->subCategory->name }} - {{ $service->name }}
@@ -36,12 +36,12 @@
         </div>
 
         <div class="form-group">
-            <label for="duration_type">{{ __('messages.duration_type') }} <span class="required">*</span></label>
+            <label for="duration_type">نوع المدة <span class="required">*</span></label>
             <select id="duration_type" name="duration_type" class="form-control" required>
-                <option value="">{{ __('messages.select_duration_type') }}</option>
-                <option value="hour" {{ old('duration_type') == 'hour' ? 'selected' : '' }}>{{ __('messages.hour') }}</option>
-                <option value="day" {{ old('duration_type') == 'day' ? 'selected' : '' }}>{{ __('messages.day') }}</option>
-                <option value="week" {{ old('duration_type') == 'week' ? 'selected' : '' }}>{{ __('messages.week') }}</option>
+                <option value="">اختر نوع المدة</option>
+                <option value="hour" {{ old('duration_type') == 'hour' ? 'selected' : '' }}>ساعة</option>
+                <option value="day" {{ old('duration_type') == 'day' ? 'selected' : '' }}>يوم</option>
+                <option value="week" {{ old('duration_type') == 'week' ? 'selected' : '' }}>أسبوع</option>
             </select>
             @error('duration_type')
                 <span class="error-message">{{ $message }}</span>
@@ -49,7 +49,7 @@
         </div>
 
         <div class="form-group">
-            <label for="duration_value">{{ __('messages.duration_value') }} <span class="required">*</span></label>
+            <label for="duration_value">قيمة المدة <span class="required">*</span></label>
             <input type="number" id="duration_value" name="duration_value" value="{{ old('duration_value') }}" class="form-control" required min="1">
             @error('duration_value')
                 <span class="error-message">{{ $message }}</span>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="form-group">
-            <label for="price">{{ __('messages.price') }} <span class="required">*</span></label>
+            <label for="price">السعر <span class="required">*</span></label>
             <input type="number" id="price" name="price" value="{{ old('price') }}" class="form-control" required step="0.01" min="0">
             @error('price')
                 <span class="error-message">{{ $message }}</span>
@@ -67,16 +67,16 @@
         <div class="form-group">
             <label class="checkbox-label">
                 <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-                <span>{{ __('messages.active') }}</span>
+                <span>نشط</span>
             </label>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save"></i> {{ __('messages.save') }}
+                <i class="fas fa-save"></i> حفظ
             </button>
             <a href="{{ route('admin.service-durations.index') }}" class="btn btn-secondary">
-                <i class="fas fa-times"></i> {{ __('messages.cancel') }}
+                <i class="fas fa-times"></i> إلغاء
             </a>
         </div>
     </form>

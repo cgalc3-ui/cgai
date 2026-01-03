@@ -36,28 +36,7 @@
                     <tr>
                         <td>{{ Str::limit($faq->trans('question'), 60) }}</td>
                         <td><span class="status-pill active"
-                                style="font-size: 11px;">
-                            @php
-                                $categoryKey = $faq->category;
-                                // Map Arabic values to English keys for translation
-                                $categoryMap = [
-                                    'الحساب' => 'account',
-                                    'عام' => 'general',
-                                    'الخدمات' => 'services',
-                                    'الدفع' => 'payment',
-                                    'تقني' => 'technical',
-                                ];
-                                if (isset($categoryMap[$categoryKey])) {
-                                    $categoryKey = $categoryMap[$categoryKey];
-                                }
-                                // If category is already an English key, use it directly
-                                $validKeys = ['account', 'general', 'services', 'payment', 'technical'];
-                                if (!in_array($categoryKey, $validKeys)) {
-                                    $categoryKey = 'general'; // Default fallback
-                                }
-                            @endphp
-                            {{ __('messages.' . $categoryKey) }}
-                        </span></td>
+                                style="font-size: 11px;">{{ __('messages.' . $faq->category) ?? $faq->category }}</span></td>
                         <td class="text-center">{{ $faq->sort_order }}</td>
                         <td class="text-center">
                             @if($faq->is_active)

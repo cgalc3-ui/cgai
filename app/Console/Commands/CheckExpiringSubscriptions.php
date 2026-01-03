@@ -59,13 +59,11 @@ class CheckExpiringSubscriptions extends Command
                 $this->notificationService->send(
                     $subscription->user,
                     'subscription_expiring',
-                    'messages.subscription_expiring_soon',
-                    'messages.subscription_expiring_for_package',
+                    'اشتراكك على وشك الانتهاء',
+                    "اشتراكك في باقة {$subscription->subscription->name} سينتهي في " . $subscription->expires_at->diffForHumans(),
                     [
                         'subscription_id' => $subscription->id,
                         'expires_at' => $subscription->expires_at->toDateTimeString(),
-                        'package' => $subscription->subscription->name,
-                        'expires_in' => $subscription->expires_at->diffForHumans(),
                     ]
                 );
 

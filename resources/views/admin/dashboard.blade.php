@@ -1,13 +1,13 @@
 @extends('layouts.dashboard')
 
-@section('title', __('messages.admin_dashboard'))
-@section('page-title', __('messages.admin_dashboard'))
+@section('title', 'لوحة تحكم المشرف الرئيسي')
+@section('page-title', 'لوحة تحكم المشرف الرئيسي')
 
 @section('content')
     <div class="page-header">
         <div class="page-header-left">
-            <h2>{{ __('messages.system_overview') }}</h2>
-            <p>{{ __('messages.welcome_back') }}, {{ auth()->user()->name }}</p>
+            <h2>نظرة عامة على النظام</h2>
+            <p>مرحباً بك مجدداً، {{ auth()->user()->name }}</p>
         </div>
     </div>
 
@@ -17,7 +17,7 @@
         <!-- Total Revenue -->
         <div class="stat-card">
             <div class="stat-card-title-row">
-                <h3 class="stat-card-title">{{ __('messages.total_revenue') }}</h3>
+                <h3 class="stat-card-title">إجمالي الإيرادات</h3>
                 <i class="fas fa-ellipsis-h stat-card-more"></i>
             </div>
             <div class="stat-card-main">
@@ -31,7 +31,7 @@
                             <i class="fas fa-arrow-up"></i> +{{ number_format(15.5, 2) }}%
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ __('messages.compared_to_last_month') }}</span>
+                    <span class="stat-card-subtitle">مقارنة بالشهر الماضي</span>
                 </div>
             </div>
             <div class="stat-card-chart">
@@ -45,7 +45,7 @@
         <!-- Total Bookings -->
         <div class="stat-card">
             <div class="stat-card-title-row">
-                <h3 class="stat-card-title">{{ __('messages.total_bookings') }}</h3>
+                <h3 class="stat-card-title">إجمالي الحجوزات</h3>
                 <i class="fas fa-ellipsis-h stat-card-more"></i>
             </div>
             <div class="stat-card-main">
@@ -59,7 +59,7 @@
                             <i class="fas fa-arrow-up"></i> +{{ number_format(8.2, 2) }}%
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }} {{ __('messages.today_bookings') }}</span>
+                    <span class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }} حجز اليوم</span>
                 </div>
             </div>
             <div class="stat-card-chart">
@@ -73,7 +73,7 @@
         <!-- Total Customers -->
         <div class="stat-card">
             <div class="stat-card-title-row">
-                <h3 class="stat-card-title">{{ __('messages.total_customers') }}</h3>
+                <h3 class="stat-card-title">إجمالي العملاء</h3>
                 <i class="fas fa-ellipsis-h stat-card-more"></i>
             </div>
             <div class="stat-card-main">
@@ -87,7 +87,7 @@
                             <i class="fas fa-arrow-up"></i> +{{ number_format(12.1, 2) }}%
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ $recentCustomers->count() }} {{ __('messages.new_customers') }}</span>
+                    <span class="stat-card-subtitle">{{ $recentCustomers->count() }} عملاء جدد</span>
                 </div>
             </div>
             <div class="stat-card-chart">
@@ -101,7 +101,7 @@
         <!-- Total Employees -->
         <div class="stat-card">
             <div class="stat-card-title-row">
-                <h3 class="stat-card-title">{{ __('messages.total_staff') }}</h3>
+                <h3 class="stat-card-title">إجمالي الموظفين</h3>
                 <i class="fas fa-ellipsis-h stat-card-more"></i>
             </div>
             <div class="stat-card-main">
@@ -115,7 +115,7 @@
                             <i class="fas fa-users"></i>
                         </span>
                     </div>
-                    <span class="stat-card-subtitle">{{ $stats['total_categories'] ?? 0 }} {{ __('messages.different_categories') }}</span>
+                    <span class="stat-card-subtitle">{{ $stats['total_categories'] ?? 0 }} فئة مختلفة</span>
                 </div>
             </div>
             <div class="stat-card-chart">
@@ -217,7 +217,7 @@
                                             </div>
                                             <div style="display: flex; flex-direction: column;">
                                                 <span
-                                                    style="font-weight: 700; color: #1e293b; font-size: 14px;">{{ $booking->customer->name ?? __('messages.unknown') }}</span>
+                                                    style="font-weight: 700; color: #1e293b; font-size: 14px;">{{ $booking->customer->name ?? 'مجهول' }}</span>
                                                 <span style="font-size: 11px; color: #94a3b8;">#{{ $booking->id }}</span>
                                             </div>
                                         </div>
@@ -324,7 +324,7 @@
                         <div class="legend-info">
                             <span class="legend-badge"
                                 style="background: #6366f1; min-width: 35px; padding: 1px 5px; font-size: 10px;">Com</span>
-                            <span class="legend-name" style="font-size: 12px;">{{ __('messages.completed') }}</span>
+                            <span class="legend-name" style="font-size: 12px;">مكتملة</span>
                         </div>
                         <span class="legend-value" style="font-size: 12px;">{{ round($p_completed, 1) }}%</span>
                     </div>
@@ -332,7 +332,7 @@
                         <div class="legend-info">
                             <span class="legend-badge"
                                 style="background: #06b6d4; min-width: 35px; padding: 1px 5px; font-size: 10px;">Con</span>
-                            <span class="legend-name" style="font-size: 12px;">{{ __('messages.confirmed') }}</span>
+                            <span class="legend-name" style="font-size: 12px;">مؤكدة</span>
                         </div>
                         <span class="legend-value" style="font-size: 12px;">{{ round($p_confirmed, 1) }}%</span>
                     </div>
@@ -340,7 +340,7 @@
                         <div class="legend-info">
                             <span class="legend-badge"
                                 style="background: #f59e0b; min-width: 35px; padding: 1px 5px; font-size: 10px;">Pen</span>
-                            <span class="legend-name" style="font-size: 12px;">{{ __('messages.pending') }}</span>
+                            <span class="legend-name" style="font-size: 12px;">معلقة</span>
                         </div>
                         <span class="legend-value" style="font-size: 12px;">{{ round($p_pending, 1) }}%</span>
                     </div>
@@ -348,7 +348,7 @@
                         <div class="legend-info">
                             <span class="legend-badge"
                                 style="background: #ef4444; min-width: 35px; padding: 1px 5px; font-size: 10px;">Can</span>
-                            <span class="legend-name" style="font-size: 12px;">{{ __('messages.cancelled') }}</span>
+                            <span class="legend-name" style="font-size: 12px;">ملغاة</span>
                         </div>
                         <span class="legend-value" style="font-size: 12px;">{{ round($p_cancelled, 1) }}%</span>
                     </div>
@@ -409,12 +409,12 @@
                             </div>
                             <div class="item-details">
                                 <span class="item-title">{{ $customer->name }}</span>
-                                <span class="item-subtitle">{{ __('messages.joined') }}
-                                    {{ $customer->created_at ? $customer->created_at->diffForHumans() : __('messages.recently') }}</span>
+                                <span class="item-subtitle">انضم
+                                    {{ $customer->created_at ? $customer->created_at->diffForHumans() : 'مؤخراً' }}</span>
                             </div>
                             <div class="item-action" style="display: flex; align-items: center; gap: 10px;">
                                 <div class="status-pill pending"
-                                    style="font-size: 10px; padding: 2px 8px; background: #f0fdf4; color: #16a34a;">{{ __('messages.customer_role') }}</div>
+                                    style="font-size: 10px; padding: 2px 8px; background: #f0fdf4; color: #16a34a;">عميل</div>
                                 <a href="{{ route('admin.users.customers.show', $customer->id) }}" class="calm-action-btn sm">
                                     <i class="far fa-eye"></i>
                                 </a>

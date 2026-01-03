@@ -53,14 +53,13 @@ class SubscriptionController extends Controller
 
         $subscription = Subscription::create($data);
 
-        // Notify all admins except the creator - Store translation keys, not translated text
+        // Notify all admins except the creator
         $this->notificationService->notifyAdmins(
             'subscription_created',
-            'messages.new_subscription_package_created',
-            'messages.new_subscription_package_created_with_name',
+            'تم إنشاء باقة جديدة',
+            "تم إنشاء باقة جديدة: {$subscription->name}",
             [
                 'subscription_id' => $subscription->id,
-                'name' => $subscription->name, // Store subscription name in data for translation
             ]
         );
 

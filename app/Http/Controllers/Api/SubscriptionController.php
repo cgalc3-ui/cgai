@@ -102,16 +102,15 @@ class SubscriptionController extends Controller
             'status' => 'pending',
         ]);
 
-        // Notify all admins - Store translation keys, not translated text
+        // Notify all admins
         $this->notificationService->notifyAdmins(
             'subscription_request_created',
-            'messages.new_subscription_request',
-            'messages.new_subscription_request_from_user',
+            'طلب اشتراك جديد',
+            "طلب اشتراك جديد من المستخدم: " . auth()->user()->name,
             [
                 'subscription_request_id' => $subscriptionRequest->id,
                 'user_id' => auth()->id(),
                 'subscription_id' => $request->subscription_id,
-                'user' => auth()->user()->name, // Store user name in data for translation
             ]
         );
 

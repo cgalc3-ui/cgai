@@ -17,7 +17,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="filters-container" data-filter-title="{{ __('messages.filter_options') }}">
+        <div class="filters-container">
             <form method="GET" action="{{ route('admin.tickets') }}" class="filters-form">
                 <div class="filter-group">
                     <label>{{ __('messages.status') }}:</label>

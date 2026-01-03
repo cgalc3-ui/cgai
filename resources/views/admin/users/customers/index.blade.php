@@ -18,7 +18,7 @@
     </div>
 
     <!-- Filter Section -->
-    <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
+    <div class="filter-container">
         <form method="GET" action="{{ route('admin.users.customers') }}" class="filter-form">
             <div class="filter-inputs">
                 <div class="filter-group">

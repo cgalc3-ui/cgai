@@ -9,22 +9,14 @@ class NotificationService
 {
     /**
      * Send notification to a user
-     * 
-     * @param User $user
-     * @param string $type
-     * @param string $title Translation key or direct text
-     * @param string $message Translation key or direct text
-     * @param array $data Additional data for translation placeholders
      */
     public function send(User $user, string $type, string $title, string $message, array $data = [])
     {
-        // Store translation keys directly, not translated text
-        // The Notification model will handle translation on display
         return Notification::create([
             'user_id' => $user->id,
             'type' => $type,
-            'title' => $title, // This should be a translation key like 'messages.booking_created_successfully'
-            'message' => $message, // This should be a translation key like 'messages.new_booking_created_for_service'
+            'title' => $title,
+            'message' => $message,
             'data' => $data,
             'read' => false,
         ]);
@@ -79,20 +71,16 @@ class NotificationService
      */
     public function bookingCreated($booking)
     {
-        $serviceName = $booking->service ? $booking->service->name : ($booking->consultation ? $booking->consultation->name : '');
-        
-        // Notify customer - Store translation keys, not translated text
+        // Notify customer
         $this->notifyCustomer(
             $booking->customer,
             'booking_created',
-            'messages.booking_created_successfully',
-            'messages.new_booking_created_for_service',
+            'تم إنشاء الحجز بنجاح',
+            "تم إنشاء حجز جديد للخدمة: {$booking->service->name}",
             [
                 'booking_id' => $booking->id,
                 'service_id' => $booking->service_id,
-                'consultation_id' => $booking->consultation_id,
                 'booking_date' => $booking->booking_date,
-                'service' => $serviceName, // Store service name in data for translation
             ]
         );
 
@@ -101,15 +89,13 @@ class NotificationService
             $this->send(
                 $booking->employee->user,
                 'booking_assigned',
-                'messages.new_booking_assigned_to_you',
-                'messages.new_booking_assigned_for_service',
+                'تم تعيين حجز جديد لك',
+                "تم تعيين حجز جديد للخدمة: {$booking->service->name}",
                 [
                     'booking_id' => $booking->id,
                     'service_id' => $booking->service_id,
-                    'consultation_id' => $booking->consultation_id,
                     'customer_id' => $booking->customer_id,
                     'booking_date' => $booking->booking_date,
-                    'service' => $serviceName, // Store service name in data for translation
                 ]
             );
         }
@@ -117,14 +103,12 @@ class NotificationService
         // Notify admins
         $this->notifyAdmins(
             'new_booking',
-            'messages.new_booking',
-            'messages.new_booking_created_by_customer',
+            'حجز جديد',
+            "تم إنشاء حجز جديد من العميل: {$booking->customer->name}",
             [
                 'booking_id' => $booking->id,
                 'customer_id' => $booking->customer_id,
                 'service_id' => $booking->service_id,
-                'consultation_id' => $booking->consultation_id,
-                'customer' => $booking->customer->name, // Store customer name in data for translation
             ]
         );
     }
@@ -134,29 +118,25 @@ class NotificationService
      */
     public function bookingStatusUpdated($booking, $oldStatus)
     {
-        $statusKeys = [
-            'confirmed' => 'messages.booking_confirmed',
-            'cancelled' => 'messages.booking_cancelled',
-            'completed' => 'messages.booking_completed',
-            'in_progress' => 'messages.booking_started',
+        $statusMessages = [
+            'confirmed' => 'تم تأكيد الحجز',
+            'cancelled' => 'تم إلغاء الحجز',
+            'completed' => 'تم إكمال الحجز',
+            'in_progress' => 'تم بدء الحجز',
         ];
 
-        $titleKey = $statusKeys[$booking->status] ?? 'messages.booking_status_updated';
-        
-        $serviceName = $booking->service ? $booking->service->name : ($booking->consultation ? $booking->consultation->name : '');
+        $message = $statusMessages[$booking->status] ?? 'تم تحديث حالة الحجز';
 
-        // Notify customer - Store translation keys, not translated text
+        // Notify customer
         $this->notifyCustomer(
             $booking->customer,
             'booking_status_updated',
-            $titleKey,
-            'messages.booking_status_updated_for_service',
+            $message,
+            "تم تحديث حالة حجزك للخدمة: {$booking->service->name} إلى: {$message}",
             [
                 'booking_id' => $booking->id,
                 'old_status' => $oldStatus,
                 'new_status' => $booking->status,
-                'service' => $serviceName, // Store service name in data for translation
-                'status_key' => $titleKey, // Store status key for translation
             ]
         );
 
@@ -165,13 +145,12 @@ class NotificationService
             $this->send(
                 $booking->employee->user,
                 'booking_status_updated',
-                $titleKey,
-                'messages.booking_status_updated_for_service_employee',
+                $message,
+                "تم تحديث حالة الحجز للخدمة: {$booking->service->name}",
                 [
                     'booking_id' => $booking->id,
                     'old_status' => $oldStatus,
                     'new_status' => $booking->status,
-                    'service' => $serviceName, // Store service name in data for translation
                 ]
             );
         }
@@ -182,12 +161,12 @@ class NotificationService
      */
     public function paymentReceived($booking)
     {
-        // Notify customer - Store translation keys, not translated text
+        // Notify customer
         $this->notifyCustomer(
             $booking->customer,
             'payment_received',
-            'messages.payment_received',
-            'messages.payment_received_successfully_for_booking',
+            'تم استلام الدفع',
+            "تم استلام الدفع بنجاح للحجز رقم: {$booking->id}",
             [
                 'booking_id' => $booking->id,
                 'amount' => $booking->total_price,
@@ -197,13 +176,12 @@ class NotificationService
         // Notify admins
         $this->notifyAdmins(
             'payment_received',
-            'messages.payment_received_admin',
-            'messages.payment_received_from_customer',
+            'تم استلام دفعة',
+            "تم استلام دفعة من العميل: {$booking->customer->name}",
             [
                 'booking_id' => $booking->id,
                 'customer_id' => $booking->customer_id,
                 'amount' => $booking->total_price,
-                'customer' => $booking->customer->name, // Store customer name in data for translation
             ]
         );
     }
