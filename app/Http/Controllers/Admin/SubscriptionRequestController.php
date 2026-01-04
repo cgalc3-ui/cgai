@@ -96,14 +96,10 @@ class SubscriptionRequestController extends Controller
 
         if ($durationType === 'monthly') {
             $expiresAt = now()->addMonth();
-        } elseif ($durationType === '3months') {
-            $expiresAt = now()->addMonths(3);
-        } elseif ($durationType === '6months') {
-            $expiresAt = now()->addMonths(6);
-        } elseif ($durationType === 'yearly') {
+        } elseif ($request->subscription->duration_type === 'year') {
             $expiresAt = now()->addYear();
         }
-        // If null, subscription doesn't expire
+        // lifetime: expiresAt remains null
 
         // Cancel all previous active subscriptions
         UserSubscription::where('user_id', $request->user_id)
@@ -120,12 +116,12 @@ class SubscriptionRequestController extends Controller
             'expires_at' => $expiresAt,
         ]);
 
-        // Notify the user - Store translation keys, not translated text
+        // Notify the user
         $this->notificationService->send(
             $request->user,
             'subscription_request_status',
-            'messages.subscription_request_approved',
-            'messages.subscription_request_approved_for_package',
+            'تم قبول طلب الاشتراك',
+            "تم قبول طلب الاشتراك في باقة: {$request->subscription->name}",
             [
                 'subscription_request_id' => $request->id,
                 'subscription_id' => $request->subscription_id,
@@ -160,12 +156,12 @@ class SubscriptionRequestController extends Controller
             'admin_notes' => $validated['admin_notes'],
         ]);
 
-        // Notify the user - Store translation keys, not translated text
+        // Notify the user
         $this->notificationService->send(
             $request->user,
             'subscription_request_status',
-            'messages.subscription_request_rejected',
-            'messages.subscription_request_rejected_for_package',
+            'تم رفض طلب الاشتراك',
+            "تم رفض طلب الاشتراك في باقة: {$request->subscription->name}. السبب: {$validated['admin_notes']}",
             [
                 'subscription_request_id' => $request->id,
                 'subscription_id' => $request->subscription_id,

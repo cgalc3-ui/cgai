@@ -69,6 +69,7 @@ class SubscriptionController extends Controller
     public function store(StoreSubscriptionRequest $request)
     {
         $data = $request->validated();
+        $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
 
         // Set default values for old fields
@@ -79,11 +80,11 @@ class SubscriptionController extends Controller
 
         $subscription = Subscription::create($data);
 
-        // Notify all admins except the creator - Store translation keys, not translated text
+        // Notify all admins except the creator
         $this->notificationService->notifyAdmins(
             'subscription_created',
-            'messages.new_subscription_package_created',
-            'messages.new_subscription_package_created_with_name',
+            'تم إنشاء باقة جديدة',
+            "تم إنشاء باقة جديدة: {$subscription->name}",
             [
                 'subscription_id' => $subscription->id,
                 'name' => $subscription->name,
@@ -118,6 +119,7 @@ class SubscriptionController extends Controller
     public function update(UpdateSubscriptionRequest $request, Subscription $subscription)
     {
         $data = $request->validated();
+        $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
 
         // Preserve old fields if not provided

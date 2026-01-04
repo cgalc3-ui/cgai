@@ -15,13 +15,12 @@ class StoreSubscriptionRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'name_en' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'description_en' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'duration_type' => 'required|in:monthly,3months,6months,yearly',
-            'features' => 'required|array|min:1',
-            'features.*.name' => 'required|string|max:255',
+            'duration_type' => 'required|in:month,year,lifetime',
+            'max_debtors' => 'required|integer|min:0',
+            'max_messages' => 'required|integer|min:0',
+            'ai_enabled' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
         ];
     }
