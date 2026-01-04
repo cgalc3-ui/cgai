@@ -52,6 +52,7 @@
                 border-radius: 12px;
                 box-shadow: var(--card-shadow);
                 padding: 24px;
+                border: 1px solid var(--border-color);
             }
 
             .guide-sections {
@@ -127,8 +128,14 @@
             }
 
             [data-theme="dark"] .help-guide-container .page-header {
-                background: transparent !important;
+                background: var(--card-bg) !important;
+                border: 1px solid var(--border-color) !important;
                 border-bottom: 1px solid var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .help-guide-container .page-header-left {
+                color: var(--text-primary);
             }
 
             [data-theme="dark"] .help-guide-container .page-header-left h2 {
@@ -139,8 +146,13 @@
                 color: var(--text-secondary) !important;
             }
 
+            [data-theme="dark"] .help-guide-container .page-header-right {
+                color: var(--text-primary);
+            }
+
             [data-theme="dark"] .help-guide-container .total-count {
-                color: var(--text-primary) !important;
+                background: var(--primary-color) !important;
+                color: white !important;
             }
 
             [data-theme="dark"] .guide-sections {
@@ -169,12 +181,25 @@
                 color: var(--text-primary) !important;
             }
 
-            [data-theme="dark"] .guide-content p {
+            [data-theme="dark"] .guide-content p,
+            [data-theme="dark"] .guide-content div,
+            [data-theme="dark"] .guide-content span,
+            [data-theme="dark"] .guide-content li,
+            [data-theme="dark"] .guide-content ul,
+            [data-theme="dark"] .guide-content ol {
                 color: var(--text-primary) !important;
             }
 
             [data-theme="dark"] .guide-content * {
                 color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .guide-content a {
+                color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .guide-content a:hover {
+                color: var(--primary-dark) !important;
             }
 
             [data-theme="dark"] .empty-state {

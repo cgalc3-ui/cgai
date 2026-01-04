@@ -138,6 +138,69 @@
                 color: #1f2937;
                 font-weight: 600;
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .help-guide-container {
+                background: var(--card-bg) !important;
+                border: 1px solid var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .help-guide-container .page-header {
+                background: var(--card-bg) !important;
+                border: 1px solid var(--border-color) !important;
+                border-bottom: 1px solid var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .help-guide-container .page-header-left h2 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .help-guide-container .page-header-left p {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .guide-sections {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .guide-section {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .guide-section:hover {
+                border-color: var(--primary-color) !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+            }
+
+            [data-theme="dark"] .guide-section h3 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .guide-section h3 i {
+                color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .guide-content {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .guide-content p,
+            [data-theme="dark"] .guide-content ul,
+            [data-theme="dark"] .guide-content ol,
+            [data-theme="dark"] .guide-content li {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .guide-content strong {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .guide-content * {
+                color: var(--text-primary) !important;
+            }
         </style>
     @endpush
 @endsection
