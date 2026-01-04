@@ -43,24 +43,18 @@ class SubscriptionController extends Controller
     public function store(StoreSubscriptionRequest $request)
     {
         $data = $request->validated();
+        $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
-        // Set default values for old fields
-        $data['max_debtors'] = 0;
-        $data['max_messages'] = 0;
-        $data['ai_enabled'] = false;
-        $data['duration_type'] = $data['duration_type'] ?? 'monthly';
 
         $subscription = Subscription::create($data);
 
-        // Notify all admins except the creator - Store translation keys, not translated text
+        // Notify all admins except the creator
         $this->notificationService->notifyAdmins(
             'subscription_created',
-            'messages.new_subscription_package_created',
-            'messages.new_subscription_package_created_with_name',
+            'تم إنشاء باقة جديدة',
+            "تم إنشاء باقة جديدة: {$subscription->name}",
             [
                 'subscription_id' => $subscription->id,
-                'name' => $subscription->name, // Store subscription name in data for translation
             ]
         );
 
@@ -91,21 +85,8 @@ class SubscriptionController extends Controller
     public function update(UpdateSubscriptionRequest $request, Subscription $subscription)
     {
         $data = $request->validated();
+        $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
-        // Preserve old fields if not provided
-        if (!isset($data['max_debtors'])) {
-            $data['max_debtors'] = $subscription->max_debtors;
-        }
-        if (!isset($data['max_messages'])) {
-            $data['max_messages'] = $subscription->max_messages;
-        }
-        if (!isset($data['ai_enabled'])) {
-            $data['ai_enabled'] = $subscription->ai_enabled;
-        }
-        if (!isset($data['duration_type'])) {
-            $data['duration_type'] = $subscription->duration_type;
-        }
 
         $subscription->update($data);
 

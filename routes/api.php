@@ -4,13 +4,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\ServiceController;
-use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\BookingController;
-use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\SubscriptionController;
-use App\Http\Controllers\Api\Admin\SubscriptionController as AdminSubscriptionController;
-use App\Http\Controllers\Api\Public\SubscriptionController as PublicSubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,16 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/profile', [\App\Http\Controllers\Api\CustomerController::class, 'profile']);
         Route::put('/profile', [\App\Http\Controllers\Api\CustomerController::class, 'updateProfile']);
         Route::get('/dashboard', [\App\Http\Controllers\Api\CustomerController::class, 'dashboard']);
+        Route::get('/reports', [\App\Http\Controllers\Api\Customer\ReportsController::class, 'index']);
 
         // Bookings
         Route::get('/bookings', [BookingController::class, 'index']);
-        Route::get('/bookings/past', [BookingController::class, 'pastBookings']);
-        Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']); // For services only
-        Route::get('/bookings/available-time-slots', [BookingController::class, 'availableTimeSlots']); // For services only
-        Route::get('/bookings/consultation/available-dates', [BookingController::class, 'availableConsultationDates']); // For consultations only
-        Route::get('/bookings/consultation/available-time-slots', [BookingController::class, 'availableConsultationTimeSlots']); // For consultations only
+        Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']);
+        Route::get('/bookings/available-time-slots', [BookingController::class, 'availableTimeSlots']);
         Route::post('/bookings', [BookingController::class, 'store']);
-        Route::post('/bookings/consultation', [BookingController::class, 'storeConsultation']);
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
         Route::put('/bookings/{booking}', [BookingController::class, 'update']);
         Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
@@ -48,14 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/bookings/initiate-online-payment', [BookingController::class, 'initiateOnlinePayment']);
         // PayMob Online Payment (Legacy - for old bookings)
         Route::post('/bookings/{bookingId}/pay-online', [\App\Http\Controllers\Api\PaymentController::class, 'initiatePayment']);
-
-        // Ratings
-        Route::post('/ratings', [RatingController::class, 'store']);
-        Route::get('/ratings/my-ratings', [RatingController::class, 'myRatings']);
-
-        // Help & Guide
-        Route::get('/help-guide', [\App\Http\Controllers\Api\HelpGuideController::class, 'index']);
-        Route::get('/help-guide/{id}', [\App\Http\Controllers\Api\HelpGuideController::class, 'show']);
     });
 
     // Employee routes
@@ -108,38 +93,9 @@ Route::prefix('services')->group(function () {
     Route::get('/services/{service}', [ServiceController::class, 'show']);
 });
 
-// Public Consultations API routes
-Route::prefix('consultations')->group(function () {
-    Route::get('/', [ConsultationController::class, 'index']);
-    Route::get('/{id}', [ConsultationController::class, 'show']);
-    Route::get('/category/{categoryId}', [ConsultationController::class, 'byCategory']);
-});
-
 // FAQ API routes
 Route::prefix('faqs')->group(function () {
     Route::get('/', [FaqController::class, 'index']);
     Route::get('/category/{category}', [FaqController::class, 'getByCategory']);
-});
-
-// Public Ratings API routes
-Route::prefix('ratings')->group(function () {
-    Route::get('/', [RatingController::class, 'index']);
-    Route::get('/statistics', [RatingController::class, 'statistics']);
-});
-
-// Public Subscriptions routes (for frontend React)
-Route::prefix('public/subscriptions')->group(function () {
-    Route::get('/', [PublicSubscriptionController::class, 'index']);
-    Route::get('/{subscription}', [PublicSubscriptionController::class, 'show']);
-});
-
-// Admin Subscriptions routes (requires authentication and admin role)
-Route::middleware('auth:sanctum')->prefix('admin/subscriptions')->group(function () {
-    Route::get('/', [AdminSubscriptionController::class, 'index']);
-    Route::post('/', [AdminSubscriptionController::class, 'store']);
-    Route::get('/{subscription}', [AdminSubscriptionController::class, 'show']);
-    Route::put('/{subscription}', [AdminSubscriptionController::class, 'update']);
-    Route::patch('/{subscription}', [AdminSubscriptionController::class, 'update']);
-    Route::delete('/{subscription}', [AdminSubscriptionController::class, 'destroy']);
 });
 
