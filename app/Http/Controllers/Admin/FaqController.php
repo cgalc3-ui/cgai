@@ -41,9 +41,13 @@ class FaqController extends Controller
         return view('admin.faqs.index', compact('faqs', 'categories'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.faqs.create');
+        $view = view('admin.faqs.create-modal');
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function store(Request $request)
@@ -57,12 +61,24 @@ class FaqController extends Controller
 
         Faq::create($request->all());
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تم إضافة السؤال بنجاح',
+                'redirect' => route('admin.faqs.index')
+            ]);
+        }
+
         return redirect()->route('admin.faqs.index')->with('success', 'تم إضافة السؤال بنجاح');
     }
 
-    public function edit(Faq $faq)
+    public function edit(Request $request, Faq $faq)
     {
-        return view('admin.faqs.edit', compact('faq'));
+        $view = view('admin.faqs.edit-modal', compact('faq'));
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function update(Request $request, Faq $faq)
@@ -75,6 +91,14 @@ class FaqController extends Controller
         ]);
 
         $faq->update($request->all());
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث السؤال بنجاح',
+                'redirect' => route('admin.faqs.index')
+            ]);
+        }
 
         return redirect()->route('admin.faqs.index')->with('success', 'تم تحديث السؤال بنجاح');
     }

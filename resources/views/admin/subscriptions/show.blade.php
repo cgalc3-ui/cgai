@@ -144,13 +144,22 @@
             </div>
 
             <!-- Features Card -->
-            @if($subscription->features && count($subscription->features) > 0)
+            @php
+                $features = $subscription->features ?? null;
+                if (is_string($features)) {
+                    $features = json_decode($features, true) ?? [];
+                }
+                if (!is_array($features)) {
+                    $features = [];
+                }
+            @endphp
+            @if(!empty($features) && count($features) > 0)
             <div class="m-card">
                 <div class="m-card-header">
                     <i class="fas fa-list-check"></i> {{ __('messages.features') }}
                 </div>
                 <div class="m-features-list">
-                    @foreach($subscription->features as $feature)
+                    @foreach($features as $feature)
                         <div class="m-feature-item">
                             <i class="fas fa-check-circle text-success"></i>
                             <span>{{ is_array($feature) ? ($feature['name'] ?? $feature['title'] ?? '') : $feature }}</span>
@@ -651,6 +660,175 @@
         text-align: right;
         width: 100%;
     }
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .subscription-modern-container {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .subscription-m-header {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .m-title {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-subtitle {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-btn-back,
+[data-theme="dark"] .m-btn-edit {
+    background: var(--sidebar-active-bg) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-btn-back:hover,
+[data-theme="dark"] .m-btn-edit:hover {
+    background: var(--bg-light) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-stat-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .m-stat-label {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-stat-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-card,
+[data-theme="dark"] .m-sticky-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .m-card-header {
+    background: var(--sidebar-active-bg) !important;
+    border-bottom-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-card-header i {
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-details-list {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .m-detail-item {
+    border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-detail-label {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-detail-label i {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-detail-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-detail-value.highlight {
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-features-list {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .m-feature-item {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .m-feature-item i {
+    color: var(--success-color) !important;
+}
+
+[data-theme="dark"] .m-action-btn {
+    background: var(--sidebar-active-bg) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-action-btn:hover {
+    background: var(--bg-light) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-action-btn.primary {
+    background: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-action-btn.primary:hover {
+    background: var(--primary-dark) !important;
+}
+
+[data-theme="dark"] .m-action-btn.info {
+    background: var(--secondary-color) !important;
+    color: white !important;
+    border-color: var(--secondary-color) !important;
+}
+
+[data-theme="dark"] .m-action-btn.info:hover {
+    background: #3db8d1 !important;
+}
+
+[data-theme="dark"] .badge {
+    background: var(--sidebar-active-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .badge-success {
+    background: rgba(26, 188, 156, 0.2) !important;
+    color: #1abc9c !important;
+}
+
+[data-theme="dark"] .badge-warning {
+    background: rgba(247, 184, 75, 0.2) !important;
+    color: #f7b84b !important;
+}
+
+[data-theme="dark"] .badge-info {
+    background: rgba(79, 198, 225, 0.2) !important;
+    color: #4fc6e1 !important;
+}
+
+[data-theme="dark"] .badge-secondary {
+    background: rgba(108, 117, 125, 0.2) !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-success {
+    color: var(--success-color) !important;
+}
+
+[data-theme="dark"] .text-warning {
+    color: var(--warning-color) !important;
+}
+
+[data-theme="dark"] .text-danger {
+    color: var(--danger-color) !important;
 }
 </style>
 @endsection

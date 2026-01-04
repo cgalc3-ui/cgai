@@ -361,6 +361,79 @@
             #editCustomerModal .modal-footer .btn-secondary:hover {
                 background: #d1d5db;
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] #addCustomerModal .form-group label,
+            [data-theme="dark"] #editCustomerModal .form-group label {
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal .form-control,
+            [data-theme="dark"] #editCustomerModal .form-control {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                border-color: var(--border-color, #2a2d3a) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal .form-control:focus,
+            [data-theme="dark"] #editCustomerModal .form-control:focus {
+                border-color: var(--primary-color, #6658dd) !important;
+                box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1) !important;
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal .form-control:hover,
+            [data-theme="dark"] #editCustomerModal .form-control:hover {
+                border-color: var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal select.form-control,
+            [data-theme="dark"] #editCustomerModal select.form-control {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                border-color: var(--border-color, #2a2d3a) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+                background-image: none !important;
+                padding-right: 16px !important;
+                padding-left: 16px !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal select.form-control:focus,
+            [data-theme="dark"] #editCustomerModal select.form-control:focus {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                border-color: var(--primary-color, #6658dd) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal select.form-control option,
+            [data-theme="dark"] #editCustomerModal select.form-control option {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal .date-input-wrapper .date-icon,
+            [data-theme="dark"] #editCustomerModal .date-input-wrapper .date-icon {
+                color: var(--text-secondary, #94a3b8) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal .modal-footer,
+            [data-theme="dark"] #editCustomerModal .modal-footer {
+                background: var(--card-bg, #1e1f27) !important;
+                border-top-color: var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal .modal-footer .btn-secondary,
+            [data-theme="dark"] #editCustomerModal .modal-footer .btn-secondary {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-secondary, #94a3b8) !important;
+                border: 1px solid var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addCustomerModal .modal-footer .btn-secondary:hover,
+            [data-theme="dark"] #editCustomerModal .modal-footer .btn-secondary:hover {
+                background: var(--bg-light, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
         </style>
     @endpush
 

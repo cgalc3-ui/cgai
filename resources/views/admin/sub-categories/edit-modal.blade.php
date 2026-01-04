@@ -1,24 +1,26 @@
-<form action="{{ route('admin.services.store') }}" method="POST" id="serviceCreateForm" class="modal-form">
+<form action="{{ route('admin.sub-categories.update', $subCategory) }}" method="POST" class="modal-form">
     @csrf
+    @method('PUT')
 
     <div class="form-group">
-        <label for="sub_category_id">{{ __('messages.sub_category') }} <span class="required">*</span></label>
-        <select id="sub_category_id" name="sub_category_id" class="form-control" required>
-            <option value="">{{ __('messages.select_sub_category') }}</option>
-            @foreach($subCategories as $subCategory)
-                <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                    {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
+        <label for="category_id">{{ __('messages.category') }} <span class="required">*</span></label>
+        <select id="category_id" name="category_id" class="form-control" required>
+            <option value="">{{ __('messages.select_category') }}</option>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}" {{ old('category_id', $subCategory->category_id) == $category->id ? 'selected' : '' }}>
+                    {{ $category->trans('name') }}
                 </option>
             @endforeach
         </select>
-        @error('sub_category_id')
+        @error('category_id')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
         <label for="name">{{ __('messages.name') }} (AR) <span class="required">*</span></label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
+        <input type="text" id="name" name="name" value="{{ old('name', $subCategory->name) }}" class="form-control"
+            required>
         @error('name')
             <span class="error-message">{{ $message }}</span>
         @enderror
@@ -26,8 +28,8 @@
 
     <div class="form-group">
         <label for="name_en">{{ __('messages.name') }} (EN)</label>
-        <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-control"
-            style="direction: ltr; text-align: left;">
+        <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $subCategory->name_en) }}"
+            class="form-control" style="direction: ltr; text-align: left;">
         @error('name_en')
             <span class="error-message">{{ $message }}</span>
         @enderror
@@ -36,7 +38,7 @@
     <div class="form-group">
         <label for="description">{{ __('messages.description') }} (AR)</label>
         <textarea id="description" name="description" class="form-control"
-            rows="4">{{ old('description') }}</textarea>
+            rows="4">{{ old('description', $subCategory->description) }}</textarea>
         @error('description')
             <span class="error-message">{{ $message }}</span>
         @enderror
@@ -45,7 +47,7 @@
     <div class="form-group">
         <label for="description_en">{{ __('messages.description') }} (EN)</label>
         <textarea id="description_en" name="description_en" class="form-control" rows="4"
-            style="direction: ltr; text-align: left;">{{ old('description_en') }}</textarea>
+            style="direction: ltr; text-align: left;">{{ old('description_en', $subCategory->description_en) }}</textarea>
         @error('description_en')
             <span class="error-message">{{ $message }}</span>
         @enderror
@@ -53,26 +55,16 @@
 
     <div class="form-group">
         <label class="checkbox-label">
-            <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+            <input type="checkbox" name="is_active" value="1" {{ old('is_active', $subCategory->is_active) ? 'checked' : '' }}>
             <span>{{ __('messages.active') }}</span>
         </label>
-    </div>
-
-    <div class="form-group">
-        <label for="hourly_rate">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span
-                class="required">*</span></label>
-        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
-            class="form-control" step="0.01" min="0" required>
-        @error('hourly_rate')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
     </div>
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save"></i> {{ __('messages.save') }}
         </button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('createServiceModal'); return false;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('editSubCategoryModal'); return false;">
             <i class="fas fa-times"></i> {{ __('messages.cancel') }}
         </button>
     </div>
@@ -83,7 +75,7 @@
         margin-bottom: 20px;
     }
 
-    .modal-form .form-group label {
+    .modal-form label {
         color: #374151;
         font-weight: 500;
         margin-bottom: 6px;
@@ -259,7 +251,7 @@
 
 <script>
     (function() {
-        const form = document.getElementById('serviceCreateForm');
+        const form = document.querySelector('.modal-form');
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -272,7 +264,7 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
                 
                 fetch(form.action, {
-                    method: 'POST',
+                    method: 'PUT',
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -283,7 +275,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        closeModal('createServiceModal');
+                        closeModal('editSubCategoryModal');
                         if (data.redirect) {
                             window.location.href = data.redirect;
                         } else {

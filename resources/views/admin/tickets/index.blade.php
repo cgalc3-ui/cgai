@@ -229,6 +229,147 @@
             .empty-state p {
                 color: #9ca3af;
             }
+
+            /* Filter spacing - Add margin between search input and buttons */
+            .tickets-admin-container .filter-form {
+                gap: 40px;
+            }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .tickets-admin-container {
+                background: var(--card-bg) !important;
+                border: 1px solid var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .tickets-header {
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .tickets-header h2 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .tickets-header p {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .total-count {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .filter-container {
+                background: var(--card-bg) !important;
+                border: 1px solid var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .filter-group label {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .filter-select,
+            [data-theme="dark"] .filter-input {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .filter-select:focus,
+            [data-theme="dark"] .filter-input:focus {
+                border-color: var(--primary-color) !important;
+                box-shadow: 0 0 0 0.2rem rgba(102, 88, 221, 0.2) !important;
+            }
+
+            [data-theme="dark"] .btn-primary {
+                background: var(--primary-color) !important;
+                color: white !important;
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .btn-primary:hover {
+                background: var(--primary-dark) !important;
+            }
+
+            [data-theme="dark"] .btn-secondary {
+                background: var(--sidebar-active-bg) !important;
+                color: var(--text-primary) !important;
+                border-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .btn-secondary:hover {
+                background: var(--bg-light) !important;
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .data-table {
+                background: var(--card-bg) !important;
+            }
+
+            [data-theme="dark"] .data-table thead {
+                background: var(--sidebar-active-bg) !important;
+            }
+
+            [data-theme="dark"] .data-table thead th {
+                color: var(--text-primary) !important;
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .data-table tbody tr {
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .data-table tbody tr:hover {
+                background: var(--sidebar-active-bg) !important;
+            }
+
+            [data-theme="dark"] .data-table tbody td {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .user-name {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .user-email {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .ticket-link {
+                color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .ticket-link:hover {
+                color: var(--primary-dark) !important;
+            }
+
+            [data-theme="dark"] .empty-state i {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .empty-state h3 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .empty-state p {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .pagination-wrapper {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .pagination-wrapper .pagination a,
+            [data-theme="dark"] .pagination-wrapper .pagination span {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .pagination-wrapper .pagination .active span {
+                background: var(--primary-color) !important;
+                border-color: var(--primary-color) !important;
+                color: white !important;
+            }
         </style>
     @endpush
 @endsection

@@ -1,17 +1,17 @@
-<form action="{{ route('admin.services.store') }}" method="POST" id="serviceCreateForm" class="modal-form">
+<form action="{{ route('admin.consultations.store') }}" method="POST" id="consultationCreateForm" class="modal-form">
     @csrf
 
     <div class="form-group">
-        <label for="sub_category_id">{{ __('messages.sub_category') }} <span class="required">*</span></label>
-        <select id="sub_category_id" name="sub_category_id" class="form-control" required>
-            <option value="">{{ __('messages.select_sub_category') }}</option>
-            @foreach($subCategories as $subCategory)
-                <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                    {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
+        <label for="category_id">{{ __('messages.category') }} <span class="required">*</span></label>
+        <select id="category_id" name="category_id" class="form-control" required>
+            <option value="">{{ __('messages.select_category') }}</option>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                    {{ $category->trans('name') }}
                 </option>
             @endforeach
         </select>
-        @error('sub_category_id')
+        @error('category_id')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
@@ -29,6 +29,15 @@
         <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-control"
             style="direction: ltr; text-align: left;">
         @error('name_en')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+        <label for="slug">{{ __('messages.slug') }}</label>
+        <input type="text" id="slug" name="slug" value="{{ old('slug') }}" class="form-control"
+            placeholder="{{ __('messages.slug_auto_generate') }}">
+        @error('slug')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
@@ -52,27 +61,27 @@
     </div>
 
     <div class="form-group">
+        <label for="fixed_price">{{ __('messages.fixed_price') }} ({{ __('messages.sar') }}) <span
+                class="required">*</span></label>
+        <input type="number" id="fixed_price" name="fixed_price" value="{{ old('fixed_price') }}"
+            class="form-control" step="0.01" min="0" required>
+        @error('fixed_price')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
         <label class="checkbox-label">
             <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
             <span>{{ __('messages.active') }}</span>
         </label>
     </div>
 
-    <div class="form-group">
-        <label for="hourly_rate">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span
-                class="required">*</span></label>
-        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
-            class="form-control" step="0.01" min="0" required>
-        @error('hourly_rate')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
-
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save"></i> {{ __('messages.save') }}
         </button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('createServiceModal'); return false;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('createConsultationModal'); return false;">
             <i class="fas fa-times"></i> {{ __('messages.cancel') }}
         </button>
     </div>
@@ -83,7 +92,7 @@
         margin-bottom: 20px;
     }
 
-    .modal-form .form-group label {
+    .modal-form label {
         color: #374151;
         font-weight: 500;
         margin-bottom: 6px;
@@ -259,7 +268,7 @@
 
 <script>
     (function() {
-        const form = document.getElementById('serviceCreateForm');
+        const form = document.getElementById('consultationCreateForm');
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -283,7 +292,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        closeModal('createServiceModal');
+                        closeModal('createConsultationModal');
                         if (data.redirect) {
                             window.location.href = data.redirect;
                         } else {

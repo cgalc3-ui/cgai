@@ -421,6 +421,176 @@
                 top: 0;
             }
         }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] .filter-container {
+            background: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .filter-form label {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .custom-checkbox {
+            background: var(--sidebar-active-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .checkbox-label:hover .custom-checkbox {
+            border-color: var(--primary-color) !important;
+            color: var(--primary-color) !important;
+        }
+
+        [data-theme="dark"] .checkbox-label input:checked + .custom-checkbox {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        [data-theme="dark"] .filter-input-small {
+            background: var(--sidebar-active-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .btn-outline-secondary {
+            background: var(--sidebar-active-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .btn-outline-secondary:hover {
+            background: var(--bg-light) !important;
+            border-color: var(--primary-color) !important;
+            color: var(--primary-color) !important;
+        }
+
+        [data-theme="dark"] .calendar-container {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: none !important;
+        }
+
+        [data-theme="dark"] .calendar-header {
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .calendar-header h3 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .calendar-nav-btn {
+            background: var(--sidebar-active-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .calendar-nav-btn:hover {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        [data-theme="dark"] .weekday {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .calendar-day {
+            background: var(--sidebar-active-bg) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .calendar-day:hover {
+            background: var(--bg-light) !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        [data-theme="dark"] .calendar-day.other-month {
+            background: var(--card-bg) !important;
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .calendar-day.today {
+            background: var(--primary-color) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .calendar-day.selected {
+            background: var(--secondary-color) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .section-container {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: none !important;
+        }
+
+        [data-theme="dark"] .section-header {
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .section-header h3 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .day-badge {
+            background: rgba(79, 198, 225, 0.2) !important;
+            color: var(--secondary-color) !important;
+        }
+
+        [data-theme="dark"] .time-badge {
+            background: var(--sidebar-active-bg) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .datetime-info .date {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .datetime-info .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .data-table {
+            background: var(--card-bg) !important;
+        }
+
+        [data-theme="dark"] .data-table thead {
+            background: var(--sidebar-active-bg) !important;
+        }
+
+        [data-theme="dark"] .data-table thead th {
+            color: var(--text-primary) !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .data-table tbody tr {
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .data-table tbody tr:hover {
+            background: var(--sidebar-active-bg) !important;
+        }
+
+        [data-theme="dark"] .data-table tbody td {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .empty-state i {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .empty-state h3 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .empty-state p {
+            color: var(--text-secondary) !important;
+        }
     </style>
 @endpush
 

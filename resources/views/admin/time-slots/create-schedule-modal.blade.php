@@ -1,78 +1,84 @@
-<form action="{{ route('admin.services.store') }}" method="POST" id="serviceCreateForm" class="modal-form">
+<form action="{{ route('admin.time-slots.schedules.store') }}" method="POST" id="scheduleCreateForm" class="modal-form">
     @csrf
 
     <div class="form-group">
-        <label for="sub_category_id">{{ __('messages.sub_category') }} <span class="required">*</span></label>
-        <select id="sub_category_id" name="sub_category_id" class="form-control" required>
-            <option value="">{{ __('messages.select_sub_category') }}</option>
-            @foreach($subCategories as $subCategory)
-                <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                    {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
+        <label for="employee_id">{{ __('messages.employee') }} <span class="required">*</span></label>
+        <select id="employee_id" name="employee_id" class="form-control" required>
+            <option value="">{{ __('messages.select_employee') }}</option>
+            @foreach($employees as $employee)
+                <option value="{{ $employee->id }}" {{ old('employee_id') == $employee->id ? 'selected' : '' }}>
+                    {{ $employee->user->name }}
                 </option>
             @endforeach
         </select>
-        @error('sub_category_id')
+        @error('employee_id')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="name">{{ __('messages.name') }} (AR) <span class="required">*</span></label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
-        @error('name')
+        <label>{{ __('messages.weekdays_label') }} <span class="required">*</span></label>
+        <div class="days-checkboxes">
+            @php
+                $days = [
+                    0 => ['name' => __('messages.sunday'), 'value' => 0],
+                    1 => ['name' => __('messages.monday'), 'value' => 1],
+                    2 => ['name' => __('messages.tuesday'), 'value' => 2],
+                    3 => ['name' => __('messages.wednesday'), 'value' => 3],
+                    4 => ['name' => __('messages.thursday'), 'value' => 4],
+                    5 => ['name' => __('messages.friday'), 'value' => 5],
+                    6 => ['name' => __('messages.saturday'), 'value' => 6],
+                ];
+                $oldDays = old('days_of_week', []);
+            @endphp
+            @foreach($days as $day)
+                <label class="day-checkbox">
+                    <input type="checkbox" name="days_of_week[]" value="{{ $day['value'] }}" 
+                           {{ in_array($day['value'], $oldDays) ? 'checked' : '' }}>
+                    <span>{{ $day['name'] }}</span>
+                </label>
+            @endforeach
+        </div>
+        @error('days_of_week')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
-    <div class="form-group">
-        <label for="name_en">{{ __('messages.name') }} (EN)</label>
-        <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-control"
-            style="direction: ltr; text-align: left;">
-        @error('name_en')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="start_time">{{ __('messages.from_hour') }} <span class="required">*</span></label>
+            <input type="time" id="start_time" name="start_time" value="{{ old('start_time', '10:00') }}" class="form-control" required>
+            @error('start_time')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
 
-    <div class="form-group">
-        <label for="description">{{ __('messages.description') }} (AR)</label>
-        <textarea id="description" name="description" class="form-control"
-            rows="4">{{ old('description') }}</textarea>
-        @error('description')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
-
-    <div class="form-group">
-        <label for="description_en">{{ __('messages.description') }} (EN)</label>
-        <textarea id="description_en" name="description_en" class="form-control" rows="4"
-            style="direction: ltr; text-align: left;">{{ old('description_en') }}</textarea>
-        @error('description_en')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
+        <div class="form-group">
+            <label for="end_time">{{ __('messages.to_hour') }} <span class="required">*</span></label>
+            <input type="time" id="end_time" name="end_time" value="{{ old('end_time', '18:00') }}" class="form-control" required>
+            @error('end_time')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
     </div>
 
     <div class="form-group">
         <label class="checkbox-label">
             <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-            <span>{{ __('messages.active') }}</span>
+            <span>{{ __('messages.appointments_active') }}</span>
         </label>
     </div>
 
-    <div class="form-group">
-        <label for="hourly_rate">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span
-                class="required">*</span></label>
-        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
-            class="form-control" step="0.01" min="0" required>
-        @error('hourly_rate')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
+    <div class="info-box">
+        <i class="fas fa-info-circle"></i>
+        <p>{{ __('messages.auto_create_time_slots_info') }}</p>
     </div>
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save"></i> {{ __('messages.save') }}
         </button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('createServiceModal'); return false;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('createScheduleModal'); return false;">
             <i class="fas fa-times"></i> {{ __('messages.cancel') }}
         </button>
     </div>
@@ -83,7 +89,7 @@
         margin-bottom: 20px;
     }
 
-    .modal-form .form-group label {
+    .modal-form label {
         color: #374151;
         font-weight: 500;
         margin-bottom: 6px;
@@ -113,9 +119,10 @@
         border-color: #9ca3af;
     }
 
-    .modal-form textarea.form-control {
-        resize: vertical;
-        min-height: 80px;
+    .modal-form .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
     }
 
     .modal-form .error-message {
@@ -138,6 +145,71 @@
         height: 18px;
         cursor: pointer;
         accent-color: #3b82f6;
+    }
+
+    .modal-form .days-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .modal-form .day-checkbox {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        gap: 8px;
+    }
+
+    .modal-form .day-checkbox:hover {
+        background: #e9ecef;
+        border-color: #3b82f6;
+    }
+
+    .modal-form .day-checkbox input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #3b82f6;
+        margin: 0;
+    }
+
+    .modal-form .day-checkbox input[type="checkbox"]:checked + span {
+        font-weight: 600;
+        color: #3b82f6;
+    }
+
+    .modal-form .day-checkbox:has(input[type="checkbox"]:checked) {
+        background: #e7f3ff;
+        border-color: #3b82f6;
+    }
+
+    .modal-form .info-box {
+        background: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 20px 0;
+        display: flex;
+        align-items: start;
+        gap: 10px;
+    }
+
+    .modal-form .info-box i {
+        color: #3b82f6;
+        font-size: 18px;
+        margin-top: 2px;
+    }
+
+    .modal-form .info-box p {
+        margin: 0;
+        color: #004085;
+        font-size: 13px;
     }
 
     .modal-form .form-actions {
@@ -228,8 +300,64 @@
         color: var(--text-primary, #f1f5f9) !important;
     }
 
+    [data-theme="dark"] .modal-form .checkbox-label span {
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
     [data-theme="dark"] .modal-form .checkbox-label input[type="checkbox"] {
         accent-color: var(--primary-color, #6658dd) !important;
+        filter: brightness(1.2);
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox {
+        background: var(--sidebar-active-bg, #15171d) !important;
+        border-color: var(--border-color, #2a2d3a) !important;
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox span {
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox:hover {
+        background: var(--bg-light, #15171d) !important;
+        border-color: var(--primary-color, #6658dd) !important;
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox:hover span {
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox input[type="checkbox"] {
+        accent-color: var(--primary-color, #6658dd) !important;
+        filter: brightness(1.2);
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox input[type="checkbox"]:checked + span {
+        color: var(--primary-color, #6658dd) !important;
+        font-weight: 600 !important;
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox:has(input[type="checkbox"]:checked) {
+        background: rgba(102, 88, 221, 0.15) !important;
+        border-color: var(--primary-color, #6658dd) !important;
+    }
+
+    [data-theme="dark"] .modal-form .day-checkbox:has(input[type="checkbox"]:checked) span {
+        color: var(--primary-color, #6658dd) !important;
+    }
+
+    [data-theme="dark"] .modal-form .info-box {
+        background: rgba(102, 88, 221, 0.1) !important;
+        border-color: var(--primary-color, #6658dd) !important;
+    }
+
+    [data-theme="dark"] .modal-form .info-box i {
+        color: var(--primary-color, #6658dd) !important;
+    }
+
+    [data-theme="dark"] .modal-form .info-box p {
+        color: var(--text-primary, #f1f5f9) !important;
     }
 
     [data-theme="dark"] .modal-form .form-actions {
@@ -259,7 +387,7 @@
 
 <script>
     (function() {
-        const form = document.getElementById('serviceCreateForm');
+        const form = document.getElementById('scheduleCreateForm');
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -283,7 +411,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        closeModal('createServiceModal');
+                        closeModal('createScheduleModal');
                         if (data.redirect) {
                             window.location.href = data.redirect;
                         } else {

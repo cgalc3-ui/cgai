@@ -53,16 +53,13 @@ class ServiceController extends Controller
 
     public function create(Request $request)
     {
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
         $subCategories = SubCategory::where('is_active', true)->with('category')->orderBy('name')->get();
-        $view = view('admin.services.create-modal', compact('subCategories'));
+        $view = view('admin.services.create-modal', compact('categories', 'subCategories'));
         
-        if ($request->ajax()) {
-            return response()->json([
-                'html' => $view->render()
-            ]);
-        }
-        
-        return view('admin.services.create', compact('subCategories'));
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function store(StoreServiceRequest $request)
@@ -73,6 +70,9 @@ class ServiceController extends Controller
         if (empty($data['slug'])) {
             unset($data['slug']);
         }
+
+        // Remove category_id if present (it's only used for UI)
+        unset($data['category_id']);
 
         $service = Service::create($data);
         
@@ -90,16 +90,13 @@ class ServiceController extends Controller
 
     public function edit(Request $request, Service $service)
     {
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
         $subCategories = SubCategory::where('is_active', true)->with('category')->orderBy('name')->get();
-        $view = view('admin.services.edit-modal', compact('service', 'subCategories'));
+        $view = view('admin.services.edit-modal', compact('service', 'categories', 'subCategories'));
         
-        if ($request->ajax()) {
-            return response()->json([
-                'html' => $view->render()
-            ]);
-        }
-        
-        return view('admin.services.edit', compact('service', 'subCategories'));
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function update(UpdateServiceRequest $request, Service $service)
@@ -110,6 +107,9 @@ class ServiceController extends Controller
         if (empty($data['slug'])) {
             unset($data['slug']);
         }
+
+        // Remove category_id if present (it's only used for UI)
+        unset($data['category_id']);
 
         $service->update($data);
         

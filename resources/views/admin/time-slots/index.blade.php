@@ -13,9 +13,9 @@
             <a href="{{ route('admin.time-slots.schedules') }}" class="btn btn-info">
                 <i class="fas fa-calendar-alt"></i> {{ __('messages.recurring_appointments') }}
             </a>
-            <a href="{{ route('admin.time-slots.create') }}" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" onclick="openCreateModal('{{ route('admin.time-slots.create') }}', 'createTimeSlotModal', '{{ __('messages.add_time_slot') }}')">
                 <i class="fas fa-plus"></i> {{ __('messages.add_time_slot') }}
-            </a>
+            </button>
             <span class="total-count">{{ __('messages.total_time_slots') }}: {{ $timeSlots->total() }}</span>
         </div>
     </div>
@@ -136,10 +136,10 @@
                                     </td>
                                     <td class="text-center">
                                         <div style="display: flex; gap: 8px; justify-content: center;">
-                                            <a href="{{ route('admin.time-slots.edit', $timeSlot) }}"
-                                                class="calm-action-btn warning" title="{{ __('messages.edit') }}">
+                                            <button type="button" class="calm-action-btn warning" title="{{ __('messages.edit') }}"
+                                                onclick="openEditModal('{{ route('admin.time-slots.edit', $timeSlot) }}', 'editTimeSlotModal', '{{ __('messages.edit_time_slot') }}')">
                                                 <i class="far fa-edit"></i>
-                                            </a>
+                                            </button>
                                             <form action="{{ route('admin.time-slots.delete', $timeSlot) }}" method="POST"
                                                 class="d-inline"
                                                 onsubmit="return confirm('{{ __('messages.delete_time_slot_confirm') }}')">
@@ -168,6 +168,42 @@
             </div>
         </div>
     </div>
+
+    <!-- Create Modal -->
+    <div class="modal-overlay" id="createTimeSlotModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">{{ __('messages.add_time_slot') }}</h3>
+                <button type="button" class="modal-close" onclick="closeModal('createTimeSlotModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="createTimeSlotModalBody" style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editTimeSlotModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">{{ __('messages.edit_time_slot') }}</h3>
+                <button type="button" class="modal-close" onclick="closeModal('editTimeSlotModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="editTimeSlotModalBody" style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+    </style>
 
     @push('styles')
         <style>
@@ -320,6 +356,69 @@
                     top: 0;
                 }
             }
+
+            /* Dark Mode Styles for Time Slots */
+            [data-theme="dark"] .calendar-container {
+                background: var(--card-bg);
+                box-shadow: none;
+                border: 1px solid var(--border-color);
+            }
+
+            [data-theme="dark"] .calendar-header {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .calendar-header h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .calendar-nav-btn {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .calendar-nav-btn:hover {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .weekday {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .calendar-day {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .calendar-day:hover {
+                background: var(--sidebar-active-bg);
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .calendar-day.other-month {
+                color: var(--text-secondary);
+                background: var(--sidebar-active-bg);
+            }
+
+            [data-theme="dark"] .calendar-day.today {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .calendar-day.selected {
+                background: var(--secondary-color);
+                color: white;
+                border-color: var(--secondary-color);
+            }
+
+            [data-theme="dark"] .table-container-wrapper {
+                background: transparent;
+            }
         </style>
     @endpush
 
@@ -454,6 +553,135 @@
                     currentDate = new Date(selectedDate);
                 }
                 renderCalendar();
+            });
+
+            // Modal Functions
+            function openCreateModal(url, modalId, title) {
+                const modal = document.getElementById(modalId);
+                const modalBody = document.getElementById(modalId + 'Body');
+                
+                modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3b82f6;"></i></div>';
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10);
+                
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    modalBody.innerHTML = data.html;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    modalBody.innerHTML = '<div class="alert alert-error">{{ __('messages.error') }}</div>';
+                });
+            }
+
+            function openEditModal(url, modalId, title) {
+                const modal = document.getElementById(modalId);
+                const modalBody = document.getElementById(modalId + 'Body');
+                
+                modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3b82f6;"></i></div>';
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('show'), 10);
+                
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    modalBody.innerHTML = data.html;
+                    // Update form action and add AJAX handler
+                    const form = modalBody.querySelector('form');
+                    if (form) {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            handleFormSubmit(form, modalId);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    modalBody.innerHTML = '<div class="alert alert-error">{{ __('messages.error') }}</div>';
+                });
+            }
+
+            function handleFormSubmit(form, modalId) {
+                const formData = new FormData(form);
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
+                
+                fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeModal(modalId);
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        // Handle validation errors
+                        if (data.errors) {
+                            // Clear previous errors
+                            form.querySelectorAll('.error-message').forEach(el => el.remove());
+                            form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+                            
+                            Object.keys(data.errors).forEach(key => {
+                                const input = form.querySelector(`[name="${key}"]`);
+                                if (input) {
+                                    input.classList.add('error');
+                                    const errorMsg = document.createElement('span');
+                                    errorMsg.className = 'error-message';
+                                    errorMsg.textContent = data.errors[key][0];
+                                    input.parentNode.appendChild(errorMsg);
+                                }
+                            });
+                        }
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
+            }
+
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('show');
+                    setTimeout(() => {
+                        modal.style.display = 'none';
+                    }, 300);
+                }
+            }
+
+            // Close modal when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-overlay')) {
+                    closeModal(e.target.id);
+                }
             });
         </script>
     @endpush

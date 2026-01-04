@@ -612,6 +612,208 @@
                     grid-template-columns: 1fr;
                 }
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .booking-modern-container {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .booking-m-header {
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .m-title {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .m-subtitle {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-btn-back {
+                background: var(--sidebar-active-bg) !important;
+                color: var(--text-secondary) !important;
+                border-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .m-btn-back:hover {
+                background: var(--bg-light) !important;
+                color: var(--primary-color) !important;
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .m-stat-card {
+                background: var(--card-bg) !important;
+                border-color: var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .m-stat-label {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-stat-status,
+            [data-theme="dark"] .m-stat-value {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .m-card,
+            [data-theme="dark"] .m-sticky-card {
+                background: var(--card-bg) !important;
+                border-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .m-card-header {
+                color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .m-card-header i {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-service-info h3 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .m-service-meta {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-dot {
+                background: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .m-contact-item {
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .m-contact-item .label {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-contact-item .value {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .m-contact-item .value.link {
+                color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .m-time-item label {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-time-item .val {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .m-time-item .day {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-time-line {
+                background: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .m-notes-area {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .notes-content {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .m-form-group label {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .m-select-wrapper select {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .m-select-wrapper select:focus {
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .m-btn-save.primary {
+                background: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .m-btn-save.primary:hover {
+                background: var(--primary-dark) !important;
+            }
+
+            [data-theme="dark"] .m-btn-save.secondary {
+                background: var(--sidebar-active-bg) !important;
+                color: var(--text-primary) !important;
+                border: 1px solid var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .m-btn-save.secondary:hover {
+                background: var(--bg-light) !important;
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .m-card-divider {
+                background: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .tool-btn {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .tool-btn:hover {
+                background: var(--bg-light) !important;
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .m-side-title {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .icon-blue {
+                background: rgba(59, 130, 246, 0.2) !important;
+                color: #3b82f6 !important;
+            }
+
+            [data-theme="dark"] .icon-green {
+                background: rgba(34, 197, 94, 0.2) !important;
+                color: #22c55e !important;
+            }
+
+            [data-theme="dark"] .icon-purple {
+                background: rgba(168, 85, 247, 0.2) !important;
+                color: #a855f7 !important;
+            }
+
+            [data-theme="dark"] .status-pending {
+                color: var(--warning-color) !important;
+            }
+
+            [data-theme="dark"] .status-confirmed {
+                color: var(--secondary-color) !important;
+            }
+
+            [data-theme="dark"] .status-completed {
+                color: var(--success-color) !important;
+            }
+
+            [data-theme="dark"] .status-cancelled {
+                color: var(--danger-color) !important;
+            }
+
+            [data-theme="dark"] .payment-paid {
+                color: var(--success-color) !important;
+            }
+
+            [data-theme="dark"] .payment-unpaid {
+                color: var(--warning-color) !important;
+            }
         </style>
     @endpush
 @endsection

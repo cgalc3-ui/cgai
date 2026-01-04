@@ -58,9 +58,13 @@ class SubscriptionController extends Controller
     /**
      * Show the form for creating a new subscription
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.subscriptions.create');
+        $view = view('admin.subscriptions.create-modal');
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     /**
@@ -92,6 +96,14 @@ class SubscriptionController extends Controller
             ]
         );
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تم إنشاء الباقة بنجاح',
+                'redirect' => route('admin.subscriptions.index')
+            ]);
+        }
+
         return redirect()->route('admin.subscriptions.index')
             ->with('success', 'تم إنشاء الباقة بنجاح');
     }
@@ -108,9 +120,13 @@ class SubscriptionController extends Controller
     /**
      * Show the form for editing the specified subscription
      */
-    public function edit(Subscription $subscription)
+    public function edit(Request $request, Subscription $subscription)
     {
-        return view('admin.subscriptions.edit', compact('subscription'));
+        $view = view('admin.subscriptions.edit-modal', compact('subscription'));
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     /**
@@ -149,6 +165,14 @@ class SubscriptionController extends Controller
                 'name_en' => $subscription->name_en,
             ]
         );
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث الباقة بنجاح',
+                'redirect' => route('admin.subscriptions.index')
+            ]);
+        }
 
         return redirect()->route('admin.subscriptions.index')
             ->with('success', 'تم تحديث الباقة بنجاح');

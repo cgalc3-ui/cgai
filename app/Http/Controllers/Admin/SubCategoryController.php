@@ -42,10 +42,14 @@ class SubCategoryController extends Controller
         return view('admin.sub-categories.index', compact('subCategories', 'categories'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $categories = Category::where('is_active', true)->orderBy('name')->get();
-        return view('admin.sub-categories.create', compact('categories'));
+        $view = view('admin.sub-categories.create-modal', compact('categories'));
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function store(StoreSubCategoryRequest $request)
@@ -59,14 +63,26 @@ class SubCategoryController extends Controller
         
         SubCategory::create($data);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.subcategory_created_success'),
+                'redirect' => route('admin.sub-categories.index')
+            ]);
+        }
+
         return redirect()->route('admin.sub-categories.index')
             ->with('success', 'تم إنشاء الفئة الفرعية بنجاح');
     }
 
-    public function edit(SubCategory $subCategory)
+    public function edit(Request $request, SubCategory $subCategory)
     {
         $categories = Category::where('is_active', true)->orderBy('name')->get();
-        return view('admin.sub-categories.edit', compact('subCategory', 'categories'));
+        $view = view('admin.sub-categories.edit-modal', compact('subCategory', 'categories'));
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function update(UpdateSubCategoryRequest $request, SubCategory $subCategory)
@@ -79,6 +95,14 @@ class SubCategoryController extends Controller
         }
         
         $subCategory->update($data);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.subcategory_updated_success'),
+                'redirect' => route('admin.sub-categories.index')
+            ]);
+        }
 
         return redirect()->route('admin.sub-categories.index')
             ->with('success', 'تم تحديث الفئة الفرعية بنجاح');

@@ -36,13 +36,9 @@ class CategoryController extends Controller
     {
         $view = view('admin.categories.create-modal');
         
-        if ($request->ajax()) {
-            return response()->json([
-                'html' => $view->render()
-            ]);
-        }
-        
-        return view('admin.categories.create');
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function store(StoreCategoryRequest $request)
@@ -72,13 +68,9 @@ class CategoryController extends Controller
     {
         $view = view('admin.categories.edit-modal', compact('category'));
         
-        if ($request->ajax()) {
-            return response()->json([
-                'html' => $view->render()
-            ]);
-        }
-        
-        return view('admin.categories.edit', compact('category'));
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function update(UpdateCategoryRequest $request, Category $category)

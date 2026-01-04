@@ -354,6 +354,113 @@
                 display: flex;
                 justify-content: center;
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .notifications-container {
+                background: var(--card-bg);
+                box-shadow: none;
+                border: 1px solid var(--border-color);
+            }
+
+            [data-theme="dark"] .notifications-header {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .header-left h2 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .header-left p {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .btn-mark-all-read {
+                background: var(--primary-color);
+            }
+
+            [data-theme="dark"] .btn-mark-all-read:hover {
+                background: var(--primary-dark);
+            }
+
+            [data-theme="dark"] .notification-item {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .notification-item.unread {
+                background: rgba(102, 88, 221, 0.1);
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .notification-item:hover {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            [data-theme="dark"] .notification-item.unread .notification-icon {
+                background: rgba(102, 88, 221, 0.2);
+                color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .notification-item.read .notification-icon {
+                background: var(--bg-light);
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .notification-title {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .notification-item.read .notification-title {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .notification-time {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .notification-message {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .notification-item.read .notification-message {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .notification-link {
+                background: var(--primary-color);
+            }
+
+            [data-theme="dark"] .notification-link:hover {
+                background: var(--primary-dark);
+            }
+
+            [data-theme="dark"] .btn-mark-read {
+                background: var(--success-color);
+            }
+
+            [data-theme="dark"] .btn-mark-read:hover {
+                background: #059669;
+            }
+
+            [data-theme="dark"] .btn-delete {
+                background: var(--danger-color);
+            }
+
+            [data-theme="dark"] .btn-delete:hover {
+                background: #dc2626;
+            }
+
+            [data-theme="dark"] .empty-state i {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .empty-state h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .empty-state p {
+                color: var(--text-secondary);
+            }
         </style>
     @endpush
 @endsection

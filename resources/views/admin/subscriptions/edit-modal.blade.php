@@ -1,24 +1,10 @@
-<form action="{{ route('admin.services.store') }}" method="POST" id="serviceCreateForm" class="modal-form">
+<form action="{{ route('admin.subscriptions.update', $subscription) }}" method="POST" class="modal-form">
     @csrf
-
-    <div class="form-group">
-        <label for="sub_category_id">{{ __('messages.sub_category') }} <span class="required">*</span></label>
-        <select id="sub_category_id" name="sub_category_id" class="form-control" required>
-            <option value="">{{ __('messages.select_sub_category') }}</option>
-            @foreach($subCategories as $subCategory)
-                <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                    {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
-                </option>
-            @endforeach
-        </select>
-        @error('sub_category_id')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
+    @method('PUT')
 
     <div class="form-group">
         <label for="name">{{ __('messages.name') }} (AR) <span class="required">*</span></label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
+        <input type="text" id="name" name="name" value="{{ old('name', $subscription->name) }}" class="form-control" required>
         @error('name')
             <span class="error-message">{{ $message }}</span>
         @enderror
@@ -26,7 +12,7 @@
 
     <div class="form-group">
         <label for="name_en">{{ __('messages.name') }} (EN)</label>
-        <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-control"
+        <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $subscription->name_en) }}" class="form-control"
             style="direction: ltr; text-align: left;">
         @error('name_en')
             <span class="error-message">{{ $message }}</span>
@@ -36,7 +22,7 @@
     <div class="form-group">
         <label for="description">{{ __('messages.description') }} (AR)</label>
         <textarea id="description" name="description" class="form-control"
-            rows="4">{{ old('description') }}</textarea>
+            rows="4">{{ old('description', $subscription->description) }}</textarea>
         @error('description')
             <span class="error-message">{{ $message }}</span>
         @enderror
@@ -45,34 +31,74 @@
     <div class="form-group">
         <label for="description_en">{{ __('messages.description') }} (EN)</label>
         <textarea id="description_en" name="description_en" class="form-control" rows="4"
-            style="direction: ltr; text-align: left;">{{ old('description_en') }}</textarea>
+            style="direction: ltr; text-align: left;">{{ old('description_en', $subscription->description_en) }}</textarea>
         @error('description_en')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
+    <div class="form-row">
+        <div class="form-group">
+            <label for="price">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span class="required">*</span></label>
+            <input type="number" id="price" name="price" value="{{ old('price', $subscription->price) }}" class="form-control" step="0.01" min="0" required>
+            @error('price')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="duration_type">{{ __('messages.duration_type') }} <span class="required">*</span></label>
+            <select id="duration_type" name="duration_type" class="form-control" required>
+                <option value="">{{ __('messages.select_duration_type') }}</option>
+                <option value="month" {{ old('duration_type', $subscription->duration_type) == 'month' ? 'selected' : '' }}>{{ __('messages.monthly') }}</option>
+                <option value="year" {{ old('duration_type', $subscription->duration_type) == 'year' ? 'selected' : '' }}>{{ __('messages.yearly') }}</option>
+                <option value="lifetime" {{ old('duration_type', $subscription->duration_type) == 'lifetime' ? 'selected' : '' }}>{{ __('messages.lifetime') }}</option>
+            </select>
+            @error('duration_type')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="max_debtors">{{ __('messages.max_debtors') }} <span class="required">*</span></label>
+            <input type="number" id="max_debtors" name="max_debtors" value="{{ old('max_debtors', $subscription->max_debtors) }}" class="form-control" min="0" required>
+            <small class="form-text text-muted">{{ __('messages.zero_for_unlimited') }}</small>
+            @error('max_debtors')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="max_messages">{{ __('messages.max_messages') }} <span class="required">*</span></label>
+            <input type="number" id="max_messages" name="max_messages" value="{{ old('max_messages', $subscription->max_messages) }}" class="form-control" min="0" required>
+            <small class="form-text text-muted">{{ __('messages.zero_for_unlimited') }}</small>
+            @error('max_messages')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+
     <div class="form-group">
         <label class="checkbox-label">
-            <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-            <span>{{ __('messages.active') }}</span>
+            <input type="checkbox" name="ai_enabled" value="1" {{ old('ai_enabled', $subscription->ai_enabled) ? 'checked' : '' }}>
+            <span>{{ __('messages.ai_enabled') }}</span>
         </label>
     </div>
 
     <div class="form-group">
-        <label for="hourly_rate">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span
-                class="required">*</span></label>
-        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
-            class="form-control" step="0.01" min="0" required>
-        @error('hourly_rate')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
+        <label class="checkbox-label">
+            <input type="checkbox" name="is_active" value="1" {{ old('is_active', $subscription->is_active) ? 'checked' : '' }}>
+            <span>{{ __('messages.active') }}</span>
+        </label>
     </div>
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save"></i> {{ __('messages.save') }}
         </button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('createServiceModal'); return false;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('editSubscriptionModal'); return false;">
             <i class="fas fa-times"></i> {{ __('messages.cancel') }}
         </button>
     </div>
@@ -83,7 +109,7 @@
         margin-bottom: 20px;
     }
 
-    .modal-form .form-group label {
+    .modal-form label {
         color: #374151;
         font-weight: 500;
         margin-bottom: 6px;
@@ -116,6 +142,19 @@
     .modal-form textarea.form-control {
         resize: vertical;
         min-height: 80px;
+    }
+
+    .modal-form .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .modal-form .form-text {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #6b7280;
     }
 
     .modal-form .error-message {
@@ -220,6 +259,10 @@
         color: var(--text-primary, #f1f5f9) !important;
     }
 
+    [data-theme="dark"] .modal-form .form-text {
+        color: var(--text-secondary, #94a3b8) !important;
+    }
+
     [data-theme="dark"] .modal-form .error-message {
         color: var(--danger-color, #ef4444) !important;
     }
@@ -228,8 +271,13 @@
         color: var(--text-primary, #f1f5f9) !important;
     }
 
+    [data-theme="dark"] .modal-form .checkbox-label span {
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
     [data-theme="dark"] .modal-form .checkbox-label input[type="checkbox"] {
         accent-color: var(--primary-color, #6658dd) !important;
+        filter: brightness(1.2);
     }
 
     [data-theme="dark"] .modal-form .form-actions {
@@ -259,7 +307,7 @@
 
 <script>
     (function() {
-        const form = document.getElementById('serviceCreateForm');
+        const form = document.querySelector('.modal-form');
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -272,7 +320,7 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
                 
                 fetch(form.action, {
-                    method: 'POST',
+                    method: 'PUT',
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -283,7 +331,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        closeModal('createServiceModal');
+                        closeModal('editSubscriptionModal');
                         if (data.redirect) {
                             window.location.href = data.redirect;
                         } else {

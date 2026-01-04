@@ -42,10 +42,14 @@ class ConsultationController extends Controller
         return view('admin.consultations.index', compact('consultations', 'categories'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $categories = Category::where('is_active', true)->orderBy('name')->get();
-        return view('admin.consultations.create', compact('categories'));
+        $view = view('admin.consultations.create-modal', compact('categories'));
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function store(StoreConsultationRequest $request)
@@ -58,14 +62,27 @@ class ConsultationController extends Controller
         }
 
         $consultation = Consultation::create($data);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.consultation_created_success'),
+                'redirect' => route('admin.consultations.index')
+            ]);
+        }
+        
         return redirect()->route('admin.consultations.index')
             ->with('success', 'تم إنشاء الاستشارة بنجاح');
     }
 
-    public function edit(Consultation $consultation)
+    public function edit(Request $request, Consultation $consultation)
     {
         $categories = Category::where('is_active', true)->orderBy('name')->get();
-        return view('admin.consultations.edit', compact('consultation', 'categories'));
+        $view = view('admin.consultations.edit-modal', compact('consultation', 'categories'));
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     public function update(UpdateConsultationRequest $request, Consultation $consultation)
@@ -78,6 +95,15 @@ class ConsultationController extends Controller
         }
 
         $consultation->update($data);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.consultation_updated_success'),
+                'redirect' => route('admin.consultations.index')
+            ]);
+        }
+        
         return redirect()->route('admin.consultations.index')
             ->with('success', 'تم تحديث الاستشارة بنجاح');
     }

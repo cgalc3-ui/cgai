@@ -295,6 +295,98 @@
             .btn-warning:hover {
                 background: #d97706;
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .settings-card {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .settings-card .card-header {
+                background: var(--sidebar-active-bg);
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .settings-card .card-header h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .settings-card .card-header h3 i {
+                color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .settings-card .card-header p {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .form-group label {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-control {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-control:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1);
+            }
+
+            [data-theme="dark"] .form-control.is-invalid {
+                border-color: var(--danger-color);
+            }
+
+            [data-theme="dark"] .error-text {
+                color: var(--danger-color);
+            }
+
+            [data-theme="dark"] .alert-success {
+                background: rgba(16, 185, 129, 0.1);
+                color: var(--success-color);
+                border-color: var(--success-color);
+            }
+
+            [data-theme="dark"] .alert-success i {
+                color: var(--success-color);
+            }
+
+            [data-theme="dark"] .btn-primary {
+                background: var(--primary-color);
+            }
+
+            [data-theme="dark"] .btn-primary:hover {
+                background: var(--primary-dark);
+            }
+
+            [data-theme="dark"] .btn-warning {
+                background: var(--warning-color);
+            }
+
+            [data-theme="dark"] .btn-warning:hover {
+                background: #d97706;
+            }
+
+            [data-theme="dark"] select.form-control {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+                background-image: none;
+                padding-right: 16px;
+                padding-left: 16px;
+            }
+
+            [data-theme="dark"] select.form-control:focus {
+                background: var(--sidebar-active-bg);
+                border-color: var(--primary-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] select.form-control option {
+                background: var(--sidebar-active-bg);
+                color: var(--text-primary);
+            }
         </style>
     @endpush
 @endsection

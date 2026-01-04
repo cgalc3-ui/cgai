@@ -4,12 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Translatable;
 
 class Subscription extends Model
 {
+    use Translatable;
     protected $fillable = [
         'name',
+        'name_en',
         'description',
+        'description_en',
         'price',
         'duration_type',
         'max_debtors',

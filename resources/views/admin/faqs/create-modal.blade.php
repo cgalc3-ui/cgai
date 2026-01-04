@@ -1,52 +1,58 @@
-<form action="{{ route('admin.services.store') }}" method="POST" id="serviceCreateForm" class="modal-form">
+<form action="{{ route('admin.faqs.store') }}" method="POST" id="faqCreateForm" class="modal-form">
     @csrf
 
     <div class="form-group">
-        <label for="sub_category_id">{{ __('messages.sub_category') }} <span class="required">*</span></label>
-        <select id="sub_category_id" name="sub_category_id" class="form-control" required>
-            <option value="">{{ __('messages.select_sub_category') }}</option>
-            @foreach($subCategories as $subCategory)
-                <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                    {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
-                </option>
-            @endforeach
-        </select>
-        @error('sub_category_id')
+        <label for="question">{{ __('messages.question') }} (AR) <span class="required">*</span></label>
+        <input type="text" id="question" name="question" value="{{ old('question') }}" class="form-control" required>
+        @error('question')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="name">{{ __('messages.name') }} (AR) <span class="required">*</span></label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
-        @error('name')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
-
-    <div class="form-group">
-        <label for="name_en">{{ __('messages.name') }} (EN)</label>
-        <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-control"
+        <label for="question_en">{{ __('messages.question') }} (EN)</label>
+        <input type="text" id="question_en" name="question_en" value="{{ old('question_en') }}" class="form-control"
             style="direction: ltr; text-align: left;">
-        @error('name_en')
+        @error('question_en')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="description">{{ __('messages.description') }} (AR)</label>
-        <textarea id="description" name="description" class="form-control"
-            rows="4">{{ old('description') }}</textarea>
-        @error('description')
+        <label for="category">{{ __('messages.category') }} <span class="required">*</span></label>
+        <select id="category" name="category" class="form-control" required>
+            <option value="general" {{ old('category') == 'general' ? 'selected' : '' }}>{{ __('messages.general') }}</option>
+            <option value="account" {{ old('category') == 'account' ? 'selected' : '' }}>{{ __('messages.account') }}</option>
+            <option value="services" {{ old('category') == 'services' ? 'selected' : '' }}>{{ __('messages.services') }}</option>
+            <option value="payment" {{ old('category') == 'payment' ? 'selected' : '' }}>{{ __('messages.payment') }}</option>
+            <option value="technical" {{ old('category') == 'technical' ? 'selected' : '' }}>{{ __('messages.technical') }}</option>
+        </select>
+        @error('category')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="description_en">{{ __('messages.description') }} (EN)</label>
-        <textarea id="description_en" name="description_en" class="form-control" rows="4"
-            style="direction: ltr; text-align: left;">{{ old('description_en') }}</textarea>
-        @error('description_en')
+        <label for="answer">{{ __('messages.answer') }} (AR) <span class="required">*</span></label>
+        <textarea id="answer" name="answer" class="form-control" rows="6" required>{{ old('answer') }}</textarea>
+        @error('answer')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+        <label for="answer_en">{{ __('messages.answer') }} (EN)</label>
+        <textarea id="answer_en" name="answer_en" class="form-control" rows="6"
+            style="direction: ltr; text-align: left;">{{ old('answer_en') }}</textarea>
+        @error('answer_en')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+        <label for="sort_order">{{ __('messages.sort_order') }}</label>
+        <input type="number" id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}" class="form-control">
+        @error('sort_order')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
@@ -58,21 +64,11 @@
         </label>
     </div>
 
-    <div class="form-group">
-        <label for="hourly_rate">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span
-                class="required">*</span></label>
-        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
-            class="form-control" step="0.01" min="0" required>
-        @error('hourly_rate')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
-
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save"></i> {{ __('messages.save') }}
         </button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('createServiceModal'); return false;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('createFaqModal'); return false;">
             <i class="fas fa-times"></i> {{ __('messages.cancel') }}
         </button>
     </div>
@@ -83,7 +79,7 @@
         margin-bottom: 20px;
     }
 
-    .modal-form .form-group label {
+    .modal-form label {
         color: #374151;
         font-weight: 500;
         margin-bottom: 6px;
@@ -115,7 +111,7 @@
 
     .modal-form textarea.form-control {
         resize: vertical;
-        min-height: 80px;
+        min-height: 100px;
     }
 
     .modal-form .error-message {
@@ -228,8 +224,13 @@
         color: var(--text-primary, #f1f5f9) !important;
     }
 
+    [data-theme="dark"] .modal-form .checkbox-label span {
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
     [data-theme="dark"] .modal-form .checkbox-label input[type="checkbox"] {
         accent-color: var(--primary-color, #6658dd) !important;
+        filter: brightness(1.2);
     }
 
     [data-theme="dark"] .modal-form .form-actions {
@@ -259,7 +260,7 @@
 
 <script>
     (function() {
-        const form = document.getElementById('serviceCreateForm');
+        const form = document.getElementById('faqCreateForm');
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -283,7 +284,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        closeModal('createServiceModal');
+                        closeModal('createFaqModal');
                         if (data.redirect) {
                             window.location.href = data.redirect;
                         } else {

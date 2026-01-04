@@ -765,5 +765,161 @@
         text-align: center;
     }
 }
+
+/* Dark Mode Styles */
+[data-theme="dark"] .request-modern-container {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .request-m-header {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .m-title {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-subtitle {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-btn-back {
+    background: var(--sidebar-active-bg) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-btn-back:hover {
+    background: var(--bg-light) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-card,
+[data-theme="dark"] .m-sticky-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none !important;
+}
+
+[data-theme="dark"] .m-card-header {
+    background: var(--sidebar-active-bg) !important;
+    border-bottom-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-card-header i {
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-detail-item {
+    border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-detail-label {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-detail-label i {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-detail-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-detail-value.highlight {
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-notes-box {
+    background: var(--sidebar-active-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-proof-link {
+    background: var(--sidebar-active-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-proof-link:hover {
+    border-color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .m-form-control {
+    background: var(--sidebar-active-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .m-form-control:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 88, 221, 0.2) !important;
+}
+
+[data-theme="dark"] .m-form-group label {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-action-header {
+    border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-action-header.approve {
+    border-bottom-color: rgba(26, 188, 156, 0.3) !important;
+}
+
+[data-theme="dark"] .m-action-header.reject {
+    border-bottom-color: rgba(241, 85, 108, 0.3) !important;
+}
+
+[data-theme="dark"] .m-divider {
+    background: var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-status-item {
+    border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .m-status-label {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .m-status-value {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .badge-info {
+    background: rgba(79, 198, 225, 0.2) !important;
+    color: #4fc6e1 !important;
+}
+
+[data-theme="dark"] .badge-warning {
+    background: rgba(247, 184, 75, 0.2) !important;
+    color: #f7b84b !important;
+}
+
+[data-theme="dark"] .badge-secondary {
+    background: rgba(108, 117, 125, 0.2) !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .status-badge-pending {
+    background: rgba(247, 184, 75, 0.2) !important;
+    border-color: #f7b84b !important;
+}
+
+[data-theme="dark"] .status-badge-approved {
+    background: rgba(26, 188, 156, 0.2) !important;
+    border-color: #1abc9c !important;
+}
+
+[data-theme="dark"] .status-badge-rejected {
+    background: rgba(241, 85, 108, 0.2) !important;
+    border-color: #f1556c !important;
+}
 </style>
 @endsection

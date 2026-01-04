@@ -274,6 +274,51 @@
             #editAdminModal .modal-footer .btn-secondary:hover {
                 background: #d1d5db;
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] #addAdminModal .form-group label,
+            [data-theme="dark"] #editAdminModal .form-group label {
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addAdminModal .form-control,
+            [data-theme="dark"] #editAdminModal .form-control {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                border-color: var(--border-color, #2a2d3a) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addAdminModal .form-control:focus,
+            [data-theme="dark"] #editAdminModal .form-control:focus {
+                border-color: var(--primary-color, #6658dd) !important;
+                box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1) !important;
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addAdminModal .form-control:hover,
+            [data-theme="dark"] #editAdminModal .form-control:hover {
+                border-color: var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addAdminModal .modal-footer,
+            [data-theme="dark"] #editAdminModal .modal-footer {
+                background: var(--card-bg, #1e1f27) !important;
+                border-top-color: var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addAdminModal .modal-footer .btn-secondary,
+            [data-theme="dark"] #editAdminModal .modal-footer .btn-secondary {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-secondary, #94a3b8) !important;
+                border: 1px solid var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addAdminModal .modal-footer .btn-secondary:hover,
+            [data-theme="dark"] #editAdminModal .modal-footer .btn-secondary:hover {
+                background: var(--bg-light, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
         </style>
     @endpush
 

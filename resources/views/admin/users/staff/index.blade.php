@@ -385,9 +385,86 @@
             #editStaffModal .modal-footer .btn-secondary:hover {
                 background: #d1d5db;
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] #addStaffModal .form-group label,
+            [data-theme="dark"] #editStaffModal .form-group label {
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .form-control,
+            [data-theme="dark"] #editStaffModal .form-control {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                border-color: var(--border-color, #2a2d3a) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .form-control:focus,
+            [data-theme="dark"] #editStaffModal .form-control:focus {
+                border-color: var(--primary-color, #6658dd) !important;
+                box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1) !important;
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .form-control:hover,
+            [data-theme="dark"] #editStaffModal .form-control:hover {
+                border-color: var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal select.form-control,
+            [data-theme="dark"] #editStaffModal select.form-control {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                border-color: var(--border-color, #2a2d3a) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+                background-image: none !important;
+                padding-right: 16px !important;
+                padding-left: 16px !important;
+            }
+
+            [data-theme="dark"] #addStaffModal select.form-control:focus,
+            [data-theme="dark"] #editStaffModal select.form-control:focus {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                border-color: var(--primary-color, #6658dd) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal select.form-control option,
+            [data-theme="dark"] #editStaffModal select.form-control option {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .checkbox-label,
+            [data-theme="dark"] #editStaffModal .checkbox-label {
+                color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .checkbox-label input[type="checkbox"],
+            [data-theme="dark"] #editStaffModal .checkbox-label input[type="checkbox"] {
+                accent-color: var(--primary-color, #6658dd) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .modal-footer,
+            [data-theme="dark"] #editStaffModal .modal-footer {
+                background: var(--card-bg, #1e1f27) !important;
+                border-top-color: var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .modal-footer .btn-secondary,
+            [data-theme="dark"] #editStaffModal .modal-footer .btn-secondary {
+                background: var(--sidebar-active-bg, #15171d) !important;
+                color: var(--text-secondary, #94a3b8) !important;
+                border: 1px solid var(--border-color, #2a2d3a) !important;
+            }
+
+            [data-theme="dark"] #addStaffModal .modal-footer .btn-secondary:hover,
+            [data-theme="dark"] #editStaffModal .modal-footer .btn-secondary:hover {
+                background: var(--bg-light, #15171d) !important;
+                color: var(--text-primary, #f1f5f9) !important;
+            }
         </style>
         
-        <style>
         <style>
             .category-tag {
                 display: inline-flex;

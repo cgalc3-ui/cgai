@@ -19,8 +19,12 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     @stack('styles')
     <script>
-        // Check for saved sidebar state before page renders
+        // Apply theme BEFORE page renders to prevent flickering
         (function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Check for saved sidebar state before page renders
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
                 document.documentElement.classList.add('sidebar-collapsed-init');
@@ -172,6 +176,17 @@
                             </a>
                         </div>
                     </div>
+                    <a href="{{ route('admin.tickets') }}"
+                        class="nav-item {{ request()->routeIs('admin.tickets*') ? 'active' : '' }}">
+                        <i class="fas fa-headset"></i>
+                        <span>{{ __('messages.tickets_support') }}</span>
+                        @php
+                            $adminTicketsCount = \App\Models\Ticket::whereIn('status', ['open', 'in_progress'])->count();
+                        @endphp
+                        @if($adminTicketsCount > 0)
+                            <span class="nav-badge">{{ $adminTicketsCount }}</span>
+                        @endif
+                    </a>
                 @elseif(auth()->user()->isStaff())
                     <a href="{{ route('staff.dashboard') }}"
                         class="nav-item {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
@@ -477,14 +492,11 @@
                 return;
             }
             
-            // Get current theme from localStorage or check data-theme attribute
-            let currentTheme = localStorage.getItem('theme') || 'light';
+            // Get current theme - it should already be set by the script in <head>
+            const currentTheme = html.getAttribute('data-theme') || localStorage.getItem('theme') || 'light';
             
-            // If data-theme is already set, use it
-            if (html.getAttribute('data-theme')) {
-                currentTheme = html.getAttribute('data-theme');
-            } else {
-                // Apply saved theme
+            // Ensure theme is set (fallback)
+            if (!html.getAttribute('data-theme')) {
                 html.setAttribute('data-theme', currentTheme);
             }
             

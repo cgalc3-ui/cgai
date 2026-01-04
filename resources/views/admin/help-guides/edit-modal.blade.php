@@ -1,78 +1,86 @@
-<form action="{{ route('admin.services.store') }}" method="POST" id="serviceCreateForm" class="modal-form">
+<form action="{{ route('admin.help-guides.update', $helpGuide) }}" method="POST" class="modal-form">
     @csrf
+    @method('PUT')
 
     <div class="form-group">
-        <label for="sub_category_id">{{ __('messages.sub_category') }} <span class="required">*</span></label>
-        <select id="sub_category_id" name="sub_category_id" class="form-control" required>
-            <option value="">{{ __('messages.select_sub_category') }}</option>
-            @foreach($subCategories as $subCategory)
-                <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                    {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
-                </option>
-            @endforeach
+        <label for="role">{{ __('messages.role') }} <span class="required">*</span></label>
+        <select id="role" name="role" class="form-control" required>
+            <option value="">{{ __('messages.select_role') }}</option>
+            <option value="admin" {{ old('role', $helpGuide->role) == 'admin' ? 'selected' : '' }}>{{ __('messages.admin_role') }}</option>
+            <option value="staff" {{ old('role', $helpGuide->role) == 'staff' ? 'selected' : '' }}>{{ __('messages.staff_role') }}</option>
+            <option value="customer" {{ old('role', $helpGuide->role) == 'customer' ? 'selected' : '' }}>{{ __('messages.customer_role') }}</option>
         </select>
-        @error('sub_category_id')
+        @error('role')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="name">{{ __('messages.name') }} (AR) <span class="required">*</span></label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
-        @error('name')
+        <label for="title">{{ __('messages.title') }} ({{ __('messages.arabic') }}) <span class="required">*</span></label>
+        <input type="text" id="title" name="title" value="{{ old('title', $helpGuide->title) }}" class="form-control" required>
+        @error('title')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="name_en">{{ __('messages.name') }} (EN)</label>
-        <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-control"
+        <label for="title_en">{{ __('messages.title') }} ({{ __('messages.english') }})</label>
+        <input type="text" id="title_en" name="title_en" value="{{ old('title_en', $helpGuide->title_en) }}" class="form-control"
             style="direction: ltr; text-align: left;">
-        @error('name_en')
+        @error('title_en')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="description">{{ __('messages.description') }} (AR)</label>
-        <textarea id="description" name="description" class="form-control"
-            rows="4">{{ old('description') }}</textarea>
-        @error('description')
+        <label for="content">{{ __('messages.content') }} ({{ __('messages.arabic') }}) <span class="required">*</span></label>
+        <textarea id="content" name="content" rows="6" class="form-control" required>{{ old('content', $helpGuide->content) }}</textarea>
+        <small class="form-help">{{ __('messages.help_guide_content_help') }}</small>
+        @error('content')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="description_en">{{ __('messages.description') }} (EN)</label>
-        <textarea id="description_en" name="description_en" class="form-control" rows="4"
-            style="direction: ltr; text-align: left;">{{ old('description_en') }}</textarea>
-        @error('description_en')
+        <label for="content_en">{{ __('messages.content') }} ({{ __('messages.english') }})</label>
+        <textarea id="content_en" name="content_en" rows="6" class="form-control"
+            style="direction: ltr; text-align: left;">{{ old('content_en', $helpGuide->content_en) }}</textarea>
+        @error('content_en')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+        <label for="icon">{{ __('messages.icon') }}</label>
+        <input type="text" id="icon" name="icon" value="{{ old('icon', $helpGuide->icon ?? 'fas fa-info-circle') }}" 
+            class="form-control" placeholder="fas fa-info-circle">
+        <small class="form-help">{{ __('messages.help_guide_icon_help') }}</small>
+        @error('icon')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+        <label for="sort_order">{{ __('messages.sort_order') }}</label>
+        <input type="number" id="sort_order" name="sort_order" value="{{ old('sort_order', $helpGuide->sort_order) }}" 
+            class="form-control" min="0">
+        @error('sort_order')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
         <label class="checkbox-label">
-            <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+            <input type="checkbox" name="is_active" value="1" {{ old('is_active', $helpGuide->is_active) ? 'checked' : '' }}>
             <span>{{ __('messages.active') }}</span>
         </label>
-    </div>
-
-    <div class="form-group">
-        <label for="hourly_rate">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span
-                class="required">*</span></label>
-        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
-            class="form-control" step="0.01" min="0" required>
-        @error('hourly_rate')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
     </div>
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save"></i> {{ __('messages.save') }}
         </button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('createServiceModal'); return false;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('editHelpGuideModal'); return false;">
             <i class="fas fa-times"></i> {{ __('messages.cancel') }}
         </button>
     </div>
@@ -83,7 +91,7 @@
         margin-bottom: 20px;
     }
 
-    .modal-form .form-group label {
+    .modal-form label {
         color: #374151;
         font-weight: 500;
         margin-bottom: 6px;
@@ -115,7 +123,14 @@
 
     .modal-form textarea.form-control {
         resize: vertical;
-        min-height: 80px;
+        min-height: 100px;
+    }
+
+    .modal-form .form-help {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #6b7280;
     }
 
     .modal-form .error-message {
@@ -220,6 +235,10 @@
         color: var(--text-primary, #f1f5f9) !important;
     }
 
+    [data-theme="dark"] .modal-form .form-help {
+        color: var(--text-secondary, #94a3b8) !important;
+    }
+
     [data-theme="dark"] .modal-form .error-message {
         color: var(--danger-color, #ef4444) !important;
     }
@@ -228,8 +247,13 @@
         color: var(--text-primary, #f1f5f9) !important;
     }
 
+    [data-theme="dark"] .modal-form .checkbox-label span {
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
     [data-theme="dark"] .modal-form .checkbox-label input[type="checkbox"] {
         accent-color: var(--primary-color, #6658dd) !important;
+        filter: brightness(1.2);
     }
 
     [data-theme="dark"] .modal-form .form-actions {
@@ -259,7 +283,7 @@
 
 <script>
     (function() {
-        const form = document.getElementById('serviceCreateForm');
+        const form = document.querySelector('.modal-form');
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -272,7 +296,7 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
                 
                 fetch(form.action, {
-                    method: 'POST',
+                    method: 'PUT',
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -283,7 +307,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        closeModal('createServiceModal');
+                        closeModal('editHelpGuideModal');
                         if (data.redirect) {
                             window.location.href = data.redirect;
                         } else {

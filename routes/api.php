@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\SubCategoryController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -45,6 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/bookings/initiate-online-payment', [BookingController::class, 'initiateOnlinePayment']);
         // PayMob Online Payment (Legacy - for old bookings)
         Route::post('/bookings/{bookingId}/pay-online', [\App\Http\Controllers\Api\PaymentController::class, 'initiatePayment']);
+        
+        // Consultation Bookings
+        Route::get('/bookings/consultation/available-dates', [BookingController::class, 'availableConsultationDates']);
+        Route::get('/bookings/consultation/available-time-slots', [BookingController::class, 'availableConsultationTimeSlots']);
+        Route::post('/bookings/consultation', [BookingController::class, 'storeConsultation']);
     });
 
     // Employee routes
@@ -95,6 +101,19 @@ Route::prefix('services')->group(function () {
 
     Route::get('/services', [ServiceController::class, 'index']);
     Route::get('/services/{service}', [ServiceController::class, 'show']);
+});
+
+// Public Consultations API routes (for customers)
+Route::prefix('consultations')->group(function () {
+    Route::get('/', [ConsultationController::class, 'index']);
+    Route::get('/{id}', [ConsultationController::class, 'show']);
+    Route::get('/category/{categoryId}', [ConsultationController::class, 'byCategory']);
+    
+    // Available dates and time slots for consultations
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/available-dates', [BookingController::class, 'availableConsultationDates']);
+        Route::get('/available-time-slots', [BookingController::class, 'availableConsultationTimeSlots']);
+    });
 });
 
 // FAQ API routes

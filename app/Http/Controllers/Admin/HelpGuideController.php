@@ -20,9 +20,13 @@ class HelpGuideController extends Controller
     /**
      * Show the form for creating a new help guide
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.help-guides.create');
+        $view = view('admin.help-guides.create-modal');
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     /**
@@ -47,6 +51,14 @@ class HelpGuideController extends Controller
 
         HelpGuide::create($data);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.help_guide_created_success'),
+                'redirect' => route('admin.help-guides.index')
+            ]);
+        }
+
         return redirect()->route('admin.help-guides.index')
             ->with('success', __('messages.help_guide_created_success'));
     }
@@ -54,9 +66,13 @@ class HelpGuideController extends Controller
     /**
      * Show the form for editing the specified help guide
      */
-    public function edit(HelpGuide $helpGuide)
+    public function edit(Request $request, HelpGuide $helpGuide)
     {
-        return view('admin.help-guides.edit', compact('helpGuide'));
+        $view = view('admin.help-guides.edit-modal', compact('helpGuide'));
+        
+        return response()->json([
+            'html' => $view->render()
+        ]);
     }
 
     /**
@@ -80,6 +96,14 @@ class HelpGuideController extends Controller
         $data['sort_order'] = $request->sort_order ?? 0;
 
         $helpGuide->update($data);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.help_guide_updated_success'),
+                'redirect' => route('admin.help-guides.index')
+            ]);
+        }
 
         return redirect()->route('admin.help-guides.index')
             ->with('success', __('messages.help_guide_updated_success'));

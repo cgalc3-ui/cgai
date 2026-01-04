@@ -356,14 +356,21 @@
 
         .modal-container {
             background: white;
-            border-radius: 16px;
+            border-radius: 24px;
             width: 90%;
-            max-width: 600px;
+            max-width: 900px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             transform: scale(0.9);
             transition: transform 0.3s ease;
+            /* Hide scrollbar but keep functionality */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        .modal-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
 
         .modal-overlay.show .modal-container {
@@ -376,6 +383,7 @@
             align-items: center;
             padding: 20px 24px;
             border-bottom: 1px solid #e5e7eb;
+            border-radius: 24px 24px 0 0;
         }
 
         .modal-title {
@@ -408,6 +416,7 @@
 
         .modal-body {
             padding: 24px;
+            border-radius: 0 0 24px 24px;
         }
 
         @media (max-width: 768px) {
@@ -415,6 +424,43 @@
                 width: 95%;
                 max-height: 95vh;
             }
+        }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        [data-theme="dark"] .modal-container {
+            background: var(--card-bg, #1e1f27);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border-radius: 24px;
+        }
+
+        [data-theme="dark"] .modal-header {
+            background: var(--card-bg, #1e1f27);
+            border-bottom-color: var(--border-color, #2a2d3a);
+            border-radius: 24px 24px 0 0;
+        }
+
+        [data-theme="dark"] .modal-title {
+            color: var(--text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .modal-close {
+            color: var(--text-secondary, #94a3b8);
+            background: transparent;
+        }
+
+        [data-theme="dark"] .modal-close:hover {
+            background: var(--sidebar-active-bg, #15171d);
+            color: var(--text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: var(--card-bg, #1e1f27);
+            color: var(--text-primary, #f1f5f9);
+            border-radius: 0 0 24px 24px;
         }
     </style>
 @endsection

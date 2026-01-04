@@ -659,6 +659,218 @@
                     max-width: 100%;
                 }
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .ticket-details-container {
+                background: var(--card-bg) !important;
+                border: 1px solid var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .ticket-details-header {
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .ticket-details-header h2 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .ticket-meta-info {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .ticket-meta-info i {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .btn-back {
+                background: var(--sidebar-active-bg) !important;
+                color: var(--text-secondary) !important;
+                border-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .btn-back:hover {
+                background: var(--bg-light) !important;
+                color: var(--primary-color) !important;
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .info-card {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .info-item {
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .info-item label {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .info-item span:not(.badge) {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .admin-actions-card {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .admin-actions-card h3 {
+                color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .status-form label {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .form-select {
+                background: var(--card-bg) !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .form-select:focus {
+                border-color: var(--primary-color) !important;
+                box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.2) !important;
+            }
+
+            [data-theme="dark"] .btn-update {
+                background: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .btn-update:hover {
+                background: var(--primary-dark) !important;
+            }
+
+            [data-theme="dark"] .description-section {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .description-section h3 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .description-section h3::before {
+                background: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .description-content p {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .messages-section h3 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .messages-section h3::before {
+                background: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .message-item {
+                background: var(--card-bg) !important;
+                border-color: var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .message-item:hover {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2) !important;
+            }
+
+            [data-theme="dark"] .message-item.own-message {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .message-header {
+                border-bottom-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .message-user strong {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .badge-internal {
+                background: rgba(245, 158, 11, 0.2) !important;
+                color: #f59e0b !important;
+            }
+
+            [data-theme="dark"] .message-time {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .message-body p {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .attachment-item {
+                background: var(--card-bg) !important;
+                border-color: var(--border-color) !important;
+            }
+
+            [data-theme="dark"] .attachment-link {
+                color: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .attachment-link:hover {
+                background: var(--sidebar-active-bg) !important;
+            }
+
+            [data-theme="dark"] .reply-section {
+                background: var(--sidebar-active-bg) !important;
+                border-color: var(--border-color) !important;
+                box-shadow: none !important;
+            }
+
+            [data-theme="dark"] .reply-section h3 {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .reply-section h3::before {
+                background: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .form-textarea,
+            [data-theme="dark"] .form-input {
+                background: var(--card-bg) !important;
+                border-color: var(--border-color) !important;
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .form-textarea:focus,
+            [data-theme="dark"] .form-input:focus {
+                border-color: var(--primary-color) !important;
+                box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.2) !important;
+            }
+
+            [data-theme="dark"] .form-help {
+                color: var(--text-secondary) !important;
+            }
+
+            [data-theme="dark"] .checkbox-label {
+                color: var(--text-primary) !important;
+            }
+
+            [data-theme="dark"] .checkbox-label:hover {
+                background: var(--bg-light) !important;
+            }
+
+            [data-theme="dark"] .checkbox-label input[type="checkbox"] {
+                accent-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .btn-send {
+                background: var(--primary-color) !important;
+            }
+
+            [data-theme="dark"] .btn-send:hover {
+                background: var(--primary-dark) !important;
+            }
         </style>
     @endpush
 @endsection

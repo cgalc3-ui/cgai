@@ -1,78 +1,59 @@
-<form action="{{ route('admin.services.store') }}" method="POST" id="serviceCreateForm" class="modal-form">
+<form action="{{ route('admin.time-slots.store') }}" method="POST" id="timeSlotCreateForm" class="modal-form">
     @csrf
 
     <div class="form-group">
-        <label for="sub_category_id">{{ __('messages.sub_category') }} <span class="required">*</span></label>
-        <select id="sub_category_id" name="sub_category_id" class="form-control" required>
-            <option value="">{{ __('messages.select_sub_category') }}</option>
-            @foreach($subCategories as $subCategory)
-                <option value="{{ $subCategory->id }}" {{ old('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
-                    {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
+        <label for="employee_id">{{ __('messages.employee') }} <span class="required">*</span></label>
+        <select id="employee_id" name="employee_id" class="form-control" required>
+            <option value="">{{ __('messages.select_employee') }}</option>
+            @foreach($employees as $employee)
+                <option value="{{ $employee->id }}" {{ old('employee_id') == $employee->id ? 'selected' : '' }}>
+                    {{ $employee->user->name }}
                 </option>
             @endforeach
         </select>
-        @error('sub_category_id')
+        @error('employee_id')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
     <div class="form-group">
-        <label for="name">{{ __('messages.name') }} (AR) <span class="required">*</span></label>
-        <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
-        @error('name')
+        <label for="date">{{ __('messages.date') }} <span class="required">*</span></label>
+        <input type="date" id="date" name="date" value="{{ old('date', now()->format('Y-m-d')) }}" min="{{ now()->format('Y-m-d') }}" class="form-control" required>
+        @error('date')
             <span class="error-message">{{ $message }}</span>
         @enderror
     </div>
 
-    <div class="form-group">
-        <label for="name_en">{{ __('messages.name') }} (EN)</label>
-        <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-control"
-            style="direction: ltr; text-align: left;">
-        @error('name_en')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="start_time">{{ __('messages.from_hour') }} <span class="required">*</span></label>
+            <input type="time" id="start_time" name="start_time" value="{{ old('start_time', '09:00') }}" class="form-control" required>
+            @error('start_time')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
 
-    <div class="form-group">
-        <label for="description">{{ __('messages.description') }} (AR)</label>
-        <textarea id="description" name="description" class="form-control"
-            rows="4">{{ old('description') }}</textarea>
-        @error('description')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
-
-    <div class="form-group">
-        <label for="description_en">{{ __('messages.description') }} (EN)</label>
-        <textarea id="description_en" name="description_en" class="form-control" rows="4"
-            style="direction: ltr; text-align: left;">{{ old('description_en') }}</textarea>
-        @error('description_en')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
+        <div class="form-group">
+            <label for="end_time">{{ __('messages.to_hour') }} <span class="required">*</span></label>
+            <input type="time" id="end_time" name="end_time" value="{{ old('end_time', '10:00') }}" class="form-control" required>
+            @error('end_time')
+                <span class="error-message">{{ $message }}</span>
+            @enderror
+        </div>
     </div>
 
     <div class="form-group">
         <label class="checkbox-label">
-            <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-            <span>{{ __('messages.active') }}</span>
+            <input type="checkbox" name="is_available" value="1" {{ old('is_available', true) ? 'checked' : '' }}>
+            <span>{{ __('messages.time_available') }}</span>
         </label>
-    </div>
-
-    <div class="form-group">
-        <label for="hourly_rate">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span
-                class="required">*</span></label>
-        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}"
-            class="form-control" step="0.01" min="0" required>
-        @error('hourly_rate')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
     </div>
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
             <i class="fas fa-save"></i> {{ __('messages.save') }}
         </button>
-        <button type="button" class="btn btn-secondary" onclick="closeModal('createServiceModal'); return false;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('createTimeSlotModal'); return false;">
             <i class="fas fa-times"></i> {{ __('messages.cancel') }}
         </button>
     </div>
@@ -180,6 +161,15 @@
         background: #d1d5db;
     }
 
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .form-row .form-group {
+        flex: 1;
+    }
+
     /* Dark Mode Styles */
     [data-theme="dark"] .modal-form label {
         color: var(--text-primary, #f1f5f9) !important;
@@ -259,7 +249,7 @@
 
 <script>
     (function() {
-        const form = document.getElementById('serviceCreateForm');
+        const form = document.getElementById('timeSlotCreateForm');
         if (form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -283,7 +273,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        closeModal('createServiceModal');
+                        closeModal('createTimeSlotModal');
                         if (data.redirect) {
                             window.location.href = data.redirect;
                         } else {
