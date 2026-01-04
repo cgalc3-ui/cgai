@@ -11,10 +11,35 @@ use Illuminate\Http\Request;
 
 class ConsultationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $consultations = Consultation::with('category')->latest()->paginate(15);
-        return view('admin.consultations.index', compact('consultations'));
+        $query = Consultation::with('category');
+
+        // Filter by category
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
+        }
+
+        // Search by name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('name_en', 'like', "%{$search}%");
+            });
+        }
+
+        $consultations = $query->latest()->paginate(15)->withQueryString();
+
+        // Get categories for filter dropdown
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+
+        return view('admin.consultations.index', compact('consultations', 'categories'));
     }
 
     public function create()

@@ -38,23 +38,14 @@ class HelpGuideController extends Controller
             ->ordered()
             ->get();
 
-        // Format the response
-        $currentLocale = App::getLocale();
-        $formattedGuides = $helpGuides->map(function ($guide) use ($currentLocale) {
-            // Get translated content based on current locale
-            if ($currentLocale === 'en') {
-                $title = !empty($guide->title_en) ? $guide->title_en : $guide->title;
-                $content = !empty($guide->content_en) ? $guide->content_en : $guide->content;
-            } else {
-                // Arabic (default)
-                $title = $guide->title;
-                $content = $guide->content;
-            }
-            
+        // Format the response - return both Arabic and English
+        $formattedGuides = $helpGuides->map(function ($guide) {
             return [
                 'id' => $guide->id,
-                'title' => $title,
-                'content' => $content,
+                'title' => $guide->title,
+                'title_en' => $guide->title_en,
+                'content' => $guide->content,
+                'content_en' => $guide->content_en,
                 'icon' => $guide->icon,
                 'sort_order' => $guide->sort_order,
             ];
@@ -64,7 +55,6 @@ class HelpGuideController extends Controller
             'success' => true,
             'data' => $formattedGuides,
             'role' => $role,
-            'locale' => App::getLocale(),
         ]);
     }
 
@@ -95,27 +85,18 @@ class HelpGuideController extends Controller
             ->active()
             ->findOrFail($id);
 
-        // Get translated content based on current locale
-        $currentLocale = App::getLocale();
-        if ($currentLocale === 'en') {
-            $title = !empty($helpGuide->title_en) ? $helpGuide->title_en : $helpGuide->title;
-            $content = !empty($helpGuide->content_en) ? $helpGuide->content_en : $helpGuide->content;
-        } else {
-            // Arabic (default)
-            $title = $helpGuide->title;
-            $content = $helpGuide->content;
-        }
-
+        // Return both Arabic and English
         return response()->json([
             'success' => true,
             'data' => [
                 'id' => $helpGuide->id,
-                'title' => $title,
-                'content' => $content,
+                'title' => $helpGuide->title,
+                'title_en' => $helpGuide->title_en,
+                'content' => $helpGuide->content,
+                'content_en' => $helpGuide->content_en,
                 'icon' => $helpGuide->icon,
                 'sort_order' => $helpGuide->sort_order,
             ],
-            'locale' => $currentLocale,
         ]);
     }
 }

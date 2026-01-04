@@ -287,7 +287,6 @@
                         <h4 class="page-title">@yield('page-title', 'لوحة التحكم')</h4>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="#">{{ config('app.name') }}</a></li>
                                 @yield('breadcrumbs')
                             </ol>
                         </nav>
@@ -330,6 +329,10 @@
                             </div>
                         </div>
 
+                        <button class="icon-btn theme-toggle-btn" id="themeToggle" title="{{ __('messages.toggle_theme') ?? 'Toggle Theme' }}">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
+
                         <a href="{{ route('notifications.index') }}" class="icon-btn notification-btn" title="{{ __('messages.notifications') }}">
                             <i class="far fa-bell"></i>
                             @php
@@ -343,10 +346,6 @@
                         <a href="{{ route('settings.index') }}" class="icon-btn d-none-mobile" title="{{ __('messages.settings') }}">
                             <i class="fas fa-cog"></i>
                         </a>
-
-                        <button class="icon-btn theme-toggle" title="{{ __('messages.theme') ?? 'Theme' }}">
-                            <i class="far fa-moon"></i>
-                        </button>
 
                         <div class="user-profile-nav">
                             <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=3b82f6&color=fff' }}"
@@ -466,6 +465,59 @@
                 });
             }
         })();
+
+        // Theme Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const html = document.documentElement;
+            
+            if (!themeToggle || !themeIcon) {
+                console.error('Theme toggle elements not found');
+                return;
+            }
+            
+            // Get current theme from localStorage or check data-theme attribute
+            let currentTheme = localStorage.getItem('theme') || 'light';
+            
+            // If data-theme is already set, use it
+            if (html.getAttribute('data-theme')) {
+                currentTheme = html.getAttribute('data-theme');
+            } else {
+                // Apply saved theme
+                html.setAttribute('data-theme', currentTheme);
+            }
+            
+            // Update icon based on current theme
+            if (currentTheme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+            
+            // Add click event listener
+            themeToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const currentTheme = html.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update icon
+                if (newTheme === 'dark') {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+            });
+        });
     </script>
     @stack('scripts')
 </body>

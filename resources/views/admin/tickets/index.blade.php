@@ -16,44 +16,52 @@
             </div>
         </div>
 
-        <!-- Filters -->
-        <div class="filters-container" data-filter-title="{{ __('messages.filter_options') }}">
-            <form method="GET" action="{{ route('admin.tickets') }}" class="filters-form">
-                <div class="filter-group">
-                    <label>{{ __('messages.status') }}:</label>
-                    <select name="status" class="filter-select">
-                        <option value="">{{ __('messages.all') }}</option>
-                        <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>{{ __('messages.open') }}
-                        </option>
-                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>
-                            {{ __('messages.in_progress') }}</option>
-                        <option value="resolved" {{ request('status') === 'resolved' ? 'selected' : '' }}>
-                            {{ __('messages.resolved') }}</option>
-                        <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>
-                            {{ __('messages.closed') }}</option>
-                    </select>
+        <!-- Filter Section -->
+        <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
+            <form method="GET" action="{{ route('admin.tickets') }}" class="filter-form">
+                <div class="filter-inputs">
+                    <div class="filter-group">
+                        <label for="status"><i class="fas fa-tasks"></i> {{ __('messages.status') }}:</label>
+                        <select name="status" id="status" class="filter-select">
+                            <option value="">{{ __('messages.all') }}</option>
+                            <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>{{ __('messages.open') }}
+                            </option>
+                            <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>
+                                {{ __('messages.in_progress') }}</option>
+                            <option value="resolved" {{ request('status') === 'resolved' ? 'selected' : '' }}>
+                                {{ __('messages.resolved') }}</option>
+                            <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>
+                                {{ __('messages.closed') }}</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="priority"><i class="fas fa-exclamation-circle"></i> {{ __('messages.priority') }}:</label>
+                        <select name="priority" id="priority" class="filter-select">
+                            <option value="">{{ __('messages.all') }}</option>
+                            <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>{{ __('messages.low') }}
+                            </option>
+                            <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>
+                                {{ __('messages.medium') }}</option>
+                            <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>{{ __('messages.high') }}
+                            </option>
+                            <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>
+                                {{ __('messages.urgent') }}</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
+                        <input type="text" name="search" id="search" class="filter-input"
+                            placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label>{{ __('messages.priority') }}:</label>
-                    <select name="priority" class="filter-select">
-                        <option value="">{{ __('messages.all') }}</option>
-                        <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>{{ __('messages.low') }}
-                        </option>
-                        <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>
-                            {{ __('messages.medium') }}</option>
-                        <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>{{ __('messages.high') }}
-                        </option>
-                        <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>
-                            {{ __('messages.urgent') }}</option>
-                    </select>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> {{ __('messages.search') }}
+                    </button>
+                    <a href="{{ route('admin.tickets') }}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> {{ __('messages.clear') }}
+                    </a>
                 </div>
-                <div class="filter-group">
-                    <label>{{ __('messages.search') }}:</label>
-                    <input type="text" name="search" class="filter-input"
-                        placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
-                </div>
-                <button type="submit" class="btn-filter">{{ __('messages.apply') }}</button>
-                <a href="{{ route('admin.tickets') }}" class="btn-clear">{{ __('messages.clear') }}</a>
             </form>
         </div>
 
@@ -174,61 +182,6 @@
                 margin: 0;
             }
 
-            .filters-container {
-                background: #f9fafb;
-                padding: 16px;
-                border-radius: 8px;
-                margin-bottom: 24px;
-            }
-
-            .filters-form {
-                display: flex;
-                gap: 16px;
-                align-items: flex-end;
-            }
-
-            .filter-group {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .filter-group label {
-                font-size: 12px;
-                font-weight: 600;
-                color: #4b5563;
-            }
-
-            .filter-select,
-            .filter-input {
-                padding: 8px 12px;
-                border: 1px solid #d1d5db;
-                border-radius: 6px;
-                font-size: 14px;
-                background: white;
-            }
-
-            .btn-filter,
-            .btn-clear {
-                padding: 8px 16px;
-                border-radius: 6px;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                border: none;
-                text-decoration: none;
-                display: inline-block;
-            }
-
-            .btn-filter {
-                background: #3b82f6;
-                color: white;
-            }
-
-            .btn-clear {
-                background: #e5e7eb;
-                color: #4b5563;
-            }
 
             .ticket-link {
                 color: #3b82f6;

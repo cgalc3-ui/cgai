@@ -27,8 +27,8 @@
         <!-- Notifications List -->
         <div class="notifications-list">
             @forelse($notifications as $notification)
-                <div class="notification-item {{ $notification->read ? 'read' : 'unread' }}" 
-                     data-notification-id="{{ $notification->id }}">
+                <div class="notification-item {{ $notification->read ? 'read' : 'unread' }}"
+                    data-notification-id="{{ $notification->id }}">
                     <div class="notification-icon">
                         @if($notification->type === 'booking_created' || $notification->type === 'booking_assigned')
                             <i class="fas fa-calendar-check"></i>
@@ -52,22 +52,45 @@
                         <p class="notification-message">{{ $notification->translated_message }}</p>
                         @if($notification->data)
                             <div class="notification-data">
-                                @if(isset($notification->data['booking_id']))
-                                    @php
-                                        $bookingId = $notification->data['booking_id'];
+                                @php
+                                    $actionRoute = null;
+                                    $actionLabel = null;
+                                    $data = $notification->data;
+
+                                    if (isset($data['booking_id'])) {
+                                        $actionLabel = __('messages.view_booking');
                                         if (auth()->user()->isAdmin()) {
-                                            $bookingRoute = route('admin.bookings.show', $bookingId);
+                                            $actionRoute = route('admin.bookings.show', $data['booking_id']);
                                         } elseif (auth()->user()->isStaff()) {
-                                            $bookingRoute = route('staff.my-bookings.show', $bookingId);
+                                            $actionRoute = route('staff.my-bookings.show', $data['booking_id']);
                                         } else {
-                                            $bookingRoute = null; // Customer doesn't have web route for booking details
+                                            $actionRoute = route('customer.bookings.show', $data['booking_id']);
                                         }
-                                    @endphp
-                                    @if($bookingRoute)
-                                        <a href="{{ $bookingRoute }}" class="notification-link">
-                                            {{ __('messages.view_booking') }}
-                                        </a>
-                                    @endif
+                                    } elseif (isset($data['subscription_request_id'])) {
+                                        $actionLabel = __('messages.view_subscription_request');
+                                        if (auth()->user()->isAdmin()) {
+                                            $actionRoute = route('admin.subscription-requests.show', $data['subscription_request_id']);
+                                        }
+                                    } elseif (isset($data['subscription_id']) || isset($data['package_id'])) {
+                                        $subId = $data['subscription_id'] ?? $data['package_id'];
+                                        $actionLabel = __('messages.view_subscription');
+                                        if (auth()->user()->isAdmin()) {
+                                            $actionRoute = route('admin.subscriptions.show', $subId);
+                                        }
+                                    } elseif (isset($data['ticket_id'])) {
+                                        $actionLabel = __('messages.view_details');
+                                        if (auth()->user()->isAdmin()) {
+                                            $actionRoute = route('admin.tickets.show', $data['ticket_id']);
+                                        } else {
+                                            $actionRoute = route('tickets.show', $data['ticket_id']);
+                                        }
+                                    }
+                                @endphp
+                                @if($actionRoute)
+                                    <a href="{{ $actionRoute }}" class="notification-link">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        {{ $actionLabel }}
+                                    </a>
                                 @endif
                             </div>
                         @endif
@@ -84,7 +107,8 @@
                         <form action="{{ route('notifications.destroy', $notification) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-delete" title="{{ __('messages.delete') }}" onclick="return confirm('{{ __('messages.delete_notification_confirm') }}')">
+                            <button type="submit" class="btn-delete" title="{{ __('messages.delete') }}"
+                                onclick="return confirm('{{ __('messages.delete_notification_confirm') }}')">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
@@ -333,4 +357,3 @@
         </style>
     @endpush
 @endsection
-

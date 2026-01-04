@@ -65,6 +65,7 @@ class CheckExpiringSubscriptions extends Command
                         'subscription_id' => $subscription->id,
                         'expires_at' => $subscription->expires_at->toDateTimeString(),
                         'package' => $subscription->subscription->name,
+                        'package_en' => $subscription->subscription->name_en,
                         'expires_in' => $subscription->expires_at->diffForHumans(),
                     ]
                 );

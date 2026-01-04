@@ -23,9 +23,35 @@ class SubscriptionController extends Controller
     /**
      * Display a listing of subscriptions
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subscriptions = Subscription::latest()->paginate(15);
+        $query = Subscription::query();
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
+        }
+
+        // Filter by duration type
+        if ($request->filled('duration_type')) {
+            $query->where('duration_type', $request->duration_type);
+        }
+
+        // Filter by AI enabled
+        if ($request->filled('ai_enabled')) {
+            $query->where('ai_enabled', $request->ai_enabled === 'enabled');
+        }
+
+        // Search by name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('name_en', 'like', "%{$search}%");
+            });
+        }
+
+        $subscriptions = $query->latest()->paginate(15)->withQueryString();
         return view('admin.subscriptions.index', compact('subscriptions'));
     }
 
@@ -44,7 +70,7 @@ class SubscriptionController extends Controller
     {
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
+
         // Set default values for old fields
         $data['max_debtors'] = 0;
         $data['max_messages'] = 0;
@@ -60,7 +86,8 @@ class SubscriptionController extends Controller
             'messages.new_subscription_package_created_with_name',
             [
                 'subscription_id' => $subscription->id,
-                'name' => $subscription->name, // Store subscription name in data for translation
+                'name' => $subscription->name,
+                'name_en' => $subscription->name_en,
             ]
         );
 
@@ -92,7 +119,7 @@ class SubscriptionController extends Controller
     {
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
+
         // Preserve old fields if not provided
         if (!isset($data['max_debtors'])) {
             $data['max_debtors'] = $subscription->max_debtors;
@@ -112,10 +139,12 @@ class SubscriptionController extends Controller
         // Notify all admins except the updater
         $this->notificationService->notifyAdmins(
             'subscription_updated',
-            'تم تحديث باقة',
-            "تم تحديث باقة: {$subscription->name}",
+            'messages.subscription_updated',
+            'messages.subscription_updated_with_name',
             [
                 'subscription_id' => $subscription->id,
+                'name' => $subscription->name,
+                'name_en' => $subscription->name_en,
             ]
         );
 

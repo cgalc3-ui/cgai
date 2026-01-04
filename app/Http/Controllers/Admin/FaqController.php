@@ -8,10 +8,37 @@ use Illuminate\Http\Request;
 
 class FaqController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $faqs = Faq::orderBy('sort_order')->orderBy('created_at', 'desc')->get();
-        return view('admin.faqs.index', compact('faqs'));
+        $query = Faq::query();
+
+        // Filter by category
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
+        }
+
+        // Search by question or answer
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('question', 'like', "%{$search}%")
+                  ->orWhere('question_en', 'like', "%{$search}%")
+                  ->orWhere('answer', 'like', "%{$search}%")
+                  ->orWhere('answer_en', 'like', "%{$search}%");
+            });
+        }
+
+        $faqs = $query->orderBy('sort_order')->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        
+        // Get unique categories for filter dropdown
+        $categories = Faq::select('category')->distinct()->orderBy('category')->pluck('category');
+        
+        return view('admin.faqs.index', compact('faqs', 'categories'));
     }
 
     public function create()

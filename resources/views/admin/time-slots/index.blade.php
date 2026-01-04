@@ -27,7 +27,9 @@
                 <div class="filter-group">
                     <label for="employee_id"><i class="fas fa-user-tie"></i> {{ __('messages.employee') }}:</label>
                     <select name="employee_id" id="employee_id" class="filter-select">
-                        <option value="all" {{ $employeeFilter == 'all' ? 'selected' : '' }}>{{ __('messages.all_employees') }}</option>
+                        <option value="all" {{ $employeeFilter == 'all' ? 'selected' : '' }}>
+                            {{ __('messages.all_employees') }}
+                        </option>
                         @foreach($employees as $employee)
                             <option value="{{ $employee->id }}" {{ $employeeFilter == $employee->id ? 'selected' : '' }}>
                                 {{ $employee->user->name }}
@@ -41,7 +43,7 @@
                         value="{{ $dateFilter ?? \Carbon\Carbon::today()->format('Y-m-d') }}" class="filter-input">
                 </div>
             </div>
-            <div class="filter-actions">
+            <div class="filter-actions" style="margin-inline-start: 24px;">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-filter"></i> {{ __('messages.apply_filter') }}
                 </button>
@@ -139,10 +141,12 @@
                                                 <i class="far fa-edit"></i>
                                             </a>
                                             <form action="{{ route('admin.time-slots.delete', $timeSlot) }}" method="POST"
-                                                class="d-inline" onsubmit="return confirm('{{ __('messages.delete_time_slot_confirm') }}')">
+                                                class="d-inline"
+                                                onsubmit="return confirm('{{ __('messages.delete_time_slot_confirm') }}')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
+                                                <button type="submit" class="calm-action-btn danger"
+                                                    title="{{ __('messages.delete') }}">
                                                     <i class="far fa-trash-alt"></i>
                                                 </button>
                                             </form>

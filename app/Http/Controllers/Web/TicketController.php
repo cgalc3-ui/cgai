@@ -71,14 +71,14 @@ class TicketController extends Controller
 
         return DB::transaction(function () use ($request, $user) {
             $locale = app()->getLocale();
-            
+
             // Create ticket with translation support
             $ticketData = [
                 'user_id' => $user->id,
                 'priority' => $request->priority ?? 'medium',
                 'status' => 'open',
             ];
-            
+
             // Save based on current locale
             if ($locale === 'en') {
                 $ticketData['subject_en'] = $request->subject;
@@ -91,7 +91,7 @@ class TicketController extends Controller
                 $ticketData['subject'] = $request->subject;
                 $ticketData['description'] = $request->description;
             }
-            
+
             $ticket = Ticket::create($ticketData);
 
             // Create initial message
@@ -106,7 +106,7 @@ class TicketController extends Controller
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
                     $path = $file->store('tickets/' . $ticket->id, 'public');
-                    
+
                     TicketAttachment::create([
                         'ticket_id' => $ticket->id,
                         'message_id' => $message->id,
@@ -130,6 +130,7 @@ class TicketController extends Controller
                         'user_id' => $user->id,
                         'user' => $user->name,
                         'subject' => $ticket->subject,
+                        'subject_en' => $ticket->subject_en,
                     ]
                 );
             }
@@ -207,7 +208,7 @@ class TicketController extends Controller
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
                     $path = $file->store('tickets/' . $ticket->id, 'public');
-                    
+
                     TicketAttachment::create([
                         'ticket_id' => $ticket->id,
                         'message_id' => $message->id,

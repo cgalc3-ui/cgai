@@ -27,7 +27,7 @@
                         placeholder="{{ __('messages.search_admin_placeholder') }}" class="filter-input">
                 </div>
             </div>
-            <div class="filter-actions">
+            <div class="filter-actions" style="margin-inline-start: 20px;">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-search"></i> {{ __('messages.search') }}
                 </button>
@@ -173,6 +173,109 @@
             </div>
         </form>
     </x-modal>
+
+    @push('styles')
+        <style>
+            /* Admin Modal Form Styling */
+            #addAdminModal .modal-body,
+            #editAdminModal .modal-body {
+                padding: 28px;
+            }
+            
+            #addAdminModal .form-group,
+            #editAdminModal .form-group {
+                margin-bottom: 20px;
+            }
+            
+            #addAdminModal .form-group:last-child,
+            #editAdminModal .form-group:last-child {
+                margin-bottom: 0;
+            }
+            
+            /* Form labels */
+            #addAdminModal .form-group label,
+            #editAdminModal .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: var(--text-primary, #343a40);
+                font-size: 14px;
+            }
+            
+            /* Form inputs */
+            #addAdminModal .form-control,
+            #editAdminModal .form-control {
+                width: 100% !important;
+                padding: 12px 16px !important;
+                border: 2px solid #e5e7eb !important;
+                border-radius: 10px !important;
+                font-size: 14px !important;
+                font-family: 'Cairo', sans-serif !important;
+                transition: all 0.3s !important;
+                background: white !important;
+                box-sizing: border-box !important;
+            }
+            
+            #addAdminModal .form-control:focus,
+            #editAdminModal .form-control:focus {
+                outline: none !important;
+                border-color: var(--primary-color, #6658dd) !important;
+                box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1) !important;
+            }
+            
+            #addAdminModal .form-control:hover,
+            #editAdminModal .form-control:hover {
+                border-color: #d1d5db !important;
+            }
+            
+            /* Modal footer */
+            #addAdminModal .modal-footer,
+            #editAdminModal .modal-footer {
+                padding: 20px 28px;
+                border-top: 1px solid #e5e7eb;
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+                background: #f9fafb;
+            }
+            
+            #addAdminModal .modal-footer .btn,
+            #editAdminModal .modal-footer .btn {
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            #addAdminModal .modal-footer .btn-primary,
+            #editAdminModal .modal-footer .btn-primary {
+                background: var(--primary-color, #6658dd);
+                color: white;
+            }
+            
+            #addAdminModal .modal-footer .btn-primary:hover,
+            #editAdminModal .modal-footer .btn-primary:hover {
+                background: var(--primary-dark, #564ab1);
+            }
+            
+            #addAdminModal .modal-footer .btn-secondary,
+            #editAdminModal .modal-footer .btn-secondary {
+                background: #e5e7eb;
+                color: #6b7280;
+            }
+            
+            #addAdminModal .modal-footer .btn-secondary:hover,
+            #editAdminModal .modal-footer .btn-secondary:hover {
+                background: #d1d5db;
+            }
+        </style>
+    @endpush
 
     @push('scripts')
         <script>

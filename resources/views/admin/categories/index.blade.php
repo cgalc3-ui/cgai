@@ -17,6 +17,39 @@
         </div>
     </div>
 
+    <!-- Filter Section -->
+    <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
+        <form method="GET" action="{{ route('admin.categories.index') }}" class="filter-form">
+            <div class="filter-inputs" style="gap: 30px;">
+                <div class="filter-group">
+                    <label for="status"><i class="fas fa-toggle-on"></i> {{ __('messages.status') }}:</label>
+                    <select name="status" id="status" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>
+                            {{ __('messages.active') }}
+                        </option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>
+                            {{ __('messages.inactive') }}
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group" style="margin-inline-start: 40px;">
+                    <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
+                    <input type="text" name="search" id="search" class="filter-input"
+                        placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="filter-actions" style="margin-inline-start: 20px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> {{ __('messages.apply_filter') }}
+                </button>
+                <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
+                </a>
+            </div>
+        </form>
+    </div>
+
     <div class="table-container">
         <table class="data-table">
             <thead>

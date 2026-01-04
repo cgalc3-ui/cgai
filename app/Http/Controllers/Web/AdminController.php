@@ -311,7 +311,7 @@ class AdminController extends Controller
             });
         }
 
-        $users = $query->with('employee.categories')->latest()->paginate(20)->withQueryString();
+        $users = $query->with(['employee.categories', 'employee.subCategories'])->latest()->paginate(20)->withQueryString();
         $categories = Category::where('is_active', true)->get();
 
         return view('admin.users.staff.index', compact('users', 'searchQuery', 'categories'));
@@ -341,10 +341,14 @@ class AdminController extends Controller
             'employee.is_available' => 'nullable|boolean',
             'employee.categories' => 'nullable|array',
             'employee.categories.*' => 'nullable|exists:categories,id',
+            'employee.sub_categories' => 'nullable|array',
+            'employee.sub_categories.*' => 'nullable|exists:sub_categories,id',
             'bio' => 'nullable|string',
             'hourly_rate' => 'nullable|numeric|min:0',
             'categories' => 'nullable|array',
             'categories.*' => 'required|exists:categories,id',
+            'sub_categories' => 'nullable|array',
+            'sub_categories.*' => 'nullable|exists:sub_categories,id',
         ]);
 
         $user = User::create([
@@ -384,6 +388,22 @@ class AdminController extends Controller
         // Always sync categories (even if empty array to detach)
         $employee->categories()->sync($categories);
 
+        // Sync subcategories - support both formats
+        $subCategories = $request->input('employee.sub_categories') ?? $request->input('sub_categories', []);
+
+        // Ensure sub_categories is an array and filter out empty values
+        if (is_array($subCategories)) {
+            $subCategories = array_filter($subCategories, function ($value) {
+                return !empty($value) && is_numeric($value);
+            });
+            $subCategories = array_values($subCategories); // Re-index array
+        } else {
+            $subCategories = [];
+        }
+
+        // Always sync subcategories (even if empty array to detach)
+        $employee->subCategories()->sync($subCategories);
+
         return redirect()->route('admin.users.staff')
             ->with('success', 'تم إنشاء الموظف بنجاح');
     }
@@ -397,7 +417,7 @@ class AdminController extends Controller
             abort(404);
         }
 
-        $user->load(['employee.categories']);
+        $user->load(['employee.categories', 'employee.subCategories']);
 
         return view('admin.users.staff.show', compact('user'));
     }
@@ -432,11 +452,15 @@ class AdminController extends Controller
             'password' => 'nullable|string|min:8',
             'employee.categories' => 'nullable|array',
             'employee.categories.*' => 'exists:categories,id',
+            'employee.sub_categories' => 'nullable|array',
+            'employee.sub_categories.*' => 'exists:sub_categories,id',
             'employee.bio' => 'nullable|string',
             'employee.hourly_rate' => 'nullable|numeric|min:0',
             'employee.is_available' => 'nullable|boolean',
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
+            'sub_categories' => 'nullable|array',
+            'sub_categories.*' => 'exists:sub_categories,id',
             'bio' => 'nullable|string',
             'hourly_rate' => 'nullable|numeric|min:0',
             'is_available' => 'nullable|boolean',
@@ -480,8 +504,60 @@ class AdminController extends Controller
             $employee->categories()->detach();
         }
 
+        // Sync subcategories - support both formats
+        $subCategories = $request->input('employee.sub_categories') ?? $request->input('sub_categories', []);
+
+        // Ensure sub_categories is an array and filter out empty values
+        if (is_array($subCategories)) {
+            $subCategories = array_filter($subCategories, function ($value) {
+                return !empty($value) && is_numeric($value);
+            });
+            $subCategories = array_values($subCategories); // Re-index array
+        } else {
+            $subCategories = [];
+        }
+
+        if (!empty($subCategories)) {
+            $employee->subCategories()->sync($subCategories);
+        } else {
+            // If no subcategories provided, detach all
+            $employee->subCategories()->detach();
+        }
+
         return redirect()->route('admin.users.staff.show', $user)
             ->with('success', 'تم تحديث الموظف بنجاح');
+    }
+
+    /**
+     * Get subcategories for a category (API)
+     */
+    public function getSubCategories(Category $category)
+    {
+        $subCategories = $category->activeSubCategories()->get(['id', 'name', 'name_en']);
+        
+        return response()->json([
+            'success' => true,
+            'subcategories' => $subCategories->map(function ($subCat) {
+                return [
+                    'id' => $subCat->id,
+                    'name' => app()->getLocale() === 'ar' ? $subCat->name : ($subCat->name_en ?? $subCat->name),
+                ];
+            }),
+        ]);
+    }
+
+    /**
+     * Get a single subcategory (API)
+     */
+    public function getSubCategory(SubCategory $subcategory)
+    {
+        return response()->json([
+            'success' => true,
+            'subcategory' => [
+                'id' => $subcategory->id,
+                'name' => app()->getLocale() === 'ar' ? $subcategory->name : ($subcategory->name_en ?? $subcategory->name),
+            ],
+        ]);
     }
 
     /**

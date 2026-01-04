@@ -75,6 +75,14 @@ class Employee extends Model
     }
 
     /**
+     * Get all subcategories for this employee
+     */
+    public function subCategories(): BelongsToMany
+    {
+        return $this->belongsToMany(SubCategory::class, 'employee_subcategory');
+    }
+
+    /**
      * @deprecated Use categories() instead
      * Get all specializations for this employee (for backward compatibility)
      */

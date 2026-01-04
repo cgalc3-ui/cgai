@@ -17,6 +17,63 @@
         </div>
     </div>
 
+    <!-- Filter Section -->
+    <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
+        <form method="GET" action="{{ route('admin.services.index') }}" class="filter-form">
+            <div class="filter-inputs" style="gap: 30px;">
+                <div class="filter-group">
+                    <label for="category_id"><i class="fas fa-tags"></i> {{ __('messages.category') }}:</label>
+                    <select name="category_id" id="category_id" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->trans('name') }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sub_category_id"><i class="fas fa-tag"></i> {{ __('messages.sub_category') }}:</label>
+                    <select name="sub_category_id" id="sub_category_id" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        @foreach($subCategories as $subCategory)
+                            <option value="{{ $subCategory->id }}" 
+                                data-category-id="{{ $subCategory->category_id }}"
+                                {{ request('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
+                                {{ $subCategory->category->trans('name') }} - {{ $subCategory->trans('name') }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="status"><i class="fas fa-toggle-on"></i> {{ __('messages.status') }}:</label>
+                    <select name="status" id="status" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>
+                            {{ __('messages.active') }}
+                        </option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>
+                            {{ __('messages.inactive') }}
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group" style="margin-inline-start: 40px;">
+                    <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
+                    <input type="text" name="search" id="search" class="filter-input"
+                        placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="filter-actions" style="margin-inline-start: 20px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> {{ __('messages.apply_filter') }}
+                </button>
+                <a href="{{ route('admin.services.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
+                </a>
+            </div>
+        </form>
+    </div>
+
     <div class="table-container">
         <table class="data-table">
             <thead>
@@ -113,6 +170,39 @@
     </div>
 
     <script>
+        // Filter functionality - Link category to sub category
+        document.addEventListener('DOMContentLoaded', function() {
+            const categorySelect = document.getElementById('category_id');
+            const subCategorySelect = document.getElementById('sub_category_id');
+            const allSubCategories = Array.from(subCategorySelect.options);
+
+            if (categorySelect && subCategorySelect) {
+                categorySelect.addEventListener('change', function() {
+                    const selectedCategoryId = this.value;
+                    
+                    // Clear sub category select
+                    subCategorySelect.innerHTML = '<option value="">{{ __('messages.all') }}</option>';
+                    
+                    // Filter sub categories based on selected category
+                    allSubCategories.forEach(option => {
+                        if (option.value === '' || option.dataset.categoryId === selectedCategoryId) {
+                            subCategorySelect.appendChild(option.cloneNode(true));
+                        }
+                    });
+                });
+
+                // Trigger on page load if category is selected
+                if (categorySelect.value) {
+                    categorySelect.dispatchEvent(new Event('change'));
+                    // Restore selected sub category if exists
+                    const selectedSubCategory = '{{ request('sub_category_id') }}';
+                    if (selectedSubCategory) {
+                        subCategorySelect.value = selectedSubCategory;
+                    }
+                }
+            }
+        });
+
         function openCreateModal(url, modalId, title) {
             const modal = document.getElementById(modalId);
             const modalBody = document.getElementById(modalId + 'Body');

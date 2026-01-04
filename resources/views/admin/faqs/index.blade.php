@@ -16,8 +16,69 @@
             <a href="{{ route('admin.faqs.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> {{ __('messages.add_faq') }}
             </a>
-            <span class="total-count">{{ __('messages.total_faqs') }}: {{ $faqs->count() }}</span>
+            <span class="total-count">{{ __('messages.total_faqs') }}: {{ $faqs->total() }}</span>
         </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
+        <form method="GET" action="{{ route('admin.faqs.index') }}" class="filter-form">
+            <div class="filter-inputs" style="gap: 30px;">
+                <div class="filter-group">
+                    <label for="category"><i class="fas fa-tags"></i> {{ __('messages.category') }}:</label>
+                    <select name="category" id="category" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        @foreach($categories as $category)
+                            @php
+                                $categoryKey = $category;
+                                $categoryMap = [
+                                    'الحساب' => 'account',
+                                    'عام' => 'general',
+                                    'الخدمات' => 'services',
+                                    'الدفع' => 'payment',
+                                    'تقني' => 'technical',
+                                ];
+                                if (isset($categoryMap[$categoryKey])) {
+                                    $categoryKey = $categoryMap[$categoryKey];
+                                }
+                                $validKeys = ['account', 'general', 'services', 'payment', 'technical'];
+                                if (!in_array($categoryKey, $validKeys)) {
+                                    $categoryKey = 'general';
+                                }
+                            @endphp
+                            <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>
+                                {{ __('messages.' . $categoryKey) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="status"><i class="fas fa-toggle-on"></i> {{ __('messages.status') }}:</label>
+                    <select name="status" id="status" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>
+                            {{ __('messages.active') }}
+                        </option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>
+                            {{ __('messages.inactive') }}
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group" style="margin-inline-start: 40px;">
+                    <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
+                    <input type="text" name="search" id="search" class="filter-input"
+                        placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="filter-actions" style="margin-inline-start: 20px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> {{ __('messages.apply_filter') }}
+                </button>
+                <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
+                </a>
+            </div>
+        </form>
     </div>
 
     <div class="table-container">

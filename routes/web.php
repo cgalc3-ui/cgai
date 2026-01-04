@@ -98,6 +98,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         'sub-categories' => 'subCategory'
     ]);
 
+    // API routes for dynamic loading
+    Route::get('/api/categories/{category}/subcategories', [AdminController::class, 'getSubCategories'])->name('api.categories.subcategories');
+    Route::get('/api/subcategories/{subcategory}', [AdminController::class, 'getSubCategory'])->name('api.subcategories.show');
+
     // Services management
     Route::resource('services', ServiceController::class)->parameters([
         'services' => 'service'

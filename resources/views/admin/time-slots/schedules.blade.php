@@ -22,8 +22,8 @@
         <form method="GET" action="{{ route('admin.time-slots.schedules') }}" class="filter-form">
             <div class="filter-inputs">
                 <div class="filter-group">
-                    <label for="employee_id">{{ __('messages.employee') }}:</label>
-                    <select name="employee_id" id="employee_id" class="filter-input">
+                    <label for="employee_id"><i class="fas fa-user-tie"></i> {{ __('messages.employee') }}:</label>
+                    <select name="employee_id" id="employee_id" class="filter-select">
                         <option value="all">{{ __('messages.all') }}</option>
                         @foreach($employees as $employee)
                             <option value="{{ $employee->id }}" {{ request('employee_id') == $employee->id ? 'selected' : '' }}>

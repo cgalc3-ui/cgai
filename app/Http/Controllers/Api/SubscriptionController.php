@@ -111,7 +111,9 @@ class SubscriptionController extends Controller
                 'subscription_request_id' => $subscriptionRequest->id,
                 'user_id' => auth()->id(),
                 'subscription_id' => $request->subscription_id,
-                'user' => auth()->user()->name, // Store user name in data for translation
+                'user' => auth()->user()->name,
+                'package' => $subscription->name,
+                'package_en' => $subscription->name_en,
             ]
         );
 

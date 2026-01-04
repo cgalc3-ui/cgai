@@ -20,19 +20,23 @@
     <!-- Filter Section -->
     <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
         <form method="GET" action="{{ route('admin.bookings') }}" class="filter-form">
-            <div class="filter-inputs">
+            <div class="filter-inputs" style="gap: 30px;">
                 <div class="filter-group">
                     <label for="status"><i class="fas fa-tasks"></i> {{ __('messages.booking_status') }}:</label>
                     <select name="status" id="status" class="filter-input">
                         <option value="">{{ __('messages.all') }}</option>
                         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>
-                            {{ __('messages.pending') }}</option>
+                            {{ __('messages.pending') }}
+                        </option>
                         <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>
-                            {{ __('messages.confirmed') }}</option>
+                            {{ __('messages.confirmed') }}
+                        </option>
                         <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>
-                            {{ __('messages.completed') }}</option>
+                            {{ __('messages.completed') }}
+                        </option>
                         <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>
-                            {{ __('messages.cancelled') }}</option>
+                            {{ __('messages.cancelled') }}
+                        </option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -41,7 +45,8 @@
                     <select name="payment_status" id="payment_status" class="filter-input">
                         <option value="">{{ __('messages.all') }}</option>
                         <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>
-                            {{ __('messages.paid') }}</option>
+                            {{ __('messages.paid') }}
+                        </option>
                         <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>
                             {{ __('messages.unpaid') }}
                         </option>
@@ -54,13 +59,13 @@
                     <label for="date"><i class="fas fa-calendar-alt"></i> {{ __('messages.date') }}:</label>
                     <input type="date" name="date" id="date" class="filter-input" value="{{ request('date') }}">
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="margin-inline-start: 40px;">
                     <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
                     <input type="text" name="search" id="search" class="filter-input"
                         placeholder="{{ __('messages.search_customer_placeholder') }}" value="{{ request('search') }}">
                 </div>
             </div>
-            <div class="filter-actions">
+            <div class="filter-actions" style="margin-inline-start: 20px;">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-check"></i> {{ __('messages.apply_filter') }}
                 </button>
@@ -167,7 +172,8 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.bookings.show', $booking) }}" class="calm-action-btn" title="{{ __('messages.view') }}">
+                            <a href="{{ route('admin.bookings.show', $booking) }}" class="calm-action-btn"
+                                title="{{ __('messages.view') }}">
                                 <i class="far fa-eye"></i>
                             </a>
                         </td>

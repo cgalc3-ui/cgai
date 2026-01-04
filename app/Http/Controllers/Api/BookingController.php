@@ -857,12 +857,19 @@ class BookingController extends Controller
         }
 
         $categoryId = $service->subCategory->category_id;
+        $subCategoryId = $service->sub_category_id;
 
         $date = Carbon::parse($request->date)->format('Y-m-d');
 
+        // Find employees who have either the category OR the specific subcategory
         $employees = Employee::where('is_available', true)
-            ->whereHas('categories', function ($query) use ($categoryId) {
-                $query->where('categories.id', $categoryId);
+            ->where(function ($query) use ($categoryId, $subCategoryId) {
+                $query->whereHas('categories', function ($q) use ($categoryId) {
+                    $q->where('categories.id', $categoryId);
+                })
+                ->orWhereHas('subCategories', function ($q) use ($subCategoryId) {
+                    $q->where('sub_categories.id', $subCategoryId);
+                });
             })
             ->with('user')
             ->get();
@@ -1572,11 +1579,19 @@ class BookingController extends Controller
      * Find available employee for category and time
      * يختار أول موظف متاح، ويترك الباقي متاحين للعملاء الآخرين
      */
-    private function findAvailableEmployee($categoryId, $date, $startTime, $endTime)
+    private function findAvailableEmployee($categoryId, $subCategoryId = null, $date, $startTime, $endTime)
     {
         $employees = Employee::where('is_available', true)
-            ->whereHas('categories', function ($query) use ($categoryId) {
-                $query->where('categories.id', $categoryId);
+            ->where(function ($query) use ($categoryId, $subCategoryId) {
+                $query->whereHas('categories', function ($q) use ($categoryId) {
+                    $q->where('categories.id', $categoryId);
+                });
+                
+                if ($subCategoryId) {
+                    $query->orWhereHas('subCategories', function ($q) use ($subCategoryId) {
+                        $q->where('sub_categories.id', $subCategoryId);
+                    });
+                }
             })
             ->with('user')
             ->get();

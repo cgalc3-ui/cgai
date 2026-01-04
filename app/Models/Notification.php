@@ -85,20 +85,40 @@ class Notification extends Model
      */
     public function getTranslatedTitleAttribute()
     {
+        $title = $this->title;
+
         // Check if title is a translation key (starts with 'messages.')
-        if (strpos($this->title, 'messages.') === 0) {
-            $translated = __($this->title);
-            
+        if (strpos($title, 'messages.') === 0) {
+            $translated = __($title);
+
             // If translation exists and has placeholders, replace them with data
             if ($this->data && is_array($this->data)) {
                 $translated = $this->replacePlaceholders($translated);
             }
-            
+
+            // If translation returns the same key, it means translation doesn't exist
+            // Return the original title in that case
+            if ($translated === $title) {
+                return $title;
+            }
+
             return $translated;
         }
-        
-        // If not a translation key, return as is
-        return $this->title;
+
+        // If title doesn't start with 'messages.', it might be:
+        // 1. Already translated text (old notifications) - return as is
+        // 2. A translation key without prefix - try to translate it
+        $translated = __('messages.' . $title);
+        if ($translated !== 'messages.' . $title) {
+            // Translation found
+            if ($this->data && is_array($this->data)) {
+                $translated = $this->replacePlaceholders($translated);
+            }
+            return $translated;
+        }
+
+        // If not a translation key, return as is (already translated or plain text)
+        return $title;
     }
 
     /**
@@ -106,20 +126,40 @@ class Notification extends Model
      */
     public function getTranslatedMessageAttribute()
     {
+        $message = $this->message;
+
         // Check if message is a translation key (starts with 'messages.')
-        if (strpos($this->message, 'messages.') === 0) {
-            $translated = __($this->message);
-            
+        if (strpos($message, 'messages.') === 0) {
+            $translated = __($message);
+
             // If translation exists and has placeholders, replace them with data
             if ($this->data && is_array($this->data)) {
                 $translated = $this->replacePlaceholders($translated);
             }
-            
+
+            // If translation returns the same key, it means translation doesn't exist
+            // Return the original message in that case
+            if ($translated === $message) {
+                return $message;
+            }
+
             return $translated;
         }
-        
-        // If not a translation key, return as is
-        return $this->message;
+
+        // If message doesn't start with 'messages.', it might be:
+        // 1. Already translated text (old notifications) - return as is
+        // 2. A translation key without prefix - try to translate it
+        $translated = __('messages.' . $message);
+        if ($translated !== 'messages.' . $message) {
+            // Translation found
+            if ($this->data && is_array($this->data)) {
+                $translated = $this->replacePlaceholders($translated);
+            }
+            return $translated;
+        }
+
+        // If not a translation key, return as is (already translated or plain text)
+        return $message;
     }
 
     /**
@@ -131,9 +171,14 @@ class Notification extends Model
             return $text;
         }
 
+        $locale = app()->getLocale();
+
         // Replace service name
         if (isset($this->data['service'])) {
-            $text = str_replace(':service', $this->data['service'], $text);
+            $service = ($locale === 'en' && !empty($this->data['service_en']))
+                ? $this->data['service_en']
+                : $this->data['service'];
+            $text = str_replace(':service', $service, $text);
         }
 
         // Replace customer name
@@ -143,16 +188,16 @@ class Notification extends Model
 
         // Replace amount
         if (isset($this->data['amount'])) {
-            $amount = is_numeric($this->data['amount']) 
-                ? number_format($this->data['amount'], 2) 
+            $amount = is_numeric($this->data['amount'])
+                ? number_format($this->data['amount'], 2)
                 : $this->data['amount'];
             $text = str_replace(':amount', $amount, $text);
         }
 
         // Replace booking date
         if (isset($this->data['booking_date'])) {
-            $bookingDate = is_string($this->data['booking_date']) 
-                ? $this->data['booking_date'] 
+            $bookingDate = is_string($this->data['booking_date'])
+                ? $this->data['booking_date']
                 : (is_object($this->data['booking_date']) && method_exists($this->data['booking_date'], 'format')
                     ? $this->data['booking_date']->format('Y-m-d')
                     : $this->data['booking_date']);
@@ -185,7 +230,26 @@ class Notification extends Model
 
         // Replace package name
         if (isset($this->data['package'])) {
-            $text = str_replace(':package', $this->data['package'], $text);
+            $package = ($locale === 'en' && !empty($this->data['package_en']))
+                ? $this->data['package_en']
+                : $this->data['package'];
+            $text = str_replace(':package', $package, $text);
+        }
+
+        // Replace name (for subscription name)
+        if (isset($this->data['name'])) {
+            $name = ($locale === 'en' && !empty($this->data['name_en']))
+                ? $this->data['name_en']
+                : $this->data['name'];
+            $text = str_replace(':name', $name, $text);
+        }
+
+        // Replace subject (for support tickets)
+        if (isset($this->data['subject'])) {
+            $subject = ($locale === 'en' && !empty($this->data['subject_en']))
+                ? $this->data['subject_en']
+                : $this->data['subject'];
+            $text = str_replace(':subject', $subject, $text);
         }
 
         // Replace reason
@@ -195,7 +259,19 @@ class Notification extends Model
 
         // Replace expires_in
         if (isset($this->data['expires_in'])) {
-            $text = str_replace(':expires_in', $this->data['expires_in'], $text);
+            $expiresIn = $this->data['expires_in'];
+
+            // If we have expires_at, recalculate it based on current locale
+            if (isset($this->data['expires_at'])) {
+                try {
+                    $expiresAt = \Carbon\Carbon::parse($this->data['expires_at']);
+                    $expiresIn = $expiresAt->diffForHumans();
+                } catch (\Exception $e) {
+                    // Fallback to stored expires_in
+                }
+            }
+
+            $text = str_replace(':expires_in', $expiresIn, $text);
         }
 
         return $text;

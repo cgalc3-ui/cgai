@@ -17,6 +17,69 @@
         </div>
     </div>
 
+    <!-- Filter Section -->
+    <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
+        <form method="GET" action="{{ route('admin.subscriptions.index') }}" class="filter-form">
+            <div class="filter-inputs" style="gap: 30px;">
+                <div class="filter-group">
+                    <label for="status"><i class="fas fa-toggle-on"></i> {{ __('messages.status') }}:</label>
+                    <select name="status" id="status" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>
+                            {{ __('messages.active') }}
+                        </option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>
+                            {{ __('messages.inactive') }}
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="duration_type"><i class="fas fa-calendar-alt"></i> {{ __('messages.duration_type') }}:</label>
+                    <select name="duration_type" id="duration_type" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="monthly" {{ request('duration_type') === 'monthly' ? 'selected' : '' }}>
+                            {{ __('messages.monthly') }}
+                        </option>
+                        <option value="3months" {{ request('duration_type') === '3months' ? 'selected' : '' }}>
+                            {{ __('messages.3months') }}
+                        </option>
+                        <option value="6months" {{ request('duration_type') === '6months' ? 'selected' : '' }}>
+                            {{ __('messages.6months') }}
+                        </option>
+                        <option value="yearly" {{ request('duration_type') === 'yearly' ? 'selected' : '' }}>
+                            {{ __('messages.yearly') }}
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="ai_enabled"><i class="fas fa-robot"></i> {{ __('messages.ai_enabled') }}:</label>
+                    <select name="ai_enabled" id="ai_enabled" class="filter-input">
+                        <option value="">{{ __('messages.all') }}</option>
+                        <option value="enabled" {{ request('ai_enabled') === 'enabled' ? 'selected' : '' }}>
+                            {{ __('messages.enabled') }}
+                        </option>
+                        <option value="disabled" {{ request('ai_enabled') === 'disabled' ? 'selected' : '' }}>
+                            {{ __('messages.disabled') }}
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-group" style="margin-inline-start: 40px;">
+                    <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
+                    <input type="text" name="search" id="search" class="filter-input"
+                        placeholder="{{ __('messages.search_placeholder') }}" value="{{ request('search') }}">
+                </div>
+            </div>
+            <div class="filter-actions" style="margin-inline-start: 20px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> {{ __('messages.apply_filter') }}
+                </button>
+                <a href="{{ route('admin.subscriptions.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> {{ __('messages.clear') }}
+                </a>
+            </div>
+        </form>
+    </div>
+
     <div class="table-container">
         <table class="data-table">
             <thead>

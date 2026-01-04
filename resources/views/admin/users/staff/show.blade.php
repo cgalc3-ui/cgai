@@ -78,12 +78,28 @@
                 <div class="card-body">
                     <div class="info-grid">
                         <div class="info-item">
-                            <span class="info-label">{{ __('messages.specializations') }}:</span>
+                            <span class="info-label">{{ __('messages.categories_specializations') }}:</span>
                             <span class="info-value">
-                                @if($user->employee->specializations->count() > 0)
-                                    @foreach($user->employee->specializations as $specialization)
-                                        <span class="badge badge-info status-pill active">{{ $specialization->name }}</span>
-                                    @endforeach
+                                @if($user->employee->categories->count() > 0)
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        @foreach($user->employee->categories as $category)
+                                            <span class="badge badge-info status-pill active" style="background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; font-weight: 500; padding: 6px 12px;">{{ $category->name }}</span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span class="text-muted">{{ __('messages.no_data') }}</span>
+                                @endif
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">{{ __('messages.sub_categories') }}:</span>
+                            <span class="info-value">
+                                @if($user->employee->subCategories->count() > 0)
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        @foreach($user->employee->subCategories as $subCategory)
+                                            <span class="badge badge-info status-pill active" style="background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; font-weight: 500; padding: 6px 12px;">{{ $subCategory->name }}</span>
+                                        @endforeach
+                                    </div>
                                 @else
                                     <span class="text-muted">{{ __('messages.no_data') }}</span>
                                 @endif

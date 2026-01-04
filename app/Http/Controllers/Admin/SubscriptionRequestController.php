@@ -23,13 +23,41 @@ class SubscriptionRequestController extends Controller
     /**
      * Display a listing of subscription requests
      */
-    public function index()
+    public function index(Request $request)
     {
-        $requests = SubscriptionRequest::with(['user', 'subscription', 'approver'])
-            ->latest()
-            ->paginate(15);
+        $query = SubscriptionRequest::with(['user', 'subscription', 'approver']);
 
-        return view('admin.subscription-requests.index', compact('requests'));
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by subscription
+        if ($request->filled('subscription_id')) {
+            $query->where('subscription_id', $request->subscription_id);
+        }
+
+        // Filter by date
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        // Search by user name or email
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $requests = $query->latest()->paginate(15)->withQueryString();
+
+        // Get subscriptions for filter dropdown
+        $subscriptions = \App\Models\Subscription::orderBy('name')->get();
+
+        return view('admin.subscription-requests.index', compact('requests', 'subscriptions'));
     }
 
     /**
@@ -65,7 +93,7 @@ class SubscriptionRequestController extends Controller
         // Calculate expiration date
         $expiresAt = null;
         $durationType = $request->subscription->duration_type;
-        
+
         if ($durationType === 'monthly') {
             $expiresAt = now()->addMonth();
         } elseif ($durationType === '3months') {
@@ -102,7 +130,8 @@ class SubscriptionRequestController extends Controller
                 'subscription_request_id' => $request->id,
                 'subscription_id' => $request->subscription_id,
                 'status' => 'approved',
-                'package' => $request->subscription->name, // Store package name in data for translation
+                'package' => $request->subscription->name,
+                'package_en' => $request->subscription->name_en,
             ]
         );
 
@@ -141,8 +170,9 @@ class SubscriptionRequestController extends Controller
                 'subscription_request_id' => $request->id,
                 'subscription_id' => $request->subscription_id,
                 'status' => 'rejected',
-                'package' => $request->subscription->name, // Store package name in data for translation
-                'reason' => $validated['admin_notes'], // Store rejection reason in data for translation
+                'package' => $request->subscription->name,
+                'package_en' => $request->subscription->name_en,
+                'reason' => $validated['admin_notes'],
             ]
         );
 
