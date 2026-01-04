@@ -29,6 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Api\CustomerController::class, 'dashboard']);
         Route::get('/reports', [\App\Http\Controllers\Api\Customer\ReportsController::class, 'index']);
 
+        // Help Guides
+        Route::get('/help-guide', [\App\Http\Controllers\Api\HelpGuideController::class, 'index']);
+        Route::get('/help-guide/{id}', [\App\Http\Controllers\Api\HelpGuideController::class, 'show']);
+
         // Bookings
         Route::get('/bookings', [BookingController::class, 'index']);
         Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']);
