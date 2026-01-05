@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/profile', [\App\Http\Controllers\Api\CustomerController::class, 'updateProfile']);
         Route::get('/dashboard', [\App\Http\Controllers\Api\CustomerController::class, 'dashboard']);
         Route::get('/reports', [\App\Http\Controllers\Api\Customer\ReportsController::class, 'index']);
+        Route::get('/activity-log', [\App\Http\Controllers\Api\Customer\ReportsController::class, 'activityLog']);
 
         // Help Guides
         Route::get('/help-guide', [\App\Http\Controllers\Api\HelpGuideController::class, 'index']);
