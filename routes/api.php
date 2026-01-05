@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ConsultationController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/bookings/consultation/available-dates', [BookingController::class, 'availableConsultationDates']);
         Route::get('/bookings/consultation/available-time-slots', [BookingController::class, 'availableConsultationTimeSlots']);
         Route::post('/bookings/consultation', [BookingController::class, 'storeConsultation']);
+
+        // Ratings
+        Route::post('/ratings', [RatingController::class, 'store']);
+        Route::get('/ratings/my-ratings', [RatingController::class, 'myRatings']);
     });
 
     // Employee routes

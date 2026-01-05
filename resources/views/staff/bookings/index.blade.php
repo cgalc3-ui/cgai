@@ -121,8 +121,9 @@
                                 @endif
                             </td>
                             <td style="text-align: center;">
-                                <a href="{{ route('staff.my-bookings.show', $booking) }}" class="calm-action-btn"
-                                    title="{{ __('messages.view_details') }}">
+                                <a href="{{ route('staff.my-bookings.show', $booking->id) }}" class="calm-action-btn"
+                                    title="{{ __('messages.view_details') }}"
+                                    style="pointer-events: auto; z-index: 10; position: relative;">
                                     <i class="far fa-eye"></i>
                                 </a>
                             </td>

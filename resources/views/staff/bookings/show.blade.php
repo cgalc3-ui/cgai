@@ -9,7 +9,7 @@
         <header class="booking-m-header">
             <div class="m-header-main">
                 <h1 class="m-title">{{ __('messages.booking_details') }}</h1>
-                <p class="m-subtitle">{{ __('messages.registration_date') }}: {{ $booking->created_at->format('Y-m-d') }}
+                <p class="m-subtitle">{{ __('messages.registration_date') }}: {{ $booking->created_at ? $booking->created_at->format('Y-m-d') : '---' }}
                 </p>
             </div>
             <div class="m-header-actions">
@@ -147,8 +147,13 @@
                         <div class="m-time-line"></div>
                         <div class="m-time-item">
                             <label>{{ __('messages.attendance_start_time') }}</label>
-                            <div class="val">{{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
-                                {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
+                            <div class="val">
+                                @if($booking->start_time && $booking->end_time)
+                                    {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} -
+                                    {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
+                                @else
+                                    ---
+                                @endif
                             </div>
                             <div class="day">{{ __('messages.local_time') }}</div>
                         </div>
@@ -580,6 +585,152 @@
                 .m-stats-row {
                     grid-template-columns: 1fr;
                 }
+            }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .booking-modern-container {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .booking-m-header {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .m-title {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-subtitle {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .m-btn-back {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-btn-back:hover {
+                background: var(--sidebar-active-bg);
+                color: var(--text-primary);
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .m-stat-card {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .m-stat-label {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .m-stat-status {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-stat-value {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-card {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .m-card-header {
+                color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .m-card-header i {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .m-service-info h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-service-meta {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .m-dot {
+                background: var(--border-color);
+            }
+
+            [data-theme="dark"] .m-contact-item {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .m-contact-item .label {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .m-contact-item .value {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-contact-item .value.link {
+                color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .m-time-item label {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .m-time-item .val {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-time-item .day {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .m-time-line {
+                background: var(--border-color);
+            }
+
+            [data-theme="dark"] .m-notes-area {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .notes-content {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .m-sticky-card {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .time-display-info {
+                background: var(--sidebar-active-bg);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .time-display-info i {
+                color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .time-display-info strong {
+                color: var(--text-primary);
+            }
+
+            /* Icon colors in dark mode */
+            [data-theme="dark"] .icon-blue {
+                background: rgba(59, 130, 246, 0.2);
+                color: #60a5fa;
+            }
+
+            [data-theme="dark"] .icon-green {
+                background: rgba(34, 197, 94, 0.2);
+                color: #4ade80;
+            }
+
+            [data-theme="dark"] .icon-purple {
+                background: rgba(168, 85, 247, 0.2);
+                color: #a78bfa;
             }
         </style>
     @endpush

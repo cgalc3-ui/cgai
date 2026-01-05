@@ -1,6 +1,6 @@
 :root {
     --primary-color: #02c0ce;
-    --primary-dark: #02c0ce;
+    --primary-dark: #09a9b4;
     --secondary-color: #4fc6e1;
     --sidebar-bg: #ffffff;
     --sidebar-text: #6c757d;
@@ -20,7 +20,7 @@
 /* Dark Mode Variables */
 [data-theme="dark"] {
     --primary-color: #02c0ce;
-    --primary-dark: #02c0ce;
+    --primary-dark: #ce0209;
     --secondary-color: #4fc6e1;
     --sidebar-bg: #1e1f27;
     --sidebar-text: #cbd5e1;
@@ -2167,7 +2167,7 @@ html[dir='rtl'] .modal-close {
 .modal-body .form-group select:focus,
 .modal-body .form-group textarea:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #779ad2;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 

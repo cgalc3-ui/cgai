@@ -105,6 +105,40 @@
         .faq-item.active {
             border-color: var(--primary-color);
         }
+
+        /* Dark Mode Styles */
+        [data-theme="dark"] .faq-item {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .faq-question {
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .faq-question:hover {
+            background: var(--sidebar-active-bg);
+        }
+
+        [data-theme="dark"] .faq-answer {
+            background: var(--sidebar-active-bg) !important;
+        }
+
+        [data-theme="dark"] .faq-answer-content {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .faq-category-title {
+            color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .empty-state {
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .empty-state h3 {
+            color: var(--text-primary);
+        }
     </style>
 
     <script>

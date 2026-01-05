@@ -11,60 +11,47 @@
 
     <!-- Statistics Cards -->
     <div class="stats-grid">
-        <!-- Total Customers -->
-        <div class="stat-card">
-            <div class="stat-card-title-row">
-                <h3 class="stat-card-title">{{ __('messages.total_customers') }}</h3>
-                <i class="fas fa-ellipsis-h stat-card-more"></i>
-            </div>
-            <div class="stat-card-main">
-                <div class="stat-card-icon-circle purple">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-card-info">
-                    <div class="stat-card-value-container">
-                        <h2 class="stat-card-value">{{ $stats['total_customers'] ?? 0 }}</h2>
-                        <span class="stat-card-trend up">
-                            <i class="fas fa-arrow-up"></i> +{{ number_format(5.2, 1) }}%
-                        </span>
-                    </div>
-                    <span class="stat-card-subtitle">{{ __('messages.customers_registered') }}</span>
-                </div>
-            </div>
-            <div class="stat-card-chart">
-                <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-                    <path d="M0,25 C10,20 20,28 30,22 C40,16 50,18 60,12 C70,6 80,10 90,8 C100,6 100,5 100,5" fill="none"
-                        stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </div>
-        </div>
-
         <!-- Total Bookings -->
         <div class="stat-card">
             <div class="stat-card-title-row">
                 <h3 class="stat-card-title">{{ __('messages.total_bookings') }}</h3>
-                <i class="fas fa-ellipsis-h stat-card-more"></i>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
             </div>
             <div class="stat-card-main">
-                <div class="stat-card-icon-circle blue">
+                <div class="stat-card-icon-circle teal">
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="stat-card-info">
                     <div class="stat-card-value-container">
-                        <h2 class="stat-card-value">{{ $stats['total_bookings'] ?? 0 }}</h2>
+                        <h2 class="stat-card-value">{{ number_format($stats['total_bookings'] ?? 0) }}</h2>
                         <span class="stat-card-trend up">
-                            <i class="fas fa-arrow-up"></i> +{{ number_format(3.8, 1) }}%
+                            <i class="fas fa-arrow-up"></i> {{ number_format($stats['today_bookings'] ?? 0) }}
                         </span>
                     </div>
-                    <span
-                        class="stat-card-subtitle">{{ $stats['today_bookings'] ?? 0 }}{{ __('messages.booked_today') }}</span>
+                    <span class="stat-card-subtitle">{{ __('messages.booked_today') }}</span>
                 </div>
             </div>
-            <div class="stat-card-chart">
-                <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-                    <path d="M0,20 C10,25 20,15 30,18 C40,21 50,10 60,15 C70,20 80,5 90,10 C100,15 100,10 100,10"
-                        fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" />
-                </svg>
+        </div>
+
+        <!-- Today Bookings -->
+        <div class="stat-card">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">{{ __('messages.today_bookings') }}</h3>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle teal">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ number_format($stats['today_bookings'] ?? 0) }}</h2>
+                        <span class="stat-card-trend up">
+                            <i class="fas fa-arrow-up"></i> {{ number_format($stats['upcoming_bookings'] ?? 0) }}
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">{{ __('messages.upcoming_bookings') }}</span>
+                </div>
             </div>
         </div>
 
@@ -72,15 +59,15 @@
         <div class="stat-card">
             <div class="stat-card-title-row">
                 <h3 class="stat-card-title">{{ __('messages.pending') }}</h3>
-                <i class="fas fa-ellipsis-h stat-card-more"></i>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
             </div>
             <div class="stat-card-main">
-                <div class="stat-card-icon-circle orange">
+                <div class="stat-card-icon-circle yellow">
                     <i class="fas fa-hourglass-half"></i>
                 </div>
                 <div class="stat-card-info">
                     <div class="stat-card-value-container">
-                        <h2 class="stat-card-value">{{ $stats['pending_bookings'] ?? 0 }}</h2>
+                        <h2 class="stat-card-value">{{ number_format($stats['pending_bookings'] ?? 0) }}</h2>
                         <span class="stat-card-trend down">
                             <i class="fas fa-clock"></i>
                         </span>
@@ -88,11 +75,27 @@
                     <span class="stat-card-subtitle">{{ __('messages.bookings_needing_review') }}</span>
                 </div>
             </div>
-            <div class="stat-card-chart">
-                <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-                    <path d="M0,28 C10,22 20,25 30,20 C40,15 50,22 60,18 C70,14 80,18 90,12 C100,6 100,5 100,5" fill="none"
-                        stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
-                </svg>
+        </div>
+
+        <!-- Completed Bookings -->
+        <div class="stat-card">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">{{ __('messages.completed_bookings') }}</h3>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle light-blue">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ number_format($stats['completed_bookings'] ?? 0) }}</h2>
+                        <span class="stat-card-trend up">
+                            <i class="fas fa-arrow-up"></i> {{ number_format($stats['completed_bookings'] ?? 0) }}
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">{{ __('messages.completed') }}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -211,20 +214,50 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="actions-grid">
-        <button class="action-btn" onclick="window.location.href='{{ route('staff.my-schedule') }}'">
-            <i class="fas fa-calendar-alt"></i>
-            <span>{{ __('messages.work_days') }}</span>
-        </button>
-        <button class="action-btn" onclick="openTicketsModal()">
-            <i class="fas fa-headset"></i>
-            <span>{{ __('messages.tickets_support') }}</span>
-        </button>
-        <button class="action-btn" onclick="window.location.href='#'">
-            <i class="fas fa-chart-line"></i>
-            <span>{{ __('messages.reports') }}</span>
-        </button>
+    <!-- Quick Actions -->
+    <div class="card dashboard-card" style="margin-top: 30px;">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-bolt" style="color: #f59e0b; margin-left: 8px;"></i>
+                {{ __('messages.quick_actions') }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="actions-grid-custom">
+                <a href="{{ route('staff.my-bookings') }}" class="action-tile tile-indigo">
+                    <div class="action-icon-box">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.my_bookings') }}</span>
+                        <span class="action-desc">{{ __('messages.view_all_my_bookings') }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="{{ route('staff.my-schedule') }}" class="action-tile tile-amber">
+                    <div class="action-icon-box">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.work_days') }}</span>
+                        <span class="action-desc">{{ __('messages.manage_schedule') }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="javascript:void(0)" onclick="openTicketsModal()" class="action-tile tile-pink">
+                    <div class="action-icon-box">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.tickets_support') }}</span>
+                        <span class="action-desc">{{ __('messages.manage_tickets_desc') }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Tickets Modal -->
@@ -326,8 +359,193 @@
 
     @push('styles')
         <style>
-            .stat-card-icon.orange {
-                background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            /* Stat Card Icon Colors - Matching Admin Dashboard */
+            .stat-card-icon-circle.teal {
+                background: rgba(20, 184, 166, 0.1);
+                color: #14b8a6;
+            }
+
+            .stat-card-icon-circle.yellow {
+                background: rgba(234, 179, 8, 0.1);
+                color: #eab308;
+            }
+
+            .stat-card-icon-circle.light-blue {
+                background: rgba(59, 130, 246, 0.1);
+                color: #3b82f6;
+            }
+
+            .stat-card-trend.down {
+                color: #ef4444;
+            }
+
+            /* Dashboard Cards */
+            .dashboard-card {
+                background: white;
+                border-radius: 16px;
+                border: 1px solid #f1f5f9;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+            }
+
+            [data-theme="dark"] .dashboard-card {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            .dashboard-card .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 25px;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            [data-theme="dark"] .dashboard-card .card-header {
+                border-bottom-color: var(--border-color);
+            }
+
+            .dashboard-card .card-title {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1e293b;
+                margin: 0;
+            }
+
+            [data-theme="dark"] .dashboard-card .card-title {
+                color: var(--text-primary);
+            }
+
+            .dashboard-card .card-body {
+                padding: 25px;
+            }
+
+            /* Quick Actions Grid */
+            .actions-grid-custom {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px;
+            }
+
+            .action-tile {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                padding: 20px;
+                background: #fff;
+                border: 1px solid #f1f5f9;
+                border-radius: 16px;
+                text-decoration: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            [data-theme="dark"] .action-tile {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            .action-tile:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.05);
+                border-color: #e2e8f0;
+            }
+
+            [data-theme="dark"] .action-tile:hover {
+                border-color: var(--primary-color);
+                box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.3);
+            }
+
+            .action-icon-box {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                transition: all 0.3s;
+            }
+
+            .tile-indigo .action-icon-box {
+                background: rgba(99, 102, 241, 0.1);
+                color: #6366f1;
+            }
+
+            [data-theme="dark"] .tile-indigo .action-icon-box {
+                background: rgba(99, 102, 241, 0.2);
+                color: #818cf8;
+            }
+
+            .tile-amber .action-icon-box {
+                background: rgba(245, 158, 11, 0.1);
+                color: #f59e0b;
+            }
+
+            [data-theme="dark"] .tile-amber .action-icon-box {
+                background: rgba(245, 158, 11, 0.2);
+                color: #fbbf24;
+            }
+
+            .tile-pink .action-icon-box {
+                background: rgba(236, 72, 153, 0.1);
+                color: #ec4899;
+            }
+
+            [data-theme="dark"] .tile-pink .action-icon-box {
+                background: rgba(236, 72, 153, 0.2);
+                color: #f472b6;
+            }
+
+            .action-tile:hover .action-icon-box {
+                transform: scale(1.1);
+            }
+
+            .action-info {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .action-name {
+                font-size: 15px;
+                font-weight: 700;
+                color: #1e293b;
+            }
+
+            [data-theme="dark"] .action-name {
+                color: var(--text-primary);
+            }
+
+            .action-desc {
+                font-size: 12px;
+                color: #94a3b8;
+                font-weight: 500;
+            }
+
+            [data-theme="dark"] .action-desc {
+                color: var(--text-secondary);
+            }
+
+            .action-arrow {
+                margin-right: auto;
+                color: #cbd5e1;
+                font-size: 14px;
+                transition: transform 0.3s;
+            }
+
+            [data-theme="dark"] .action-arrow {
+                color: #6b7280;
+            }
+
+            .action-tile:hover .action-arrow {
+                transform: translateX(-5px);
+                color: #64748b;
+            }
+
+            [data-theme="dark"] .action-tile:hover .action-arrow {
+                color: var(--text-primary);
             }
 
             /* Modal Styles */

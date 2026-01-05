@@ -752,6 +752,193 @@
                     max-width: 100%;
                 }
             }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .ticket-details-container {
+                background: var(--card-bg);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            }
+
+            [data-theme="dark"] .ticket-details-header {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .ticket-details-header h2 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .ticket-meta-info {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .ticket-meta-info i {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .btn-back {
+                background: var(--sidebar-active-bg);
+                color: var(--text-primary);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .btn-back:hover {
+                background: var(--border-color);
+                color: var(--text-primary);
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .ticket-description-section {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .ticket-description-section h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .ticket-description-text {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .ticket-attachments {
+                border-top-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .ticket-attachments h4 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .info-card {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .info-item {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .info-item label {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .info-item span:not(.badge) {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .admin-actions-card {
+                background: rgba(59, 130, 246, 0.1);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .admin-actions-card h3 {
+                color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .status-form label {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-select {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-select:focus {
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .messages-section h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .message-item {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .message-item:hover {
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            }
+
+            [data-theme="dark"] .message-item.own-message {
+                background: rgba(59, 130, 246, 0.1);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .message-header {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .message-user strong {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .message-time {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .message-body p {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .attachment-item {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .attachment-link {
+                color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .attachment-link:hover {
+                background: var(--sidebar-active-bg);
+            }
+
+            [data-theme="dark"] .reply-section {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .reply-section h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-textarea {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-textarea:focus {
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .form-textarea::placeholder {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .form-input {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-input:focus {
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .form-help {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .checkbox-label:hover {
+                background: var(--sidebar-active-bg);
+            }
+
+            [data-theme="dark"] .checkbox-label span {
+                color: var(--text-primary);
+            }
         </style>
     @endpush
 @endsection

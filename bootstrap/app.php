@@ -39,5 +39,59 @@ return Application::configure(basePath: dirname(__DIR__))
             ->withoutOverlapping();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Handle ModelNotFoundException for API routes
+        $exceptions->render(function (\Illuminate\Database\Eloquent\ModelNotFoundException $e, \Illuminate\Http\Request $request) {
+            if ($request->is('api/*') || $request->expectsJson() || $request->wantsJson()) {
+                try {
+                    $modelName = class_basename($e->getModel());
+                } catch (\Exception $ex) {
+                    $modelName = 'Model';
+                }
+                
+                $message = match($modelName) {
+                    'Booking' => 'الحجز المطلوب غير موجود',
+                    'Service' => 'الخدمة المطلوبة غير موجودة',
+                    'Consultation' => 'الاستشارة المطلوبة غير موجودة',
+                    default => 'السجل المطلوب غير موجود',
+                };
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                ], 404);
+            }
+        });
+
+        // Handle NotFoundHttpException for API routes (when ModelNotFoundException is converted)
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, \Illuminate\Http\Request $request) {
+            if ($request->is('api/*') || $request->expectsJson() || $request->wantsJson()) {
+                // Check if the original exception was a ModelNotFoundException
+                $previous = $e->getPrevious();
+                if ($previous instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+                    try {
+                        $modelName = class_basename($previous->getModel());
+                    } catch (\Exception $ex) {
+                        $modelName = 'Model';
+                    }
+                    
+                    $message = match($modelName) {
+                        'Booking' => 'الحجز المطلوب غير موجود',
+                        'Service' => 'الخدمة المطلوبة غير موجودة',
+                        'Consultation' => 'الاستشارة المطلوبة غير موجودة',
+                        default => 'السجل المطلوب غير موجود',
+                    };
+                    
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                    ], 404);
+                }
+                
+                // Also handle general 404 for API routes
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المورد المطلوب غير موجود',
+                ], 404);
+            }
+        });
     })->create();
