@@ -220,6 +220,17 @@
                     <i class="fas fa-chevron-left action-arrow"></i>
                 </a>
 
+                <a href="{{ route('admin.invoices.index') }}" class="action-tile tile-green">
+                    <div class="action-icon-box">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.invoices') }}</span>
+                        <span class="action-desc">{{ __('messages.manage_invoices_desc') }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
                 <a href="{{ route('admin.tickets') }}" class="action-tile tile-pink">
                     <div class="action-icon-box">
                         <i class="fas fa-headset"></i>
@@ -840,6 +851,16 @@
             .tile-pink .action-icon-box {
                 background: rgba(236, 72, 153, 0.1);
                 color: #ec4899;
+            }
+
+            .tile-green .action-icon-box {
+                background: rgba(34, 197, 94, 0.1);
+                color: #22c55e;
+            }
+
+            [data-theme="dark"] .tile-green .action-icon-box {
+                background: rgba(34, 197, 94, 0.2);
+                color: #4ade80;
             }
 
             .action-tile:hover .action-icon-box {

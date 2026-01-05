@@ -864,6 +864,160 @@
             .btn-cancel:hover {
                 background: #e5e7eb;
             }
+
+            /* Dark Mode Styles for Modals */
+            [data-theme="dark"] .modal-overlay {
+                background: rgba(0, 0, 0, 0.8);
+            }
+
+            [data-theme="dark"] .modal-container {
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+            }
+
+            [data-theme="dark"] .modal-header {
+                border-bottom-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .modal-header h2 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .modal-close {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .modal-close:hover {
+                background: var(--sidebar-active-bg);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .tickets-filters select {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .tickets-filters select:focus {
+                border-color: var(--primary-color);
+                outline: none;
+            }
+
+            [data-theme="dark"] .tickets-filters .btn {
+                background: var(--primary-color);
+                color: white;
+            }
+
+            [data-theme="dark"] .tickets-filters .btn:hover {
+                opacity: 0.9;
+            }
+
+            [data-theme="dark"] .ticket-item-modal {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+            }
+
+            [data-theme="dark"] .ticket-item-modal:hover {
+                background: var(--card-bg);
+                border-color: var(--primary-color);
+            }
+
+            [data-theme="dark"] .ticket-item-title {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .ticket-item-meta {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .ticket-item-description {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .loading-spinner {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .empty-state-modal {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .empty-state-modal i {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .form-group label {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-input,
+            [data-theme="dark"] .form-select,
+            [data-theme="dark"] .form-textarea {
+                background: var(--card-bg);
+                border-color: var(--border-color);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .form-input:focus,
+            [data-theme="dark"] .form-select:focus,
+            [data-theme="dark"] .form-textarea:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            }
+
+            [data-theme="dark"] .form-help {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .btn-cancel {
+                background: var(--sidebar-active-bg);
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .btn-cancel:hover {
+                background: var(--border-color);
+            }
+
+            /* Badge colors in dark mode */
+            [data-theme="dark"] .badge-open {
+                background: rgba(234, 179, 8, 0.2);
+                color: #fbbf24;
+            }
+
+            [data-theme="dark"] .badge-in_progress {
+                background: rgba(59, 130, 246, 0.2);
+                color: #60a5fa;
+            }
+
+            [data-theme="dark"] .badge-resolved {
+                background: rgba(34, 197, 94, 0.2);
+                color: #4ade80;
+            }
+
+            [data-theme="dark"] .badge-closed {
+                background: rgba(107, 114, 128, 0.2);
+                color: #9ca3af;
+            }
+
+            [data-theme="dark"] .badge-urgent {
+                background: rgba(239, 68, 68, 0.2);
+                color: #f87171;
+            }
+
+            [data-theme="dark"] .badge-high {
+                background: rgba(249, 115, 22, 0.2);
+                color: #fb923c;
+            }
+
+            [data-theme="dark"] .badge-medium {
+                background: rgba(59, 130, 246, 0.2);
+                color: #60a5fa;
+            }
+
+            [data-theme="dark"] .badge-low {
+                background: rgba(107, 114, 128, 0.2);
+                color: #9ca3af;
+            }
         </style>
     @endpush
 

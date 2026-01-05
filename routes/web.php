@@ -135,6 +135,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/{request}/approve', [SubscriptionRequestController::class, 'approve'])->name('approve');
         Route::post('/{request}/reject', [SubscriptionRequestController::class, 'reject'])->name('reject');
     });
+
+    // Invoices management
+    Route::prefix('invoices')->name('invoices.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('index');
+        Route::get('/statistics', [\App\Http\Controllers\Admin\InvoiceController::class, 'statistics'])->name('statistics');
+        Route::get('/export', [\App\Http\Controllers\Admin\InvoiceController::class, 'export'])->name('export');
+        Route::get('/{booking}', [\App\Http\Controllers\Admin\InvoiceController::class, 'show'])->name('show');
+        Route::get('/{booking}/download', [\App\Http\Controllers\Admin\InvoiceController::class, 'download'])->name('download');
+    });
 });
 
 // Staff routes (requires staff or admin role)

@@ -115,6 +115,11 @@
                         <i class="fas fa-calendar-check"></i>
                         <span>{{ __('messages.bookings') }}</span>
                     </a>
+                    <a href="{{ route('admin.invoices.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.invoices*') ? 'active' : '' }}">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>{{ __('messages.invoices') }}</span>
+                    </a>
                     <div class="nav-group">
                         <div class="nav-group-header {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') || request()->routeIs('admin.consultations*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">

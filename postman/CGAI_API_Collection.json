@@ -2449,6 +2449,130 @@
 				}
 			],
 			"description": "جميع endpoints الخاصة بالتقييمات. يمكن للعميل تقييم الموقع فقط إذا كان لديه حجز معاد انتهى (completed). كل حجز يمكن تقييمه مرة واحدة فقط. التقييم من 1 إلى 5 نجوم. التعليق اختياري (حد أقصى 1000 حرف). ترتيب الـ Endpoints: 1: إنشاء تقييم جديد (يتطلب Token - للعملاء فقط), 2: الحصول على تقييماتي (يتطلب Token - للعملاء فقط), 3: الحصول على جميع التقييمات (عام - لا يتطلب Token), 4: الحصول على إحصائيات التقييمات (عام - لا يتطلب Token)"
+		},
+		{
+			"name": "Invoices",
+			"item": [
+				{
+					"name": "1. Get My Invoices",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/invoices?per_page=15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "",
+									"description": "فلترة حسب حالة الحجز (pending, confirmed, completed, cancelled) - اختياري",
+									"disabled": true
+								},
+								{
+									"key": "date_from",
+									"value": "",
+									"description": "من تاريخ الدفع (YYYY-MM-DD) - اختياري",
+									"disabled": true
+								},
+								{
+									"key": "date_to",
+									"value": "",
+									"description": "إلى تاريخ الدفع (YYYY-MM-DD) - اختياري",
+									"disabled": true
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "عدد الفواتير في الصفحة - اختياري (افتراضي: 15)"
+								}
+							]
+						},
+						"description": "الحصول على جميع فواتير العميل (الحجوزات المدفوعة فقط). يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Invoice Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/invoices/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"invoices",
+								"1"
+							]
+						},
+						"description": "الحصول على تفاصيل فاتورة معينة (حجز مدفوع). يتطلب Token. يجب أن يكون الحجز ملك للعميل المصادق عليه."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Download Invoice PDF",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/invoices/1/download",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"invoices",
+								"1",
+								"download"
+							]
+						},
+						"description": "تحميل فاتورة PDF. يُرجع HTML للفاتورة (يمكن تحويلها إلى PDF في التطبيق). يتطلب Token. يجب أن يكون الحجز ملك للعميل المصادق عليه ومدفوع."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالفواتير والإيصالات للعميل. الفواتير هي الحجوزات المدفوعة فقط (payment_status = 'paid'). العميل يمكنه عرض فواتيره فقط. ترتيب الـ Endpoints: 1: الحصول على جميع فواتيري (يتطلب Token), 2: الحصول على تفاصيل فاتورة (يتطلب Token), 3: تحميل فاتورة PDF (يتطلب Token)"
 		}
 	]
 }

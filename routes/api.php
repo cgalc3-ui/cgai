@@ -56,6 +56,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Ratings
         Route::post('/ratings', [RatingController::class, 'store']);
         Route::get('/ratings/my-ratings', [RatingController::class, 'myRatings']);
+
+        // Invoices
+        Route::get('/invoices', [\App\Http\Controllers\Api\InvoiceController::class, 'index']);
+        Route::get('/invoices/{booking}', [\App\Http\Controllers\Api\InvoiceController::class, 'show']);
+        Route::get('/invoices/{booking}/download', [\App\Http\Controllers\Api\InvoiceController::class, 'download']);
     });
 
     // Employee routes
