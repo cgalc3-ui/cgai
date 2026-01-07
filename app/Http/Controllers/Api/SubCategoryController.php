@@ -7,9 +7,12 @@ use App\Http\Requests\StoreSubCategoryRequest;
 use App\Http\Requests\UpdateSubCategoryRequest;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponseTrait;
 
 class SubCategoryController extends Controller
 {
+    use ApiResponseTrait;
+
     public function index(Request $request)
     {
         $query = SubCategory::with('category')->where('is_active', true);
@@ -20,9 +23,14 @@ class SubCategoryController extends Controller
         
         $subCategories = $query->orderBy('name')->get();
         
+        // Filter locale columns
+        $filteredData = $subCategories->map(function ($subCategory) {
+            return $this->filterLocaleColumns($subCategory);
+        });
+        
         return response()->json([
             'success' => true,
-            'data' => $subCategories,
+            'data' => $filteredData,
         ]);
     }
 
@@ -32,19 +40,22 @@ class SubCategoryController extends Controller
         $data['is_active'] = $request->has('is_active') ? true : false;
         
         $subCategory = SubCategory::create($data);
+        $subCategory->load('category');
 
         return response()->json([
             'success' => true,
             'message' => __('messages.subcategory_created_success'),
-            'data' => $subCategory->load('category'),
+            'data' => $this->filterLocaleColumns($subCategory),
         ], 201);
     }
 
     public function show(SubCategory $subCategory)
     {
+        $subCategory->load(['category', 'services']);
+
         return response()->json([
             'success' => true,
-            'data' => $subCategory->load(['category', 'services']),
+            'data' => $this->filterLocaleColumns($subCategory),
         ]);
     }
 
@@ -54,11 +65,12 @@ class SubCategoryController extends Controller
         $data['is_active'] = $request->has('is_active') ? true : false;
         
         $subCategory->update($data);
+        $subCategory->fresh()->load('category');
 
         return response()->json([
             'success' => true,
             'message' => __('messages.subcategory_updated_success'),
-            'data' => $subCategory->fresh()->load('category'),
+            'data' => $this->filterLocaleColumns($subCategory->fresh()),
         ]);
     }
 

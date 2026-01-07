@@ -7,9 +7,12 @@ use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponseTrait;
 
 class ServiceController extends Controller
 {
+    use ApiResponseTrait;
+
     public function index(Request $request)
     {
         $query = Service::with(['subCategory.category'])
@@ -33,11 +36,20 @@ class ServiceController extends Controller
             });
         }
 
-        $services = $query->orderBy('name')->get();
+        $services = $query->with('pointsPricing')->orderBy('name')->get();
+
+        // Filter locale columns and add points pricing
+        $filteredData = $services->map(function ($service) {
+            $data = $this->filterLocaleColumns($service);
+            $data['points_price'] = $service->pointsPricing && $service->pointsPricing->is_active 
+                ? (float) $service->pointsPricing->points_price 
+                : null;
+            return $data;
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $services,
+            'data' => $filteredData,
         ]);
     }
 
@@ -47,19 +59,27 @@ class ServiceController extends Controller
         $data['is_active'] = $request->has('is_active') ? true : false;
 
         $service = Service::create($data);
+        $service->load(['subCategory.category']);
 
         return response()->json([
             'success' => true,
             'message' => __('messages.service_created_success'),
-            'data' => $service->load(['subCategory.category']),
+            'data' => $this->filterLocaleColumns($service),
         ], 201);
     }
 
     public function show(Service $service)
     {
+        $service->load(['subCategory.category', 'pointsPricing']);
+        
+        $data = $this->filterLocaleColumns($service);
+        $data['points_price'] = $service->pointsPricing && $service->pointsPricing->is_active 
+            ? (float) $service->pointsPricing->points_price 
+            : null;
+
         return response()->json([
             'success' => true,
-            'data' => $service->load(['subCategory.category']),
+            'data' => $data,
         ]);
     }
 
@@ -69,11 +89,12 @@ class ServiceController extends Controller
         $data['is_active'] = $request->has('is_active') ? true : false;
 
         $service->update($data);
+        $service->fresh()->load(['subCategory.category']);
 
         return response()->json([
             'success' => true,
             'message' => __('messages.service_updated_success'),
-            'data' => $service->fresh()->load(['subCategory.category']),
+            'data' => $this->filterLocaleColumns($service->fresh()),
         ]);
     }
 

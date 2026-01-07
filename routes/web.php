@@ -144,6 +144,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/{booking}', [\App\Http\Controllers\Admin\InvoiceController::class, 'show'])->name('show');
         Route::get('/{booking}/download', [\App\Http\Controllers\Admin\InvoiceController::class, 'download'])->name('download');
     });
+
+    // Points & Wallet management
+    Route::prefix('points')->name('points.')->group(function () {
+        Route::get('/settings', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'index'])->name('settings');
+        Route::post('/settings', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/services/{serviceId}/pricing', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'updateServicePricing'])->name('services.pricing');
+        Route::post('/consultations/{consultationId}/pricing', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'updateConsultationPricing'])->name('consultations.pricing');
+        Route::get('/transactions', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'transactions'])->name('transactions');
+        Route::get('/wallets', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'wallets'])->name('wallets');
+    });
 });
 
 // Staff routes (requires staff or admin role)

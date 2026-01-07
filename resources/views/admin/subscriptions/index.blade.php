@@ -147,7 +147,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $subscriptions->links() }}
+            {{ $subscriptions->links('vendor.pagination.custom', ['itemName' => 'subscriptions']) }}
         </div>
     </div>
 

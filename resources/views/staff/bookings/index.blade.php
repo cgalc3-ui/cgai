@@ -145,7 +145,7 @@
 
         @if($bookings->hasPages())
             <div class="pagination-wrapper">
-                {{ $bookings->links() }}
+                {{ $bookings->links('vendor.pagination.custom', ['itemName' => 'bookings']) }}
             </div>
         @endif
     </div>

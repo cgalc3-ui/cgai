@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponseTrait;
 
 class InvoiceController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Get customer's invoices
      */
@@ -69,13 +71,17 @@ class InvoiceController extends Controller
                         'id' => $booking->consultation_id,
                         'name' => $booking->consultation->name ?? null,
                         'name_en' => $booking->consultation->name_en ?? null,
-                        'type' => 'consultation'
+                        'type' => 'consultation',
+                        'description' => $booking->consultation->description ?? null,
+                        'description_en' => $booking->consultation->description_en ?? null,
                     ]
                     : [
                         'id' => $booking->service_id,
                         'name' => $booking->service->name ?? null,
                         'name_en' => $booking->service->name_en ?? null,
-                        'type' => 'service'
+                        'type' => 'service',
+                        'description' => $booking->service->description ?? null,
+                        'description_en' => $booking->service->description_en ?? null,
                     ],
                 'employee' => $booking->employee && $booking->employee->user ? [
                     'id' => $booking->employee->user->id,
@@ -94,10 +100,15 @@ class InvoiceController extends Controller
             ];
         });
 
+        // Filter locale columns
+        $filteredInvoices = $formattedInvoices->map(function ($invoice) {
+            return $this->filterLocaleColumns($invoice);
+        });
+
         return response()->json([
             'success' => true,
             'data' => [
-                'invoices' => $formattedInvoices,
+                'invoices' => $filteredInvoices,
                 'pagination' => [
                     'current_page' => $invoices->currentPage(),
                     'last_page' => $invoices->lastPage(),
@@ -157,6 +168,7 @@ class InvoiceController extends Controller
                     'name_en' => $booking->consultation->name_en ?? null,
                     'type' => 'consultation',
                     'description' => $booking->consultation->description ?? null,
+                    'description_en' => $booking->consultation->description_en ?? null,
                 ]
                 : [
                     'id' => $booking->service_id,
@@ -164,6 +176,7 @@ class InvoiceController extends Controller
                     'name_en' => $booking->service->name_en ?? null,
                     'type' => 'service',
                     'description' => $booking->service->description ?? null,
+                    'description_en' => $booking->service->description_en ?? null,
                 ],
             'employee' => $booking->employee && $booking->employee->user ? [
                 'id' => $booking->employee->user->id,
@@ -186,7 +199,7 @@ class InvoiceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $invoice
+            'data' => $this->filterLocaleColumns($invoice)
         ]);
     }
 
@@ -224,30 +237,42 @@ class InvoiceController extends Controller
 
         // Generate HTML for PDF
         $html = view('admin.invoices.pdf', compact('booking'))->render();
-
-        // Create PDF using dompdf with Arabic font support
-        $options = new \Dompdf\Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('defaultFont', 'dejavu sans');
-        $options->set('isFontSubsettingEnabled', true);
-        
-        $dompdf = new \Dompdf\Dompdf($options);
-        
-        // Load HTML with UTF-8 encoding
-        $dompdf->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-        
-        // Set paper size and orientation
-        $dompdf->setPaper('A4', 'portrait');
-        
-        // Render PDF
-        $dompdf->render();
         
         // Generate filename
         $filename = 'invoice-' . str_pad($booking->id, 6, '0', STR_PAD_LEFT) . '.pdf';
         
-        // Return PDF as stream
-        return $dompdf->stream($filename, ['Attachment' => true]);
+        // Use mPDF with Arabic support
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 5,
+            'margin_bottom' => 5,
+            'margin_header' => 0,
+            'margin_footer' => 0,
+            'default_font' => 'dejavusans',
+            'default_font_size' => 9,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'biDirectional' => true,
+            'useSubstitutions' => true,
+            'useArabic' => true,
+            'allowCJK' => true,
+        ]);
+        
+        // Set RTL direction for Arabic
+        $mpdf->SetDirectionality('rtl');
+        
+        // Write HTML content
+        $mpdf->WriteHTML($html);
+        
+        // Output PDF
+        return response($mpdf->Output($filename, 'S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "attachment; filename*=UTF-8''" . rawurlencode($filename),
+        ]);
     }
 }
 

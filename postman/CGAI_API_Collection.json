@@ -1274,7 +1274,7 @@
 								"bookings"
 							]
 						},
-						"description": "مهم: هذا الـ endpoint يحفظ بيانات الحجز مؤقتاً في cache فقط - لا يتم إنشاء الحجز في قاعدة البيانات إلا بعد الدفع. يتطلب service_id و booking_date و time_slot_ids. notes و payment_method اختياريين. إذا كان payment_method: online، يُرجع payment_url مباشرة. إذا لم يكن payment_method موجود أو ليس online، يُرجع temp_booking_id فقط (يجب استخدامه في Process Manual Payment). البيانات تُحفظ في cache لمدة 30 دقيقة. التخصص والمدة تُؤخذ تلقائياً من الخدمة. جميع time_slot_ids يجب أن تكون لنفس الموظف ونفس التاريخ. يتطلب Token."
+						"description": "مهم: هذا الـ endpoint يحفظ بيانات الحجز مؤقتاً في cache فقط - لا يتم إنشاء الحجز في قاعدة البيانات إلا بعد الدفع. يتطلب service_id و booking_date و time_slot_ids. notes و payment_method اختياريين. إذا كان payment_method: online، يُرجع payment_url مباشرة. إذا كان payment_method: points، يجب التحقق من رصيد النقاط وسعر النقاط للخدمة قبل الدفع. إذا لم يكن payment_method موجود أو ليس online/points، يُرجع temp_booking_id فقط (يجب استخدامه في Process Manual Payment). البيانات تُحفظ في cache لمدة 30 دقيقة. التخصص والمدة تُؤخذ تلقائياً من الخدمة. جميع time_slot_ids يجب أن تكون لنفس الموظف ونفس التاريخ. يتطلب Token. ملاحظة: Service API يُرجع points_price لكل خدمة."
 					},
 					"response": []
 				},
@@ -1346,7 +1346,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"temp_booking_id\": \"temp_67890abc123_1735567890\",\n    \"payment_method\": \"cash\",\n    \"transaction_id\": \"TXN123456\"\n}",
+							"raw": "{\n    \"temp_booking_id\": \"temp_67890abc123_1735567890\",\n    \"payment_method\": \"points\",\n    \"transaction_id\": null\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1364,7 +1364,7 @@
 								"payment"
 							]
 						},
-						"description": "معالجة الدفع اليدوي وإنشاء الحجز في قاعدة البيانات. مهم: الحجز يُنشأ في قاعدة البيانات فقط بعد الدفع. يتطلب temp_booking_id (من Create Booking) و payment_method (cash, credit_card, debit_card) و transaction_id (اختياري). بعد الدفع، يتم إنشاء الحجز في قاعدة البيانات مع status: confirmed و payment_status: paid. الأوقات تُحجز بعد الدفع فقط. يتطلب Token."
+						"description": "معالجة الدفع وإنشاء الحجز في قاعدة البيانات. مهم: الحجز يُنشأ في قاعدة البيانات فقط بعد الدفع. يتطلب temp_booking_id (من Create Booking) و payment_method (cash, credit_card, debit_card, points) و transaction_id (اختياري، غير مطلوب للدفع بالنقاط). للدفع بالنقاط: يجب أن يكون للخدمة/الاستشارة سعر نقاط محدد وأن يكون رصيد العميل كافياً. بعد الدفع، يتم إنشاء الحجز في قاعدة البيانات مع status: confirmed و payment_status: paid. الأوقات تُحجز بعد الدفع فقط. يتطلب Token."
 					},
 					"response": []
 				},
@@ -2263,14 +2263,76 @@
 				},
 				{
 					"name": "2. Update Customer Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ✅ التحقق من نجاح الطلب",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// ✅ التحقق من أن الـ response يحتوي على success: true",
+									"pm.test(\"Response has success: true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"// ✅ التحقق من وجود customer في الـ response",
+									"pm.test(\"Response contains customer object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('customer');",
+									"});",
+									"",
+									"// ✅ التحقق من أن avatar موجود وليس null (إذا تم رفع صورة)",
+									"pm.test(\"Avatar is uploaded and saved (if file was sent)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.customer && jsonData.customer.avatar !== null) {",
+									"        pm.expect(jsonData.customer.avatar).to.not.be.empty;",
+									"        pm.expect(jsonData.customer.avatar).to.include('avatars/');",
+									"    }",
+									"});",
+									"",
+									"// ✅ التحقق من أن avatar_url موجود وليس null (إذا تم رفع صورة)",
+									"pm.test(\"Avatar URL is generated correctly (if file was sent)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.customer && jsonData.customer.avatar_url !== null) {",
+									"        pm.expect(jsonData.customer.avatar_url).to.not.be.empty;",
+									"        pm.expect(jsonData.customer.avatar_url).to.include('storage/avatars/');",
+									"        pm.expect(jsonData.customer.avatar_url).to.match(/^https?:\\/\\//);",
+									"    }",
+									"});",
+									"",
+									"// ✅ التحقق من أن avatar_path يبدأ بـ \"avatars/\" (إذا تم رفع صورة)",
+									"pm.test(\"Avatar path starts with 'avatars/' (if file was sent)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.customer && jsonData.customer.avatar !== null) {",
+									"        pm.expect(jsonData.customer.avatar).to.include('avatars/');",
+									"    }",
+									"});",
+									"",
+									"// ✅ حفظ avatar_url في متغير للاستخدام لاحقاً (إذا كان موجود)",
+									"pm.test(\"Save avatar_url to variable (if exists)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.customer && jsonData.customer.avatar_url) {",
+									"        pm.collectionVariables.set(\"avatar_url\", jsonData.customer.avatar_url);",
+									"    }",
+									"});",
+									"",
+									"// ✅ طباعة معلومات Avatar في Console",
+									"if (pm.response.json().customer) {",
+									"    console.log(\"Avatar Path:\", pm.response.json().customer.avatar);",
+									"    console.log(\"Avatar URL:\", pm.response.json().customer.avatar_url);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "PUT",
 						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
 							{
 								"key": "Accept",
 								"value": "application/json",
@@ -2283,13 +2345,42 @@
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"اسم المستخدم\",\n    \"email\": \"user@example.com\",\n    \"phone\": \"0501234567\",\n    \"gender\": \"male\",\n    \"date_of_birth\": \"1990-01-01\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "اسم المستخدم",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "user@example.com",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "0501234567",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"type": "text",
+									"description": "male أو female (اختياري)"
+								},
+								{
+									"key": "date_of_birth",
+									"value": "1990-01-01",
+									"type": "text",
+									"description": "YYYY-MM-DD (اختياري)"
+								},
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": [],
+									"description": "رفع صورة شخصية (jpeg, png, jpg, gif - حد أقصى 2MB)"
 								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{base_url}}/customer/profile",
@@ -2301,7 +2392,100 @@
 								"profile"
 							]
 						},
-						"description": "تحديث بيانات الملف الشخصي للعميل. يتطلب Token. gender: male/female (اختياري). date_of_birth: YYYY-MM-DD (اختياري)."
+						"description": "تحديث بيانات الملف الشخصي للعميل مع إمكانية رفع صورة شخصية. يتطلب Token.\n\n**الحقول المتاحة:**\n- `name`: الاسم الكامل (اختياري)\n- `email`: البريد الإلكتروني (اختياري)\n- `phone`: رقم الهاتف (اختياري)\n- `gender`: الجنس - male/female (اختياري)\n- `date_of_birth`: تاريخ الميلاد - YYYY-MM-DD (اختياري)\n- `avatar`: صورة شخصية - jpeg, png, jpg, gif (حد أقصى 2MB) (اختياري)\n\n**ملاحظات:**\n- يمكنك إرسال أي حقل أو مجموعة حقول\n- عند رفع صورة جديدة، سيتم حذف الصورة القديمة تلقائياً\n- الصورة تُحفظ في `storage/app/public/avatars/`\n- يتم إرجاع `avatar` (المسار) و `avatar_url` (الرابط الكامل) في الـ response"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Update Customer Avatar",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ✅ التحقق من نجاح الطلب",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// ✅ التحقق من أن الـ response يحتوي على success: true",
+									"pm.test(\"Response has success: true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"// ✅ التحقق من أن avatar موجود وليس null",
+									"pm.test(\"Avatar is uploaded and saved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('avatar');",
+									"    pm.expect(jsonData.avatar).to.not.be.null;",
+									"    pm.expect(jsonData.avatar).to.not.be.empty;",
+									"    pm.expect(jsonData.avatar).to.include('avatars/');",
+									"});",
+									"",
+									"// ✅ التحقق من أن avatar_url موجود وليس null",
+									"pm.test(\"Avatar URL is generated correctly\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('avatar_url');",
+									"    pm.expect(jsonData.avatar_url).to.not.be.null;",
+									"    pm.expect(jsonData.avatar_url).to.not.be.empty;",
+									"    pm.expect(jsonData.avatar_url).to.include('storage/avatars/');",
+									"    pm.expect(jsonData.avatar_url).to.match(/^https?:\\/\\//);",
+									"});",
+									"",
+									"// ✅ حفظ avatar_url في متغير للاستخدام لاحقاً",
+									"pm.test(\"Save avatar_url to variable\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.avatar_url) {",
+									"        pm.collectionVariables.set(\"avatar_url\", jsonData.avatar_url);",
+									"    }",
+									"});",
+									"",
+									"// ✅ طباعة معلومات Avatar في Console",
+									"console.log(\"Avatar Path:\", pm.response.json().avatar);",
+									"console.log(\"Avatar URL:\", pm.response.json().avatar_url);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": [],
+									"description": "رفع صورة شخصية (jpeg, png, jpg, gif - حد أقصى 2MB)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/profile/avatar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"profile",
+								"avatar"
+							]
+						},
+						"description": "رفع أو تحديث الصورة الشخصية للعميل فقط. يتطلب Token.\n\n**المتطلبات:**\n- `avatar`: صورة شخصية - jpeg, png, jpg, gif (حد أقصى 2MB) (مطلوب)\n\n**ملاحظات:**\n- عند رفع صورة جديدة، سيتم حذف الصورة القديمة تلقائياً\n- الصورة تُحفظ في `storage/app/public/avatars/`\n- يتم إرجاع `avatar` (المسار) و `avatar_url` (الرابط الكامل) في الـ response\n- هذا الطلب مخصص فقط لرفع الصورة، لتحديث البيانات الأخرى استخدم `PUT /customer/profile`"
 					},
 					"response": []
 				}
@@ -2573,6 +2757,119 @@
 				}
 			],
 			"description": "جميع endpoints الخاصة بالفواتير والإيصالات للعميل. الفواتير هي الحجوزات المدفوعة فقط (payment_status = 'paid'). العميل يمكنه عرض فواتيره فقط. ترتيب الـ Endpoints: 1: الحصول على جميع فواتيري (يتطلب Token), 2: الحصول على تفاصيل فاتورة (يتطلب Token), 3: تحميل فاتورة PDF (يتطلب Token)"
+		},
+		{
+			"name": "Points & Wallet",
+			"item": [
+				{
+					"name": "1. Get Wallet Balance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/points/wallet",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"points",
+								"wallet"
+							]
+						},
+						"description": "الحصول على رصيد المحفظة وإعدادات النقاط. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Purchase Points",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/customer/points/purchase",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"points",
+								"purchase"
+							]
+						},
+						"description": "شراء نقاط. amount: المبلغ بالريال. يُرجع payment_url للدفع عبر PayMob. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get Points Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/customer/points/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"customer",
+								"points",
+								"transactions"
+							]
+						},
+						"description": "الحصول على سجل معاملات النقاط (شراء، استخدام، استرجاع). يتطلب Token."
+					},
+					"response": []
+				}
+			],
+			"description": "نظام النقاط والمحفظة. يتيح للعملاء شراء نقاط واستخدامها في الحجز. ترتيب الـ Endpoints: 1: الحصول على رصيد المحفظة (يتطلب Token), 2: شراء نقاط (يتطلب Token), 3: الحصول على سجل المعاملات (يتطلب Token)"
 		}
 	]
 }

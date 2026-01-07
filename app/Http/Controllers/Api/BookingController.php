@@ -12,7 +12,11 @@ use App\Models\Employee;
 use App\Models\Service;
 use App\Models\Consultation;
 use App\Models\TimeSlot;
+use App\Models\Wallet;
+use App\Models\ServicePointsPricing;
+use App\Models\PointsSetting;
 use App\Services\NotificationService;
+use App\Traits\ApiResponseTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
+    use ApiResponseTrait;
     public function store(StoreBookingRequest $request)
     {
         // استخدام معاملة (Transaction) لضمان أن جميع العمليات تنجح معًا أو تفشل معًا
@@ -502,6 +507,9 @@ class BookingController extends Controller
                 'total_price' => $booking->total_price,
                 'status' => $booking->status,
                 'payment_status' => $booking->payment_status,
+                'payment_method' => $booking->payment_method,
+                'points_used' => $booking->points_used ? (float) $booking->points_used : null,
+                'points_price' => $booking->points_price ? (float) $booking->points_price : null,
                 'payment_id' => $booking->payment_id,
                 'payment_data' => $booking->payment_data,
                 'paid_at' => $booking->paid_at,
@@ -511,7 +519,9 @@ class BookingController extends Controller
                 'service' => $booking->service ? [
                     'id' => $booking->service->id,
                     'name' => $booking->service->name,
+                    'name_en' => $booking->service->name_en,
                     'description' => $booking->service->description,
+                    'description_en' => $booking->service->description_en,
                     'price' => $booking->service->price,
                 ] : null,
                 'employee' => $booking->employee && $booking->employee->user ? [
@@ -528,9 +538,14 @@ class BookingController extends Controller
             ];
         });
 
+        // Filter locale columns
+        $filteredBookings = $formattedBookings->map(function ($booking) {
+            return $this->filterLocaleColumns($booking);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $formattedBookings,
+            'data' => $filteredBookings,
         ]);
     }
 
@@ -650,9 +665,14 @@ class BookingController extends Controller
             ];
         });
 
+        // Filter locale columns
+        $filteredBookings = $formattedBookings->map(function ($booking) {
+            return $this->filterLocaleColumns($booking);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $formattedBookings,
+            'data' => $filteredBookings,
             'pagination' => [
                 'current_page' => $bookings->currentPage(),
                 'last_page' => $bookings->lastPage(),
@@ -1322,6 +1342,9 @@ class BookingController extends Controller
             'total_price' => $booking->total_price,
             'status' => $booking->status,
             'payment_status' => $booking->payment_status,
+            'payment_method' => $booking->payment_method,
+            'points_used' => $booking->points_used ? (float) $booking->points_used : null,
+            'points_price' => $booking->points_price ? (float) $booking->points_price : null,
             'payment_id' => $booking->payment_id,
             'payment_data' => $booking->payment_data,
             'paid_at' => $booking->paid_at,
@@ -1331,7 +1354,9 @@ class BookingController extends Controller
             'service' => $booking->service ? [
                 'id' => $booking->service->id,
                 'name' => $booking->service->name,
+                'name_en' => $booking->service->name_en,
                 'description' => $booking->service->description,
+                'description_en' => $booking->service->description_en,
                 'price' => $booking->service->price,
             ] : null,
             'employee' => $booking->employee && $booking->employee->user ? [
@@ -1347,9 +1372,12 @@ class BookingController extends Controller
             }),
         ];
 
+        // Filter locale columns
+        $filteredBooking = $this->filterLocaleColumns($formattedBooking);
+
         return response()->json([
             'success' => true,
-            'data' => $formattedBooking,
+            'data' => $filteredBooking,
         ]);
     }
 
@@ -1451,7 +1479,7 @@ class BookingController extends Controller
 
         $request->validate([
             'temp_booking_id' => 'required|string',
-            'payment_method' => 'required|string|in:cash,credit_card,debit_card',
+            'payment_method' => 'required|string|in:cash,credit_card,debit_card,points',
             'transaction_id' => 'nullable|string|max:255',
         ]);
 
@@ -1475,7 +1503,7 @@ class BookingController extends Controller
         }
 
         // استخدام معاملة (Transaction) مع lockForUpdate لضمان أن أول من يدفع يحصل على الحجز
-        return DB::transaction(function () use ($request, $tempBookingData, $tempBookingId, $cacheKey) {
+        return DB::transaction(function () use ($request, $tempBookingData, $tempBookingId, $cacheKey, $customer) {
             // للاستشارات، time_slot_id واحد فقط، للخدمات قد يكون array
             $timeSlotIds = $tempBookingData['time_slot_ids'] ?? [$tempBookingData['time_slot_id']];
             
@@ -1491,6 +1519,64 @@ class BookingController extends Controller
                     'success' => false,
                     'message' => __('messages.booking_time_slots_no_longer_available'),
                 ], 422);
+            }
+
+            // معالجة الدفع بالنقاط
+            $pointsUsed = null;
+            $pointsPrice = null;
+            $paymentData = [
+                'payment_method' => $request->payment_method,
+                'transaction_id' => $request->transaction_id,
+            ];
+
+            if ($request->payment_method === 'points') {
+                // الحصول على سعر النقاط للخدمة/الاستشارة
+                $itemType = $tempBookingData['booking_type'] ?? 'service';
+                $itemId = $itemType === 'service' 
+                    ? ($tempBookingData['service_id'] ?? null)
+                    : ($tempBookingData['consultation_id'] ?? null);
+
+                if (!$itemId) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('messages.booking_item_not_found'),
+                    ], 404);
+                }
+
+                $pointsPricing = ServicePointsPricing::getPricing($itemType, $itemId);
+                
+                if (!$pointsPricing || !$pointsPricing->is_active) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('messages.points_pricing_not_available'),
+                    ], 422);
+                }
+
+                $pointsNeeded = $pointsPricing->points_price;
+                $wallet = $customer->getOrCreateWallet();
+
+                // التحقق من الرصيد
+                if ($wallet->balance < $pointsNeeded) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => __('messages.insufficient_points_balance'),
+                        'data' => [
+                            'required' => $pointsNeeded,
+                            'available' => $wallet->balance,
+                        ],
+                    ], 422);
+                }
+
+                // خصم النقاط
+                $wallet->deductPoints(
+                    $pointsNeeded,
+                    'usage',
+                    null, // سيتم تحديثه بعد إنشاء الحجز
+                    __('messages.points_used_for_booking')
+                );
+
+                $pointsUsed = $pointsNeeded;
+                $pointsPrice = $pointsPricing->points_price;
             }
 
             // حجز الـ time slots بعد الدفع
@@ -1510,13 +1596,23 @@ class BookingController extends Controller
                 'total_price' => $tempBookingData['total_price'],
                 'status' => 'confirmed',
                 'payment_status' => 'paid',
+                'payment_method' => $request->payment_method,
+                'points_used' => $pointsUsed,
+                'points_price' => $pointsPrice,
                 'paid_at' => now(),
                 'notes' => $tempBookingData['notes'] ?? null,
-                'payment_data' => [
-                    'payment_method' => $request->payment_method,
-                    'transaction_id' => $request->transaction_id,
-                ],
+                'payment_data' => $paymentData,
             ]);
+
+            // تحديث transaction بالنقاط برقم الحجز
+            if ($pointsUsed) {
+                \App\Models\PointsTransaction::where('user_id', $customer->id)
+                    ->where('type', 'usage')
+                    ->whereNull('booking_id')
+                    ->latest()
+                    ->first()
+                    ->update(['booking_id' => $booking->id]);
+            }
 
             // ربط الحجز بالـ time slots (للخدمات فقط، الاستشارات تستخدم time_slot_id مباشرة)
             if (isset($tempBookingData['time_slot_ids']) && is_array($tempBookingData['time_slot_ids'])) {

@@ -86,7 +86,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $helpGuides->links() }}
+            {{ $helpGuides->links('vendor.pagination.custom', ['itemName' => 'help_guides']) }}
         </div>
     </div>
 

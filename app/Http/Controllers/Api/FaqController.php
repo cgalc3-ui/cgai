@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Faq;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponseTrait;
 
 class FaqController extends Controller
 {
+    use ApiResponseTrait;
+
     /**
      * Display a listing of active FAQs.
      */
@@ -19,9 +22,16 @@ class FaqController extends Controller
             ->get()
             ->groupBy('category');
 
+        // Filter locale columns for each group
+        $filteredData = $faqs->map(function ($group) {
+            return $group->map(function ($faq) {
+                return $this->filterLocaleColumns($faq);
+            })->values();
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $faqs
+            'data' => $filteredData
         ]);
     }
 
@@ -35,9 +45,14 @@ class FaqController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // Filter locale columns
+        $filteredData = $faqs->map(function ($faq) {
+            return $this->filterLocaleColumns($faq);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $faqs
+            'data' => $filteredData
         ]);
     }
 }

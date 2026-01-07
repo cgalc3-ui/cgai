@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Traits\ApiResponseTrait;
 
 class EmployeeController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Get employee dashboard statistics
      */
@@ -64,7 +66,7 @@ class EmployeeController extends Controller
         $employee = $user->employee;
 
         $query = $employee->bookings()
-            ->with(['customer', 'service', 'timeSlots']);
+            ->with(['customer', 'service', 'consultation', 'timeSlots']);
 
         // Filter by status if provided
         if ($request->has('status')) {
@@ -81,14 +83,14 @@ class EmployeeController extends Controller
             ->orderBy('start_time', 'asc')
             ->paginate(15);
 
-        // Add computed attributes for each booking
+        // Add computed attributes and filter locale columns for each booking
         $bookings->getCollection()->transform(function ($booking) {
             $booking->actual_status = $booking->actual_status;
             $booking->time_display = $booking->time_display;
             $booking->time_until_start = $booking->time_until_start;
             $booking->elapsed_time = $booking->elapsed_time;
             $booking->time_until_end = $booking->time_until_end;
-            return $booking;
+            return $this->filterLocaleColumns($booking);
         });
 
         return response()->json([

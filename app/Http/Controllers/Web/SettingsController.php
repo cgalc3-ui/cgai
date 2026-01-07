@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class SettingsController extends Controller
@@ -25,11 +26,24 @@ class SettingsController extends Controller
             'phone' => ['required', 'string', 'max:20', Rule::unique('users')->ignore($user->id)],
             'gender' => ['nullable', 'in:male,female'],
             'date_of_birth' => ['nullable', 'date'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
+
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if exists
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            
+            // Store new avatar
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = $avatarPath;
+        }
 
         $user->update($validated);
 
-        return back()->with('success', 'تم تحديث البيانات الشخصية بنجاح.');
+        return back()->with('success', __('messages.profile_updated_success'));
     }
 
     public function updatePassword(Request $request)

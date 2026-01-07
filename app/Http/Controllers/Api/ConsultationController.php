@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Consultation;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponseTrait;
 
 class ConsultationController extends Controller
 {
+    use ApiResponseTrait;
+
     /**
      * Get all consultations
      */
@@ -22,24 +25,20 @@ class ConsultationController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        $consultations = $query->get();
+        $consultations = $query->with('pointsPricing')->get();
+
+        // Filter locale columns and add points pricing
+        $filteredData = $consultations->map(function ($consultation) {
+            $data = $this->filterLocaleColumns($consultation);
+            $data['points_price'] = $consultation->pointsPricing && $consultation->pointsPricing->is_active 
+                ? (float) $consultation->pointsPricing->points_price 
+                : null;
+            return $data;
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $consultations->map(function ($consultation) {
-                return [
-                    'id' => $consultation->id,
-                    'name' => $consultation->name,
-                    'slug' => $consultation->slug,
-                    'description' => $consultation->description,
-                    'fixed_price' => $consultation->fixed_price,
-                    'price' => $consultation->price,
-                    'category' => [
-                        'id' => $consultation->category->id,
-                        'name' => $consultation->category->name,
-                    ],
-                ];
-            }),
+            'data' => $filteredData,
         ]);
     }
 
@@ -48,22 +47,16 @@ class ConsultationController extends Controller
      */
     public function show($id)
     {
-        $consultation = Consultation::with('category')->findOrFail($id);
+        $consultation = Consultation::with(['category', 'pointsPricing'])->findOrFail($id);
+        
+        $data = $this->filterLocaleColumns($consultation);
+        $data['points_price'] = $consultation->pointsPricing && $consultation->pointsPricing->is_active 
+            ? (float) $consultation->pointsPricing->points_price 
+            : null;
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'id' => $consultation->id,
-                'name' => $consultation->name,
-                'slug' => $consultation->slug,
-                'description' => $consultation->description,
-                'fixed_price' => $consultation->fixed_price,
-                'price' => $consultation->price,
-                'category' => [
-                    'id' => $consultation->category->id,
-                    'name' => $consultation->category->name,
-                ],
-            ],
+            'data' => $data,
         ]);
     }
 
@@ -72,14 +65,23 @@ class ConsultationController extends Controller
      */
     public function byCategory($categoryId)
     {
-        $consultations = Consultation::with('category')
+        $consultations = Consultation::with(['category', 'pointsPricing'])
             ->where('category_id', $categoryId)
             ->where('is_active', true)
             ->get();
 
+        // Filter locale columns and add points pricing
+        $filteredData = $consultations->map(function ($consultation) {
+            $data = $this->filterLocaleColumns($consultation);
+            $data['points_price'] = $consultation->pointsPricing && $consultation->pointsPricing->is_active 
+                ? (float) $consultation->pointsPricing->points_price 
+                : null;
+            return $data;
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $consultations,
+            'data' => $filteredData,
         ]);
     }
 }

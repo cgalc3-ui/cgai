@@ -92,7 +92,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $users->links() }}
+            {{ $users->links('vendor.pagination.custom', ['itemName' => 'admins']) }}
         </div>
     </div>
 

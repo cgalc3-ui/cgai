@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class,
         ]);
 
+        // Add locale middleware for API routes
+        $middleware->api(prepend: [
+            \App\Http\Middleware\SetApiLocale::class,
+        ]);
+
         // Register role middleware alias
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckUserRole::class,

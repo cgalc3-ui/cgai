@@ -69,7 +69,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $customers->links() }}
+            {{ $customers->links('vendor.pagination.custom', ['itemName' => 'customers']) }}
         </div>
     </div>
 @endsection

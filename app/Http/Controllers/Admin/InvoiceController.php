@@ -124,30 +124,42 @@ class InvoiceController extends Controller
 
         // Generate HTML for PDF
         $html = view('admin.invoices.pdf', compact('booking'))->render();
-
-        // Create PDF using dompdf with Arabic font support
-        $options = new \Dompdf\Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('defaultFont', 'dejavu sans');
-        $options->set('isFontSubsettingEnabled', true);
-        
-        $dompdf = new \Dompdf\Dompdf($options);
-        
-        // Load HTML with UTF-8 encoding
-        $dompdf->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-        
-        // Set paper size and orientation
-        $dompdf->setPaper('A4', 'portrait');
-        
-        // Render PDF
-        $dompdf->render();
         
         // Generate filename
         $filename = 'invoice-' . str_pad($booking->id, 6, '0', STR_PAD_LEFT) . '.pdf';
         
+        // Use mPDF with Arabic support
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 5,
+            'margin_bottom' => 5,
+            'margin_header' => 0,
+            'margin_footer' => 0,
+            'default_font' => 'dejavusans',
+            'default_font_size' => 9,
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+            'biDirectional' => true,
+            'useSubstitutions' => true,
+            'useArabic' => true,
+            'allowCJK' => true,
+        ]);
+        
+        // Set RTL direction for Arabic
+        $mpdf->SetDirectionality('rtl');
+        
+        // Write HTML content
+        $mpdf->WriteHTML($html);
+        
         // Download PDF
-        return $dompdf->stream($filename, ['Attachment' => true]);
+        return response($mpdf->Output($filename, 'S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "attachment; filename*=UTF-8''" . rawurlencode($filename),
+        ]);
     }
 
     /**
@@ -190,32 +202,41 @@ class InvoiceController extends Controller
             // Add BOM for UTF-8
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             
-            // Headers
+            // Headers - Use translations based on current locale
             fputcsv($file, [
-                'رقم الفاتورة',
-                'رقم الحجز',
-                'العميل',
-                'الهاتف',
-                'البريد الإلكتروني',
-                'الخدمة',
-                'الموظف',
-                'التاريخ',
-                'الوقت',
-                'المبلغ',
-                'حالة الحجز',
-                'تاريخ الدفع',
-                'رقم المعاملة'
+                __('messages.invoice_number'),
+                __('messages.booking_id'),
+                __('messages.customer'),
+                __('messages.phone'),
+                __('messages.email'),
+                __('messages.service'),
+                __('messages.employee'),
+                __('messages.date'),
+                __('messages.time'),
+                __('messages.amount'),
+                __('messages.booking_status'),
+                __('messages.paid_at'),
+                __('messages.transaction_id')
             ]);
 
             // Data
             foreach ($invoices as $invoice) {
                 $serviceName = $invoice->booking_type === 'consultation' 
-                    ? ($invoice->consultation->name ?? 'N/A')
-                    : ($invoice->service->name ?? 'N/A');
+                    ? ($invoice->consultation ? $invoice->consultation->trans('name') : 'N/A')
+                    : ($invoice->service ? $invoice->service->trans('name') : 'N/A');
                 
                 $employeeName = $invoice->employee && $invoice->employee->user 
                     ? $invoice->employee->user->name 
                     : 'N/A';
+
+                // Translate status
+                $status = match($invoice->status) {
+                    'pending' => __('messages.pending'),
+                    'confirmed' => __('messages.confirmed'),
+                    'completed' => __('messages.completed'),
+                    'cancelled' => __('messages.cancelled'),
+                    default => $invoice->status,
+                };
 
                 fputcsv($file, [
                     'INV-' . str_pad($invoice->id, 6, '0', STR_PAD_LEFT),
@@ -225,10 +246,10 @@ class InvoiceController extends Controller
                     $invoice->customer->email ?? 'N/A',
                     $serviceName,
                     $employeeName,
-                    $invoice->booking_date->format('Y-m-d'),
-                    $invoice->start_time . ' - ' . $invoice->end_time,
+                    $invoice->booking_date ? $invoice->booking_date->format('Y-m-d') : 'N/A',
+                    ($invoice->start_time ?? '') . ' - ' . ($invoice->end_time ?? ''),
                     number_format($invoice->total_price, 2),
-                    $invoice->status,
+                    $status,
                     $invoice->paid_at ? $invoice->paid_at->format('Y-m-d H:i:s') : 'N/A',
                     $invoice->payment_id ?? 'N/A'
                 ]);

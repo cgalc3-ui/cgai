@@ -32,6 +32,7 @@ class User extends Authenticatable
         'role',
         'date_of_birth',
         'gender',
+        'avatar',
     ];
 
     /**
@@ -163,5 +164,43 @@ class User extends Authenticatable
     public function hasActiveSubscription(): bool
     {
         return $this->getActiveSubscription() !== null;
+    }
+
+    /**
+     * Get the avatar URL
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
+        }
+        return null;
+    }
+
+    /**
+     * Get the wallet for this user
+     */
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    /**
+     * Get or create wallet for user
+     */
+    public function getOrCreateWallet(): Wallet
+    {
+        return $this->wallet ?? Wallet::create([
+            'user_id' => $this->id,
+            'balance' => 0,
+        ]);
+    }
+
+    /**
+     * Get all points transactions for this user
+     */
+    public function pointsTransactions()
+    {
+        return $this->hasMany(PointsTransaction::class);
     }
 }

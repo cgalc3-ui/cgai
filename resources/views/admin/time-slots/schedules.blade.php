@@ -122,7 +122,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $schedules->links() }}
+            {{ $schedules->links('vendor.pagination.custom', ['itemName' => 'recurring_appointments']) }}
         </div>
     </div>
 

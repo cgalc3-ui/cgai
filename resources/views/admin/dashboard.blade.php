@@ -37,7 +37,7 @@
         </div>
 
         <!-- Total Revenue -->
-        <div class="stat-card">
+        <a href="{{ route('admin.invoices.index') }}" class="stat-card stat-card-link" title="{{ __('messages.invoices') }}">
             <div class="stat-card-title-row">
                 <h3 class="stat-card-title">{{ __('messages.total_revenue') }}</h3>
                 <i class="fas fa-ellipsis-v stat-card-more"></i>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="stat-card-info">
                     <div class="stat-card-value-container">
-                        <h2 class="stat-card-value">{{ number_format($stats['total_revenue'] ?? 0, 0) }} {{ __('messages.sar') }}</h2>
+                        <h2 class="stat-card-value">{{ number_format($stats['total_revenue'] ?? 0, 2) }} {{ __('messages.sar') }}</h2>
                         <span class="stat-card-trend {{ ($stats['revenue_change'] ?? 0) >= 0 ? 'up' : 'down' }}">
                             <i class="fas fa-arrow-{{ ($stats['revenue_change'] ?? 0) >= 0 ? 'up' : 'down' }}"></i> 
                             {{ number_format(abs($stats['revenue_change'] ?? 0), 2) }}%
@@ -57,7 +57,7 @@
                     <span class="stat-card-subtitle">{{ __('messages.since_last_month') }}</span>
                 </div>
             </div>
-        </div>
+        </a>
 
         <!-- New Customers -->
         <div class="stat-card">
@@ -141,14 +141,19 @@
         <!-- Total Revenue Card with Area Chart -->
         <div class="card dashboard-card">
             <div class="card-header">
-                <h3 class="card-title">{{ __('messages.total_revenue') }}</h3>
+                <h3 class="card-title">
+                    <a href="{{ route('admin.invoices.index') }}" class="card-title-link" title="{{ __('messages.invoices') }}">
+                        {{ __('messages.total_revenue') }}
+                        <i class="fas fa-external-link-alt card-link-icon"></i>
+                    </a>
+                </h3>
                 <i class="fas fa-ellipsis-v card-more"></i>
                     </div>
             <div class="card-body">
                 <div class="stats-metrics">
                     <div class="metric-item">
                         <span class="metric-label">{{ __('messages.total_revenue') }}</span>
-                        <span class="metric-value up">{{ number_format($stats['total_revenue'] ?? 0, 0) }} {{ __('messages.sar') }}</span>
+                        <span class="metric-value up">{{ number_format($stats['total_revenue'] ?? 0, 2) }} {{ __('messages.sar') }}</span>
                     </div>
                     <div class="metric-item">
                         <span class="metric-label">{{ __('messages.paid_bookings') }}</span>
@@ -251,7 +256,7 @@
         <div class="card dashboard-card">
             <div class="card-header">
                 <h3 class="card-title">{{ __('messages.transactions') }}</h3>
-                <button class="btn-add-new">{{ __('messages.add_new') }}</button>
+                <a href="{{ route('admin.bookings') }}" class="btn-add-new">{{ __('messages.view_all') }}</a>
             </div>
             <div class="card-body">
                 <p class="card-summary">{{ $stats['total_bookings'] ?? 0 }} {{ __('messages.total_bookings') }} - {{ $stats['completed_bookings'] ?? 0 }} {{ __('messages.completed') }}</p>
@@ -286,15 +291,29 @@
                     </table>
                                             </div>
                 <div class="pagination-inline">
-                    <span>{{ __('messages.showing') }} 5 {{ __('messages.of') }} {{ $stats['total_bookings'] ?? 0 }} {{ __('messages.bookings') }}</span>
+                    <span>{{ __('messages.showing') }} {{ min(5, $recentBookings->count()) }} {{ __('messages.of') }} {{ $stats['total_bookings'] ?? 0 }} {{ __('messages.bookings') }}</span>
                     <div class="pagination-controls">
-                        <button><i class="fas fa-chevron-right"></i></button>
-                        <button class="active">1</button>
-                        <button>2</button>
-                        <button>3</button>
-                        <button><i class="fas fa-chevron-left"></i></button>
-                                            </div>
-                                        </div>
+                        @if($recentBookings->count() > 5)
+                            <a href="{{ route('admin.bookings') }}" class="pagination-btn-link" title="{{ __('messages.view_all') }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="{{ route('admin.bookings') }}" class="pagination-btn-link active" title="Page 1">1</a>
+                            @if($stats['total_bookings'] > 5)
+                                <a href="{{ route('admin.bookings') }}?page=2" class="pagination-btn-link" title="Page 2">2</a>
+                            @endif
+                            @if($stats['total_bookings'] > 10)
+                                <a href="{{ route('admin.bookings') }}?page=3" class="pagination-btn-link" title="Page 3">3</a>
+                            @endif
+                            <a href="{{ route('admin.bookings') }}" class="pagination-btn-link" title="{{ __('messages.view_all') }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @else
+                            <button class="pagination-btn-disabled" disabled><i class="fas fa-chevron-right"></i></button>
+                            <button class="pagination-btn-disabled active" disabled>1</button>
+                            <button class="pagination-btn-disabled" disabled><i class="fas fa-chevron-left"></i></button>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -303,8 +322,8 @@
             <div class="card-header">
                 <h3 class="card-title">{{ __('messages.recent_new_users') }}</h3>
                 <div class="card-actions">
-                    <button class="btn-import">{{ __('messages.import') }}</button>
-                    <button class="btn-export">{{ __('messages.export') }}</button>
+                    <a href="{{ route('admin.users.customers') }}" class="btn-import">{{ __('messages.view_all') }}</a>
+                    <a href="{{ route('admin.users.customers') }}" class="btn-export" style="font-size: 11px; padding: 6px 10px;">{{ __('messages.actions') }}</a>
                 </div>
             </div>
             <div class="card-body">
@@ -324,7 +343,11 @@
                                 <tr>
                                     <td>
                                         <div class="user-cell">
-                                            <div class="user-avatar-small">{{ mb_substr($customer->name, 0, 1) }}</div>
+                                            @if($customer->avatar_url)
+                                                <img src="{{ $customer->avatar_url }}" alt="{{ $customer->name }}" class="user-avatar-small-img">
+                                            @else
+                                                <div class="user-avatar-small">{{ mb_substr($customer->name, 0, 1) }}</div>
+                                            @endif
                                             <span>{{ $customer->name }}</span>
                                         </div>
                                     </td>
@@ -340,23 +363,35 @@
                     </table>
                 </div>
                 <div class="pagination-inline">
-                    <span>{{ __('messages.showing') }} 5 {{ __('messages.of') }} {{ $recentCustomers->count() }} {{ __('messages.results') }}</span>
+                    <span>{{ __('messages.showing') }} {{ min(5, $recentCustomers->count()) }} {{ __('messages.of') }} {{ $stats['total_customers'] ?? 0 }} {{ __('messages.customers') }}</span>
                     <div class="pagination-controls">
-                        <button><i class="fas fa-chevron-right"></i></button>
-                        <button class="active">1</button>
-                        <button>2</button>
-                        <button><i class="fas fa-chevron-left"></i></button>
-            </div>
-        </div>
+                        @if($recentCustomers->count() > 5)
+                            <a href="{{ route('admin.users.customers') }}" class="pagination-btn-link" title="{{ __('messages.view_all') }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="{{ route('admin.users.customers') }}" class="pagination-btn-link active" title="Page 1">1</a>
+                            @if(($stats['total_customers'] ?? 0) > 5)
+                                <a href="{{ route('admin.users.customers') }}?page=2" class="pagination-btn-link" title="Page 2">2</a>
+                            @endif
+                            <a href="{{ route('admin.users.customers') }}" class="pagination-btn-link" title="{{ __('messages.view_all') }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @else
+                            <button class="pagination-btn-disabled" disabled><i class="fas fa-chevron-right"></i></button>
+                            <button class="pagination-btn-disabled active" disabled>1</button>
+                            <button class="pagination-btn-disabled" disabled><i class="fas fa-chevron-left"></i></button>
+                        @endif
+                    </div>
                 </div>
             </div>
+        </div>
 
         <!-- Transactions Uses (Donut Chart) -->
         <div class="card dashboard-card">
             <div class="card-header">
                 <h3 class="card-title">{{ __('messages.transactions_uses') }}</h3>
-                <button class="btn-refresh"><i class="fas fa-sync-alt"></i> {{ __('messages.refresh') }}</button>
-                    </div>
+                <button class="btn-refresh" onclick="location.reload()"><i class="fas fa-sync-alt"></i> {{ __('messages.refresh') }}</button>
+            </div>
             <div class="card-body">
                 <div class="donut-chart-wrapper">
                     <canvas id="bookingsStatusChart" width="200" height="200"></canvas>
@@ -382,8 +417,8 @@
                         <span class="legend-label">{{ __('messages.cancelled') }}</span>
                         <span class="legend-value">{{ $stats['cancelled_bookings'] ?? 0 }}</span>
                     </div>
-                        </div>
-                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -616,6 +651,18 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                font-weight: 600;
+                font-size: 14px;
+            }
+
+            .user-avatar-small-img {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 font-size: 12px;
                 font-weight: 700;
             }
@@ -634,6 +681,16 @@
                 background: #4fc6e1;
                 color: white;
                 transition: all 0.2s;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            [data-theme="dark"] .btn-add-new,
+            [data-theme="dark"] .btn-import,
+            [data-theme="dark"] .btn-export,
+            [data-theme="dark"] .btn-refresh {
+                background: #4fc6e1;
+                color: white;
             }
 
             .btn-add-new:hover,
@@ -642,6 +699,15 @@
             .btn-refresh:hover {
                 background: #3ba8c1;
                 transform: translateY(-1px);
+                color: white;
+            }
+
+            [data-theme="dark"] .btn-add-new:hover,
+            [data-theme="dark"] .btn-import:hover,
+            [data-theme="dark"] .btn-export:hover,
+            [data-theme="dark"] .btn-refresh:hover {
+                background: #3ba8c1;
+                color: white;
             }
 
             .card-actions {
@@ -677,7 +743,8 @@
                 gap: 5px;
             }
 
-            .pagination-controls button {
+            .pagination-controls button,
+            .pagination-controls .pagination-btn-link {
                 width: 28px;
                 height: 28px;
                 border-radius: 6px;
@@ -690,28 +757,54 @@
                 justify-content: center;
                 font-size: 12px;
                 transition: all 0.2s;
+                text-decoration: none;
             }
 
-            [data-theme="dark"] .pagination-controls button {
+            .pagination-controls .pagination-btn-link {
+                border: 1px solid #e2e8f0;
+            }
+
+            [data-theme="dark"] .pagination-controls button,
+            [data-theme="dark"] .pagination-controls .pagination-btn-link {
                 background: var(--sidebar-active-bg);
                 border-color: var(--border-color);
                 color: var(--text-secondary);
             }
 
-            .pagination-controls button:hover {
+            .pagination-controls button:hover:not(.pagination-btn-disabled),
+            .pagination-controls .pagination-btn-link:hover {
                 background: #f8fafc;
                 border-color: #cbd5e1;
+                color: #1e293b;
             }
 
-            [data-theme="dark"] .pagination-controls button:hover {
+            [data-theme="dark"] .pagination-controls button:hover:not(.pagination-btn-disabled),
+            [data-theme="dark"] .pagination-controls .pagination-btn-link:hover {
                 background: var(--bg-light);
                 border-color: var(--primary-color);
+                color: var(--text-primary);
             }
 
-            .pagination-controls button.active {
+            .pagination-controls button.active,
+            .pagination-controls .pagination-btn-link.active {
                 background: #4fc6e1;
                 color: white;
                 border-color: #4fc6e1;
+            }
+
+            .pagination-controls .pagination-btn-disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .pagination-controls .pagination-btn-disabled:hover {
+                background: white;
+                border-color: #e2e8f0;
+            }
+
+            [data-theme="dark"] .pagination-controls .pagination-btn-disabled:hover {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
             }
 
             /* Donut Chart */

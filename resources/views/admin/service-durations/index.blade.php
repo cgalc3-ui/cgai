@@ -79,7 +79,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $durations->links() }}
+            {{ $durations->links('vendor.pagination.custom', ['itemName' => 'service_durations']) }}
         </div>
     </div>
 @endsection

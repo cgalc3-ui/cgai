@@ -100,4 +100,14 @@ class Service extends Model
     {
         return $this->getPriceAttribute();
     }
+
+    /**
+     * Get points pricing for this service
+     */
+    public function pointsPricing()
+    {
+        return $this->hasOne(ServicePointsPricing::class)
+            ->where('item_type', 'service')
+            ->where('is_active', true);
+    }
 }
