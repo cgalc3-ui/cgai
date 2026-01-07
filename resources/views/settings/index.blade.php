@@ -13,7 +13,7 @@
                     <p>{{ __('messages.update_basic_info_and_phone') }}</p>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('settings.profile.update') }}" method="POST">
+                    <form action="{{ route('settings.profile.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -46,6 +46,30 @@
                                 @error('phone')
                                     <span class="error-text">{{ $message }}</span>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="avatar">{{ __('messages.profile_picture') }}</label>
+                            <div class="avatar-upload-container">
+                                <div class="avatar-preview">
+                                    <img id="avatarPreview" 
+                                        src="{{ $user->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=3b82f6&color=fff' }}" 
+                                        alt="{{ $user->name }}" 
+                                        class="avatar-preview-img">
+                                </div>
+                                <div class="avatar-upload-controls">
+                                    <input type="file" name="avatar" id="avatar" 
+                                        class="form-control @error('avatar') is-invalid @enderror" 
+                                        accept="image/jpeg,image/png,image/jpg,image/gif"
+                                        onchange="previewAvatar(this)">
+                                    <label for="avatar" class="avatar-upload-label">
+                                        <i class="fas fa-camera"></i> {{ __('messages.change_picture') }}
+                                    </label>
+                                    @error('avatar')
+                                        <span class="error-text">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
 
@@ -381,6 +405,83 @@
                 background: var(--sidebar-active-bg);
                 color: var(--text-primary);
             }
+
+            /* Avatar Upload Styles */
+            .avatar-upload-container {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                padding: 20px;
+                background: #f9fafb;
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+            }
+
+            [data-theme="dark"] .avatar-upload-container {
+                background: var(--sidebar-active-bg);
+                border-color: var(--border-color);
+            }
+
+            .avatar-preview {
+                flex-shrink: 0;
+            }
+
+            .avatar-preview-img {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid #3b82f6;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .avatar-upload-controls {
+                flex: 1;
+            }
+
+            .avatar-upload-controls input[type="file"] {
+                display: none;
+            }
+
+            .avatar-upload-label {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 20px;
+                background: #3b82f6;
+                color: white;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: background-color 0.15s;
+            }
+
+            .avatar-upload-label:hover {
+                background: #2563eb;
+            }
+
+            [data-theme="dark"] .avatar-upload-label {
+                background: var(--primary-color);
+            }
+
+            [data-theme="dark"] .avatar-upload-label:hover {
+                background: var(--primary-dark);
+            }
         </style>
+    @endpush
+
+    @push('scripts')
+        <script>
+            function previewAvatar(input) {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('avatarPreview').src = e.target.result;
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        </script>
     @endpush
 @endsection

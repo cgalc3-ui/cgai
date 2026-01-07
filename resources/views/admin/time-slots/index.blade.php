@@ -163,7 +163,7 @@
                 </table>
 
                 <div class="pagination-wrapper">
-                    {{ $timeSlots->links() }}
+                    {{ $timeSlots->links('vendor.pagination.custom', ['itemName' => 'time_slots']) }}
                 </div>
             </div>
         </div>

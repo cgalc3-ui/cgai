@@ -9,9 +9,11 @@ use App\Models\TicketAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use App\Traits\ApiResponseTrait;
 
 class TicketController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Get all tickets for the authenticated user
      */
@@ -34,6 +36,11 @@ class TicketController extends Controller
 
         $tickets = $query->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 20));
+
+        // Filter locale columns
+        $tickets->getCollection()->transform(function ($ticket) {
+            return $this->filterLocaleColumns($ticket);
+        });
 
         return response()->json([
             'success' => true,
@@ -110,7 +117,7 @@ class TicketController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => __('messages.ticket_created_success'),
-                'data' => $ticket,
+                'data' => $this->filterLocaleColumns($ticket),
             ], 201);
         });
     }
@@ -140,7 +147,7 @@ class TicketController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $ticket,
+            'data' => $this->filterLocaleColumns($ticket),
         ]);
     }
 
@@ -205,7 +212,7 @@ class TicketController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => __('messages.ticket_message_sent_success'),
-                'data' => $message,
+                'data' => $this->filterLocaleColumns($message),
             ], 201);
         });
     }
@@ -235,10 +242,12 @@ class TicketController extends Controller
             'resolved_at' => $request->status === 'resolved' ? now() : null,
         ]);
 
+        $ticket->fresh()->load(['assignedUser']);
+
         return response()->json([
             'success' => true,
             'message' => __('messages.ticket_status_updated_success'),
-            'data' => $ticket->fresh()->load(['assignedUser']),
+            'data' => $this->filterLocaleColumns($ticket->fresh()),
         ]);
     }
 }

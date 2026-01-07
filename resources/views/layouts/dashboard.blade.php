@@ -110,16 +110,6 @@
                         <i class="fas fa-calendar-alt"></i>
                         <span>{{ __('messages.recurring_appointments') }}</span>
                     </a>
-                    <a href="{{ route('admin.bookings') }}"
-                        class="nav-item {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-check"></i>
-                        <span>{{ __('messages.bookings') }}</span>
-                    </a>
-                    <a href="{{ route('admin.invoices.index') }}"
-                        class="nav-item {{ request()->routeIs('admin.invoices*') ? 'active' : '' }}">
-                        <i class="fas fa-file-invoice"></i>
-                        <span>{{ __('messages.invoices') }}</span>
-                    </a>
                     <div class="nav-group">
                         <div class="nav-group-header {{ request()->routeIs('admin.categories*') || request()->routeIs('admin.sub-categories*') || request()->routeIs('admin.services*') || request()->routeIs('admin.consultations*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">
@@ -151,9 +141,11 @@
                             </a>
                         </div>
                     </div>
+                    <a href="{{ route('admin.bookings') }}"
+                        class="nav-item {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>{{ __('messages.bookings') }}</span>
                     </a>
-
-                    <div class="nav-section-label">{{ __('messages.more_menu') ?? 'MORE' }}</div>
                     <div class="nav-group">
                         <div class="nav-group-header {{ request()->routeIs('admin.subscriptions*') || request()->routeIs('admin.subscription-requests*') ? 'active' : '' }}"
                             onclick="toggleNavGroup(this)">
@@ -181,6 +173,18 @@
                             </a>
                         </div>
                     </div>
+                    <a href="{{ route('admin.invoices.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.invoices*') ? 'active' : '' }}">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>{{ __('messages.invoices') }}</span>
+                    </a>
+                    <a href="{{ route('admin.points.settings') }}"
+                        class="nav-item {{ request()->routeIs('admin.points*') ? 'active' : '' }}">
+                        <i class="fas fa-coins"></i>
+                        <span>{{ __('messages.points_system') ?? 'نظام النقاط' }}</span>
+                    </a>
+
+                    <div class="nav-section-label">{{ __('messages.more_menu') ?? 'MORE' }}</div>
                     <a href="{{ route('admin.tickets') }}"
                         class="nav-item {{ request()->routeIs('admin.tickets*') ? 'active' : '' }}">
                         <i class="fas fa-headset"></i>

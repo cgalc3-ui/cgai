@@ -116,7 +116,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $users->links() }}
+            {{ $users->links('vendor.pagination.custom', ['itemName' => 'staff']) }}
         </div>
     </div>
 

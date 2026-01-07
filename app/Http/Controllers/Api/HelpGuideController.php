@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\HelpGuide;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use App\Traits\ApiResponseTrait;
 
 class HelpGuideController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Get help guides for the authenticated user based on their role
      */
@@ -38,7 +40,7 @@ class HelpGuideController extends Controller
             ->ordered()
             ->get();
 
-        // Format the response - return both Arabic and English
+        // Format the response
         $formattedGuides = $helpGuides->map(function ($guide) {
             return [
                 'id' => $guide->id,
@@ -51,9 +53,14 @@ class HelpGuideController extends Controller
             ];
         });
 
+        // Filter locale columns
+        $filteredGuides = $formattedGuides->map(function ($guide) {
+            return $this->filterLocaleColumns($guide);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $formattedGuides,
+            'data' => $filteredGuides,
             'role' => $role,
         ]);
     }
@@ -85,18 +92,20 @@ class HelpGuideController extends Controller
             ->active()
             ->findOrFail($id);
 
-        // Return both Arabic and English
+        // Format and filter locale columns
+        $formattedGuide = [
+            'id' => $helpGuide->id,
+            'title' => $helpGuide->title,
+            'title_en' => $helpGuide->title_en,
+            'content' => $helpGuide->content,
+            'content_en' => $helpGuide->content_en,
+            'icon' => $helpGuide->icon,
+            'sort_order' => $helpGuide->sort_order,
+        ];
+
         return response()->json([
             'success' => true,
-            'data' => [
-                'id' => $helpGuide->id,
-                'title' => $helpGuide->title,
-                'title_en' => $helpGuide->title_en,
-                'content' => $helpGuide->content,
-                'content_en' => $helpGuide->content_en,
-                'icon' => $helpGuide->icon,
-                'sort_order' => $helpGuide->sort_order,
-            ],
+            'data' => $this->filterLocaleColumns($formattedGuide),
         ]);
     }
 }

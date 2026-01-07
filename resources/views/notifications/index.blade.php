@@ -126,7 +126,7 @@
         <!-- Pagination -->
         @if($notifications->hasPages())
             <div class="pagination-wrapper">
-                {{ $notifications->links() }}
+                {{ $notifications->links('vendor.pagination.custom', ['itemName' => 'notifications']) }}
             </div>
         @endif
     </div>

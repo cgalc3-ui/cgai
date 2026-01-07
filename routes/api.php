@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('/profile', [\App\Http\Controllers\Api\CustomerController::class, 'profile']);
         Route::put('/profile', [\App\Http\Controllers\Api\CustomerController::class, 'updateProfile']);
+        Route::post('/profile/avatar', [\App\Http\Controllers\Api\CustomerController::class, 'updateAvatar']);
         Route::get('/dashboard', [\App\Http\Controllers\Api\CustomerController::class, 'dashboard']);
         Route::get('/reports', [\App\Http\Controllers\Api\Customer\ReportsController::class, 'index']);
         Route::get('/activity-log', [\App\Http\Controllers\Api\Customer\ReportsController::class, 'activityLog']);
@@ -38,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Bookings
         Route::get('/bookings', [BookingController::class, 'index']);
+        Route::get('/bookings/past', [BookingController::class, 'pastBookings']);
         Route::get('/bookings/available-dates', [BookingController::class, 'availableDates']);
         Route::get('/bookings/available-time-slots', [BookingController::class, 'availableTimeSlots']);
         Route::post('/bookings', [BookingController::class, 'store']);
@@ -62,6 +64,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/invoices', [\App\Http\Controllers\Api\InvoiceController::class, 'index']);
         Route::get('/invoices/{booking}', [\App\Http\Controllers\Api\InvoiceController::class, 'show']);
         Route::get('/invoices/{booking}/download', [\App\Http\Controllers\Api\InvoiceController::class, 'download']);
+
+        // Points & Wallet
+        Route::prefix('points')->group(function () {
+            Route::get('/wallet', [\App\Http\Controllers\Customer\PointsController::class, 'index']);
+            Route::post('/purchase', [\App\Http\Controllers\Customer\PointsController::class, 'purchase']);
+            Route::get('/transactions', [\App\Http\Controllers\Customer\PointsController::class, 'transactions']);
+        });
     });
 
     // Employee routes
@@ -96,7 +105,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{subscription}', [SubscriptionController::class, 'show']);
         Route::post('/', [SubscriptionController::class, 'store']);
     });
-
 });
 
 // Payment Callback (Public)
@@ -131,5 +139,11 @@ Route::prefix('consultations')->group(function () {
 Route::prefix('faqs')->group(function () {
     Route::get('/', [FaqController::class, 'index']);
     Route::get('/category/{category}', [FaqController::class, 'getByCategory']);
+});
+
+// Public Ratings API routes
+Route::prefix('ratings')->group(function () {
+    Route::get('/', [RatingController::class, 'index']);
+    Route::get('/statistics', [RatingController::class, 'statistics']);
 });
 

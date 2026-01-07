@@ -193,7 +193,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $bookings->links() }}
+            {{ $bookings->links('vendor.pagination.custom', ['itemName' => 'bookings']) }}
         </div>
     </div>
 
@@ -309,6 +309,14 @@
 
             .empty-state p {
                 color: #999;
+            }
+
+            [data-theme="dark"] .datetime-info,
+            [data-theme="dark"] .datetime-info .date,
+            [data-theme="dark"] .datetime-info .time {
+                color: var(--text-secondary);
+                opacity: 1;
+                font-weight: 500;
             }
         </style>
     @endpush

@@ -254,7 +254,7 @@
     <!-- Pagination -->
     @if($invoices->hasPages())
         <div class="pagination-wrapper">
-            {{ $invoices->links() }}
+            {{ $invoices->links('vendor.pagination.custom', ['itemName' => 'invoices']) }}
         </div>
     @endif
 

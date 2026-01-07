@@ -146,7 +146,7 @@
         <!-- Pagination -->
         @if($tickets->hasPages())
             <div class="pagination-wrapper">
-                {{ $tickets->links() }}
+                {{ $tickets->links('vendor.pagination.custom', ['itemName' => 'tickets']) }}
             </div>
         @endif
     </div>

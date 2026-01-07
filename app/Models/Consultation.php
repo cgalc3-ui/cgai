@@ -69,4 +69,14 @@ class Consultation extends Model
     {
         return (float) $this->fixed_price;
     }
+
+    /**
+     * Get points pricing for this consultation
+     */
+    public function pointsPricing()
+    {
+        return $this->hasOne(ServicePointsPricing::class)
+            ->where('item_type', 'consultation')
+            ->where('is_active', true);
+    }
 }

@@ -100,7 +100,7 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $categories->links() }}
+            {{ $categories->links('vendor.pagination.custom', ['itemName' => 'categories']) }}
         </div>
     </div>
 

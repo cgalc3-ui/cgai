@@ -45,8 +45,10 @@ class AdminController extends Controller
         $completedBookings = Booking::where('status', 'completed')->count();
         $cancelledBookings = Booking::where('status', 'cancelled')->count();
 
-        // Revenue Statistics
-        $totalRevenue = Booking::where('payment_status', 'paid')->sum('total_price');
+        // Revenue Statistics - Use paid_at for accurate revenue tracking
+        $totalRevenue = Booking::where('payment_status', 'paid')
+            ->whereNotNull('paid_at')
+            ->sum('total_price');
         $paidBookings = Booking::where('payment_status', 'paid')->count();
         $unpaidBookings = Booking::where('payment_status', 'unpaid')->count();
 
@@ -95,26 +97,50 @@ class AdminController extends Controller
 
         // Today's Statistics
         $todayBookings = Booking::whereDate('booking_date', Carbon::today())->count();
-        $todayRevenue = Booking::whereDate('created_at', Carbon::today())
-            ->where('payment_status', 'paid')
+        $todayRevenue = Booking::where('payment_status', 'paid')
+            ->where(function($q) {
+                $q->whereDate('paid_at', Carbon::today())
+                  ->orWhere(function($q2) {
+                      // Fallback to created_at if paid_at is null
+                      $q2->whereNull('paid_at')
+                         ->whereDate('created_at', Carbon::today());
+                  });
+            })
             ->sum('total_price');
 
         // This Month Statistics
         $monthBookings = Booking::whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->count();
-        $monthRevenue = Booking::whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)
-            ->where('payment_status', 'paid')
+        $monthRevenue = Booking::where('payment_status', 'paid')
+            ->where(function($q) {
+                $q->whereMonth('paid_at', Carbon::now()->month)
+                  ->whereYear('paid_at', Carbon::now()->year)
+                  ->orWhere(function($q2) {
+                      // Fallback to created_at if paid_at is null
+                      $q2->whereNull('paid_at')
+                         ->whereMonth('created_at', Carbon::now()->month)
+                         ->whereYear('created_at', Carbon::now()->year);
+                  });
+            })
             ->sum('total_price');
 
         // Last Month Statistics (for comparison)
         $lastMonthBookings = Booking::whereMonth('created_at', Carbon::now()->subMonth()->month)
             ->whereYear('created_at', Carbon::now()->subMonth()->year)
             ->count();
-        $lastMonthRevenue = Booking::whereMonth('created_at', Carbon::now()->subMonth()->month)
-            ->whereYear('created_at', Carbon::now()->subMonth()->year)
-            ->where('payment_status', 'paid')
+        $lastMonthDate = Carbon::now()->subMonth();
+        $lastMonthRevenue = Booking::where('payment_status', 'paid')
+            ->where(function($q) use ($lastMonthDate) {
+                $q->whereMonth('paid_at', $lastMonthDate->month)
+                  ->whereYear('paid_at', $lastMonthDate->year)
+                  ->orWhere(function($q2) use ($lastMonthDate) {
+                      // Fallback to created_at if paid_at is null
+                      $q2->whereNull('paid_at')
+                         ->whereMonth('created_at', $lastMonthDate->month)
+                         ->whereYear('created_at', $lastMonthDate->year);
+                  });
+            })
             ->sum('total_price');
         $lastMonthCustomers = User::where('role', 'customer')
             ->whereMonth('created_at', Carbon::now()->subMonth()->month)
@@ -144,9 +170,18 @@ class AdminController extends Controller
                 ->count();
             
             // Marketing Cost: 30% of revenue as marketing cost
-            $monthRevenue = Booking::whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->where('payment_status', 'paid')
+            // Use paid_at for accurate revenue tracking
+            $monthRevenue = Booking::where('payment_status', 'paid')
+                ->where(function($q) use ($date) {
+                    $q->whereMonth('paid_at', $date->month)
+                      ->whereYear('paid_at', $date->year)
+                      ->orWhere(function($q2) use ($date) {
+                          // Fallback to created_at if paid_at is null
+                          $q2->whereNull('paid_at')
+                             ->whereMonth('created_at', $date->month)
+                             ->whereYear('created_at', $date->year);
+                      });
+                })
                 ->sum('total_price');
             $marketingCost = ($monthRevenue * 0.3) / 100; // Convert to hundreds for display
             
@@ -169,9 +204,18 @@ class AdminController extends Controller
         for ($i = 11; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
             $monthLabels[] = $date->translatedFormat('M');
-            $monthRevenueAmount = Booking::whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->where('payment_status', 'paid')
+            // Use paid_at for accurate revenue tracking
+            $monthRevenueAmount = Booking::where('payment_status', 'paid')
+                ->where(function($q) use ($date) {
+                    $q->whereMonth('paid_at', $date->month)
+                      ->whereYear('paid_at', $date->year)
+                      ->orWhere(function($q2) use ($date) {
+                          // Fallback to created_at if paid_at is null
+                          $q2->whereNull('paid_at')
+                             ->whereMonth('created_at', $date->month)
+                             ->whereYear('created_at', $date->year);
+                      });
+                })
                 ->sum('total_price');
             
             // If no data, use sample data for display

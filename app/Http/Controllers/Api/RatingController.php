@@ -7,9 +7,11 @@ use App\Http\Requests\StoreRatingRequest;
 use App\Models\Booking;
 use App\Models\Rating;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponseTrait;
 
 class RatingController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Create a new rating for a completed booking
      */
@@ -64,12 +66,12 @@ class RatingController extends Controller
             'comment' => $request->comment,
         ]);
 
-        $rating->load(['customer', 'booking']);
+        $rating->load(['customer', 'booking.service', 'booking.consultation']);
 
         return response()->json([
             'success' => true,
             'message' => __('messages.rating_created_success'),
-            'data' => $rating,
+            'data' => $this->filterLocaleColumns($rating),
         ], 201);
     }
 
@@ -86,7 +88,13 @@ class RatingController extends Controller
         }
 
         // Paginate results
-        $ratings = $query->latest()->paginate(15);
+        $perPage = $request->get('per_page', 15);
+        $ratings = $query->with(['booking.service', 'booking.consultation'])->latest()->paginate($perPage);
+
+        // Filter locale columns
+        $ratings->getCollection()->transform(function ($rating) {
+            return $this->filterLocaleColumns($rating);
+        });
 
         return response()->json([
             'success' => true,
@@ -108,10 +116,15 @@ class RatingController extends Controller
             ], 403);
         }
 
-        $ratings = Rating::with(['booking'])
+        $ratings = Rating::with(['booking.service', 'booking.consultation'])
             ->where('customer_id', $customer->id)
             ->latest()
             ->paginate(15);
+
+        // Filter locale columns
+        $ratings->getCollection()->transform(function ($rating) {
+            return $this->filterLocaleColumns($rating);
+        });
 
         return response()->json([
             'success' => true,

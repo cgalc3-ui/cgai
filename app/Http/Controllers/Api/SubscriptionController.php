@@ -10,9 +10,11 @@ use App\Models\UserSubscription;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\ApiResponseTrait;
 
 class SubscriptionController extends Controller
 {
+    use ApiResponseTrait;
     protected $notificationService;
 
     public function __construct(NotificationService $notificationService)
@@ -30,23 +32,30 @@ class SubscriptionController extends Controller
         $activeSubscription = auth()->user()->getActiveSubscription();
         $pendingRequest = SubscriptionRequest::where('user_id', auth()->id())
             ->where('status', 'pending')
-            ->with('subscription')
+            ->with(['subscription' => function($query) {
+                $query->select('id', 'name', 'name_en', 'price', 'duration_type', 'description', 'description_en', 'is_active');
+            }])
             ->first();
+
+        // Filter locale columns
+        $filteredSubscriptions = $subscriptions->map(function ($subscription) {
+            return $this->filterLocaleColumns($subscription);
+        });
 
         return response()->json([
             'success' => true,
             'data' => [
-                'subscriptions' => $subscriptions,
+                'subscriptions' => $filteredSubscriptions,
                 'active_subscription' => $activeSubscription ? [
                     'id' => $activeSubscription->id,
-                    'subscription' => $activeSubscription->subscription,
+                    'subscription' => $this->filterLocaleColumns($activeSubscription->subscription),
                     'status' => $activeSubscription->status,
                     'started_at' => $activeSubscription->started_at,
                     'expires_at' => $activeSubscription->expires_at,
                 ] : null,
                 'pending_request' => $pendingRequest ? [
                     'id' => $pendingRequest->id,
-                    'subscription' => $pendingRequest->subscription,
+                    'subscription' => $this->filterLocaleColumns($pendingRequest->subscription),
                     'status' => $pendingRequest->status,
                     'created_at' => $pendingRequest->created_at,
                 ] : null,
@@ -61,7 +70,7 @@ class SubscriptionController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $subscription,
+            'data' => $this->filterLocaleColumns($subscription),
         ]);
     }
 
@@ -117,10 +126,12 @@ class SubscriptionController extends Controller
             ]
         );
 
+        $subscriptionRequest->load('subscription');
+
         return response()->json([
             'success' => true,
             'message' => 'تم إرسال طلب الاشتراك بنجاح',
-            'data' => $subscriptionRequest->load('subscription'),
+            'data' => $this->filterLocaleColumns($subscriptionRequest),
         ], 201);
     }
 
@@ -142,7 +153,7 @@ class SubscriptionController extends Controller
             'success' => true,
             'data' => [
                 'id' => $activeSubscription->id,
-                'subscription' => $activeSubscription->subscription,
+                'subscription' => $this->filterLocaleColumns($activeSubscription->subscription),
                 'status' => $activeSubscription->status,
                 'started_at' => $activeSubscription->started_at,
                 'expires_at' => $activeSubscription->expires_at,
@@ -157,13 +168,29 @@ class SubscriptionController extends Controller
     public function requests()
     {
         $requests = SubscriptionRequest::where('user_id', auth()->id())
-            ->with(['subscription', 'approver'])
+            ->with([
+                'subscription' => function($query) {
+                    $query->select('id', 'name', 'name_en', 'price', 'duration_type', 'description', 'description_en', 'is_active');
+                },
+                'approver' => function($query) {
+                    $query->select('id', 'name', 'email');
+                }
+            ])
             ->latest()
             ->get();
 
+        // Filter locale columns
+        $filteredRequests = $requests->map(function ($request) {
+            $requestData = $request->toArray();
+            if (isset($requestData['subscription'])) {
+                $requestData['subscription'] = $this->filterLocaleColumns($request->subscription);
+            }
+            return $this->filterLocaleColumns($requestData);
+        });
+
         return response()->json([
             'success' => true,
-            'data' => $requests,
+            'data' => $filteredRequests,
         ]);
     }
 }

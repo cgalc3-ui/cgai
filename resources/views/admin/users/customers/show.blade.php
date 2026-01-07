@@ -20,6 +20,15 @@
     </div>
 
     <div class="user-profile-container">
+        <!-- User Avatar -->
+        <div class="user-avatar-section">
+            <div class="user-avatar-large">
+                <img src="{{ $user->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=3b82f6&color=fff' }}" 
+                    alt="{{ $user->name }}" 
+                    class="user-avatar-img">
+            </div>
+        </div>
+
         <!-- User Basic Info -->
         <div class="card">
             <div class="card-header">
@@ -93,6 +102,27 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+
+        .user-avatar-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar-large {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .card {

@@ -12,9 +12,11 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Traits\ApiResponseTrait;
 
 class ReportsController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Create a new controller instance.
      */
@@ -143,7 +145,9 @@ class ReportsController extends Controller
         // Pending Subscription Request
         $pendingRequest = SubscriptionRequest::where('user_id', $user->id)
             ->where('status', 'pending')
-            ->with('subscription')
+            ->with(['subscription' => function($query) {
+                $query->select('id', 'name', 'name_en', 'price', 'duration_type');
+            }])
             ->first();
 
         // Monthly Bookings Chart (Last 12 months)
@@ -208,6 +212,7 @@ class ReportsController extends Controller
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
+                    'name_en' => $item->name_en ?? null,
                     'bookings_count' => $item->bookings_count,
                 ];
             });
@@ -255,21 +260,26 @@ class ReportsController extends Controller
                     'service' => $booking->service ? [
                         'id' => $booking->service->id,
                         'name' => $booking->service->name,
+                        'name_en' => $booking->service->name_en,
                         'sub_category' => $booking->service->subCategory ? [
                             'id' => $booking->service->subCategory->id,
                             'name' => $booking->service->subCategory->name,
+                            'name_en' => $booking->service->subCategory->name_en,
                             'category' => $booking->service->subCategory->category ? [
                                 'id' => $booking->service->subCategory->category->id,
                                 'name' => $booking->service->subCategory->category->name,
+                                'name_en' => $booking->service->subCategory->category->name_en,
                             ] : null,
                         ] : null,
                     ] : null,
                     'consultation' => $booking->consultation ? [
                         'id' => $booking->consultation->id,
                         'name' => $booking->consultation->name,
+                        'name_en' => $booking->consultation->name_en,
                         'category' => $booking->consultation->category ? [
                             'id' => $booking->consultation->category->id,
                             'name' => $booking->consultation->category->name,
+                            'name_en' => $booking->consultation->category->name_en,
                         ] : null,
                     ] : null,
                     'employee' => $booking->employee ? [
@@ -308,10 +318,12 @@ class ReportsController extends Controller
                     'service' => $booking->service ? [
                         'id' => $booking->service->id,
                         'name' => $booking->service->name,
+                        'name_en' => $booking->service->name_en,
                     ] : null,
                     'consultation' => $booking->consultation ? [
                         'id' => $booking->consultation->id,
                         'name' => $booking->consultation->name,
+                        'name_en' => $booking->consultation->name_en,
                     ] : null,
                     'employee' => $booking->employee ? [
                         'id' => $booking->employee->id,
@@ -331,6 +343,25 @@ class ReportsController extends Controller
                 ];
             });
 
+        // Filter locale columns for all nested data
+        $filteredRecentBookings = $recentBookings->map(function ($booking) {
+            return $this->filterLocaleColumns($booking);
+        });
+
+        $filteredUpcomingBookings = $upcomingBookings->map(function ($booking) {
+            return $this->filterLocaleColumns($booking);
+        });
+
+        $filteredMostUsedServices = $mostUsedServices->map(function ($service) {
+            return $this->filterLocaleColumns($service);
+        });
+
+        $filteredMostUsedConsultations = $mostUsedConsultations->map(function ($consultation) {
+            return $this->filterLocaleColumns($consultation);
+        });
+
+        $filteredPendingRequest = $pendingRequest ? $this->filterLocaleColumns($pendingRequest) : null;
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -344,24 +375,16 @@ class ReportsController extends Controller
                 'payments' => $paymentStats,
                 'tickets' => $ticketsStats,
                 'subscription' => $subscriptionStats,
-                'pending_subscription_request' => $pendingRequest ? [
-                    'id' => $pendingRequest->id,
-                    'subscription' => [
-                        'id' => $pendingRequest->subscription->id,
-                        'name' => $pendingRequest->subscription->name,
-                    ],
-                    'status' => $pendingRequest->status,
-                    'created_at' => $pendingRequest->created_at,
-                ] : null,
+                'pending_subscription_request' => $filteredPendingRequest,
                 'charts' => [
                     'monthly_bookings' => $monthlyBookings,
                     'monthly_spending' => $monthlySpending,
                     'bookings_by_status' => $bookingsByStatus,
                 ],
-                'most_used_services' => $mostUsedServices,
-                'most_used_consultations' => $mostUsedConsultations,
-                'recent_bookings' => $recentBookings,
-                'upcoming_bookings' => $upcomingBookings,
+                'most_used_services' => $filteredMostUsedServices,
+                'most_used_consultations' => $filteredMostUsedConsultations,
+                'recent_bookings' => $filteredRecentBookings,
+                'upcoming_bookings' => $filteredUpcomingBookings,
             ],
         ]);
     }
@@ -387,7 +410,7 @@ class ReportsController extends Controller
             ], 403);
         }
 
-        $perPage = $request->get('per_page', 20);
+        $perPage = (int) $request->get('per_page', 20);
         $type = $request->get('type'); // bookings, tickets, subscriptions, payments, all
         $startDate = $request->get('start_date') ? Carbon::parse($request->get('start_date')) : null;
         $endDate = $request->get('end_date') ? Carbon::parse($request->get('end_date')) : null;
@@ -414,15 +437,15 @@ class ReportsController extends Controller
                 $activities->push([
                     'id' => 'booking_' . $booking->id,
                     'type' => 'booking',
-                    'type_label' => 'حجز',
+                    'type_label' => __('messages.booking'),
                     'title' => $booking->service 
                         ? $booking->service->name 
-                        : ($booking->consultation ? $booking->consultation->name : 'حجز'),
+                        : ($booking->consultation ? $booking->consultation->name : __('messages.booking')),
                     'description' => $this->getBookingDescription($booking),
                     'status' => $booking->status,
                     'status_label' => $this->getBookingStatusLabel($booking->status),
                     'payment_status' => $booking->payment_status,
-                    'payment_status_label' => $booking->payment_status === 'paid' ? 'مدفوع' : 'غير مدفوع',
+                    'payment_status_label' => $booking->payment_status === 'paid' ? __('messages.paid') : __('messages.unpaid'),
                     'amount' => $booking->total_price,
                     'date' => $booking->booking_date,
                     'time' => $booking->start_time,
@@ -469,7 +492,7 @@ class ReportsController extends Controller
                 $activities->push([
                     'id' => 'ticket_' . $ticket->id,
                     'type' => 'ticket',
-                    'type_label' => 'تذكرة',
+                    'type_label' => __('messages.ticket'),
                     'title' => $ticket->subject,
                     'description' => $this->getTicketDescription($ticket, $lastMessage),
                     'status' => $ticket->status,
@@ -497,34 +520,37 @@ class ReportsController extends Controller
         // Subscription Requests Activities
         if (!$type || $type === 'all' || $type === 'subscriptions') {
             $subscriptionRequestsQuery = SubscriptionRequest::where('user_id', $user->id)
-                ->with('subscription')
                 ->orderBy('created_at', 'desc');
 
             if ($startDate && $endDate) {
                 $subscriptionRequestsQuery->whereBetween('created_at', [$startDate, $endDate]);
             }
 
-            $subscriptionRequests = $subscriptionRequestsQuery->get();
+            $subscriptionRequests = $subscriptionRequestsQuery
+                ->with(['subscription' => function($query) {
+                    $query->select('id', 'name', 'name_en', 'price', 'duration_type');
+                }])
+                ->get();
 
-            foreach ($subscriptionRequests as $request) {
+            foreach ($subscriptionRequests as $subscriptionRequest) {
                 $activities->push([
-                    'id' => 'subscription_request_' . $request->id,
+                    'id' => 'subscription_request_' . $subscriptionRequest->id,
                     'type' => 'subscription_request',
-                    'type_label' => 'طلب اشتراك',
-                    'title' => $request->subscription->name ?? 'طلب اشتراك',
-                    'description' => $this->getSubscriptionRequestDescription($request),
-                    'status' => $request->status,
-                    'status_label' => $this->getSubscriptionRequestStatusLabel($request->status),
-                    'amount' => $request->subscription->price ?? null,
+                    'type_label' => __('messages.subscription_request'),
+                    'title' => $subscriptionRequest->subscription->name ?? __('messages.subscription_request'),
+                    'description' => $this->getSubscriptionRequestDescription($subscriptionRequest),
+                    'status' => $subscriptionRequest->status,
+                    'status_label' => $this->getSubscriptionRequestStatusLabel($subscriptionRequest->status),
+                    'amount' => $subscriptionRequest->subscription->price ?? null,
                     'date' => null,
                     'time' => null,
-                    'created_at' => $request->created_at,
-                    'updated_at' => $request->updated_at,
+                    'created_at' => $subscriptionRequest->created_at,
+                    'updated_at' => $subscriptionRequest->updated_at,
                     'data' => [
-                        'request_id' => $request->id,
+                        'request_id' => $subscriptionRequest->id,
                         'subscription' => [
-                            'id' => $request->subscription->id ?? null,
-                            'name' => $request->subscription->name ?? null,
+                            'id' => $subscriptionRequest->subscription->id ?? null,
+                            'name' => $subscriptionRequest->subscription->name ?? null,
                         ],
                     ],
                 ]);
@@ -534,7 +560,20 @@ class ReportsController extends Controller
         // User Subscriptions Activities
         if (!$type || $type === 'all' || $type === 'subscriptions') {
             $userSubscriptionsQuery = UserSubscription::where('user_id', $user->id)
-                ->with('subscription')
+                ->select([
+                    'user_subscriptions.id',
+                    'user_subscriptions.user_id',
+                    'user_subscriptions.subscription_id',
+                    'user_subscriptions.subscription_request_id',
+                    'user_subscriptions.status',
+                    'user_subscriptions.started_at',
+                    'user_subscriptions.expires_at',
+                    'user_subscriptions.created_at',
+                    'user_subscriptions.updated_at'
+                ])
+                ->with(['subscription' => function($query) {
+                    $query->select('id', 'name', 'name_en', 'price', 'duration_type');
+                }])
                 ->orderBy('created_at', 'desc');
 
             if ($startDate && $endDate) {
@@ -547,8 +586,8 @@ class ReportsController extends Controller
                 $activities->push([
                     'id' => 'user_subscription_' . $subscription->id,
                     'type' => 'subscription',
-                    'type_label' => 'اشتراك',
-                    'title' => $subscription->subscription->name ?? 'اشتراك',
+                    'type_label' => __('messages.subscription'),
+                    'title' => $subscription->subscription->name ?? __('messages.subscription'),
                     'description' => $this->getUserSubscriptionDescription($subscription),
                     'status' => $subscription->status,
                     'status_label' => $this->getUserSubscriptionStatusLabel($subscription->status),
@@ -588,15 +627,15 @@ class ReportsController extends Controller
                 $activities->push([
                     'id' => 'payment_' . $payment->id,
                     'type' => 'payment',
-                    'type_label' => 'دفع',
-                    'title' => 'دفع حجز: ' . ($payment->service 
+                    'type_label' => __('messages.payment'),
+                    'title' => __('messages.payment_booking') . ': ' . ($payment->service 
                         ? $payment->service->name 
-                        : ($payment->consultation ? $payment->consultation->name : 'حجز')),
-                    'description' => 'تم دفع مبلغ ' . number_format($payment->total_price, 2) . ' ريال',
+                        : ($payment->consultation ? $payment->consultation->name : __('messages.booking'))),
+                    'description' => __('messages.payment_amount_paid') . ' ' . number_format($payment->total_price, 2) . ' ' . __('messages.sar'),
                     'status' => 'paid',
-                    'status_label' => 'مدفوع',
+                    'status_label' => __('messages.paid'),
                     'payment_status' => 'paid',
-                    'payment_status_label' => 'مدفوع',
+                    'payment_status_label' => __('messages.paid'),
                     'amount' => $payment->total_price,
                     'date' => $payment->paid_at ? $payment->paid_at->format('Y-m-d') : null,
                     'time' => $payment->paid_at ? $payment->paid_at->format('H:i') : null,
@@ -621,10 +660,15 @@ class ReportsController extends Controller
         $activities = $activities->sortByDesc('created_at')->values();
 
         // Paginate
-        $currentPage = $request->get('page', 1);
-        $items = $activities->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $pageParam = $request->input('page', 1);
+        $currentPage = is_numeric($pageParam) ? (int) $pageParam : 1;
+        
+        // Ensure perPage is an integer (it's defined at line 392)
+        $perPageValue = is_int($perPage) ? $perPage : (is_numeric($perPage) ? (int) $perPage : 20);
+        
+        $items = $activities->slice(($currentPage - 1) * $perPageValue, $perPageValue)->values();
         $total = $activities->count();
-        $lastPage = ceil($total / $perPage);
+        $lastPage = (int) ceil($total / $perPageValue);
 
         return response()->json([
             'success' => true,
@@ -632,11 +676,11 @@ class ReportsController extends Controller
                 'activities' => $items,
                 'pagination' => [
                     'current_page' => (int) $currentPage,
-                    'per_page' => (int) $perPage,
+                    'per_page' => (int) $perPageValue,
                     'total' => $total,
                     'last_page' => $lastPage,
-                    'from' => $total > 0 ? (($currentPage - 1) * $perPage) + 1 : 0,
-                    'to' => min($currentPage * $perPage, $total),
+                    'from' => $total > 0 ? (($currentPage - 1) * $perPageValue) + 1 : 0,
+                    'to' => min($currentPage * $perPageValue, $total),
                 ],
                 'filters' => [
                     'type' => $type ?? 'all',
@@ -654,19 +698,11 @@ class ReportsController extends Controller
     {
         $serviceName = $booking->service 
             ? $booking->service->name 
-            : ($booking->consultation ? $booking->consultation->name : 'حجز');
+            : ($booking->consultation ? $booking->consultation->name : __('messages.booking'));
         
-        $statusLabels = [
-            'pending' => 'قيد الانتظار',
-            'confirmed' => 'مؤكد',
-            'in_progress' => 'قيد التنفيذ',
-            'completed' => 'مكتمل',
-            'cancelled' => 'ملغي',
-        ];
-
-        $statusLabel = $statusLabels[$booking->status] ?? $booking->status;
+        $statusLabel = $this->getBookingStatusLabel($booking->status);
         
-        return "حجز {$serviceName} - الحالة: {$statusLabel}";
+        return __('messages.booking') . " {$serviceName} - " . __('messages.status') . ": {$statusLabel}";
     }
 
     /**
@@ -675,11 +711,11 @@ class ReportsController extends Controller
     private function getBookingStatusLabel($status)
     {
         $labels = [
-            'pending' => 'قيد الانتظار',
-            'confirmed' => 'مؤكد',
-            'in_progress' => 'قيد التنفيذ',
-            'completed' => 'مكتمل',
-            'cancelled' => 'ملغي',
+            'pending' => __('messages.pending'),
+            'confirmed' => __('messages.confirmed'),
+            'in_progress' => __('messages.in_progress'),
+            'completed' => __('messages.completed'),
+            'cancelled' => __('messages.cancelled'),
         ];
 
         return $labels[$status] ?? $status;
@@ -690,20 +726,13 @@ class ReportsController extends Controller
      */
     private function getTicketDescription($ticket, $lastMessage)
     {
-        $statusLabels = [
-            'open' => 'مفتوح',
-            'in_progress' => 'قيد المعالجة',
-            'resolved' => 'تم الحل',
-            'closed' => 'مغلق',
-        ];
-
-        $statusLabel = $statusLabels[$ticket->status] ?? $ticket->status;
+        $statusLabel = $this->getTicketStatusLabel($ticket->status);
         
         if ($lastMessage) {
-            return "تذكرة: {$ticket->subject} - الحالة: {$statusLabel} - آخر رسالة: " . substr($lastMessage->message, 0, 50);
+            return __('messages.ticket') . ": {$ticket->subject} - " . __('messages.status') . ": {$statusLabel} - " . __('messages.last_message') . ": " . substr($lastMessage->message, 0, 50);
         }
         
-        return "تذكرة: {$ticket->subject} - الحالة: {$statusLabel}";
+        return __('messages.ticket') . ": {$ticket->subject} - " . __('messages.status') . ": {$statusLabel}";
     }
 
     /**
@@ -712,10 +741,10 @@ class ReportsController extends Controller
     private function getTicketStatusLabel($status)
     {
         $labels = [
-            'open' => 'مفتوح',
-            'in_progress' => 'قيد المعالجة',
-            'resolved' => 'تم الحل',
-            'closed' => 'مغلق',
+            'open' => __('messages.open'),
+            'in_progress' => __('messages.in_progress'),
+            'resolved' => __('messages.resolved'),
+            'closed' => __('messages.closed'),
         ];
 
         return $labels[$status] ?? $status;
@@ -726,15 +755,9 @@ class ReportsController extends Controller
      */
     private function getSubscriptionRequestDescription($request)
     {
-        $statusLabels = [
-            'pending' => 'قيد الانتظار',
-            'approved' => 'موافق عليه',
-            'rejected' => 'مرفوض',
-        ];
-
-        $statusLabel = $statusLabels[$request->status] ?? $request->status;
+        $statusLabel = $this->getSubscriptionRequestStatusLabel($request->status);
         
-        return "طلب اشتراك في باقة: {$request->subscription->name} - الحالة: {$statusLabel}";
+        return __('messages.subscription_request_package') . ": {$request->subscription->name} - " . __('messages.status') . ": {$statusLabel}";
     }
 
     /**
@@ -743,9 +766,9 @@ class ReportsController extends Controller
     private function getSubscriptionRequestStatusLabel($status)
     {
         $labels = [
-            'pending' => 'قيد الانتظار',
-            'approved' => 'موافق عليه',
-            'rejected' => 'مرفوض',
+            'pending' => __('messages.pending'),
+            'approved' => __('messages.approved'),
+            'rejected' => __('messages.rejected'),
         ];
 
         return $labels[$status] ?? $status;
@@ -756,19 +779,13 @@ class ReportsController extends Controller
      */
     private function getUserSubscriptionDescription($subscription)
     {
-        $statusLabels = [
-            'active' => 'نشط',
-            'expired' => 'منتهي',
-            'cancelled' => 'ملغي',
-        ];
-
-        $statusLabel = $statusLabels[$subscription->status] ?? $subscription->status;
+        $statusLabel = $this->getUserSubscriptionStatusLabel($subscription->status);
         
         $expiresText = $subscription->expires_at 
-            ? ' - ينتهي في: ' . $subscription->expires_at->format('Y-m-d')
+            ? ' - ' . __('messages.expires_at') . ': ' . $subscription->expires_at->format('Y-m-d')
             : '';
         
-        return "اشتراك في باقة: {$subscription->subscription->name} - الحالة: {$statusLabel}{$expiresText}";
+        return __('messages.subscription_package') . ": {$subscription->subscription->name} - " . __('messages.status') . ": {$statusLabel}{$expiresText}";
     }
 
     /**
@@ -777,9 +794,9 @@ class ReportsController extends Controller
     private function getUserSubscriptionStatusLabel($status)
     {
         $labels = [
-            'active' => 'نشط',
-            'expired' => 'منتهي',
-            'cancelled' => 'ملغي',
+            'active' => __('messages.active'),
+            'expired' => __('messages.expired'),
+            'cancelled' => __('messages.cancelled'),
         ];
 
         return $labels[$status] ?? $status;

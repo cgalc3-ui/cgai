@@ -72,16 +72,23 @@
                     <th>{{ __('messages.user') }}</th>
                     <th>{{ __('messages.package') }}</th>
                     <th class="text-center">{{ __('messages.status') }}</th>
-                    <th>{{ __('messages.request_date') }}</th>
-                    <th>{{ __('messages.processed_by') }}</th>
+                    <th class="text-center">{{ __('messages.request_date') }}</th>
+                    <th class="text-center">{{ __('messages.processed_by') }}</th>
                     <th class="text-center">{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($requests as $request)
                     <tr>
-                        <td>{{ $request->user->name }}</td>
-                        <td>{{ $request->subscription->name }}</td>
+                        <td>
+                            <div class="user-info-cell">
+                                <div class="user-name-cell">{{ $request->user->name }}</div>
+                                @if($request->user->email)
+                                    <div class="user-email-cell">{{ $request->user->email }}</div>
+                                @endif
+                            </div>
+                        </td>
+                        <td>{{ $request->subscription->trans('name') }}</td>
                         <td class="text-center">
                             @if($request->status == 'pending')
                                 <span class="status-pill pending">{{ __('messages.pending') }}</span>
@@ -91,12 +98,17 @@
                                 <span class="status-pill cancelled">{{ __('messages.rejected') }}</span>
                             @endif
                         </td>
-                        <td>{{ $request->created_at->format('Y-m-d H:i') }}</td>
-                        <td>{{ $request->approver ? $request->approver->name : '-' }}</td>
+                        <td class="text-center">{{ $request->created_at->format('Y-m-d H:i') }}</td>
                         <td class="text-center">
-                            <div style="display: flex; gap: 8px; justify-content: center;">
-                                <a href="{{ route('admin.subscription-requests.show', $request) }}" class="calm-action-btn info"
-                                    title="{{ __('messages.view') }}">
+                            @if($request->approver)
+                                <span class="approver-name">{{ $request->approver->name }}</span>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <div class="action-buttons" style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+                                <a href="{{ route('admin.subscription-requests.show', $request) }}" class="calm-action-btn" title="{{ __('messages.view') }}">
                                     <i class="far fa-eye"></i>
                                 </a>
                             </div>
@@ -111,7 +123,86 @@
         </table>
 
         <div class="pagination-wrapper">
-            {{ $requests->links() }}
+            {{ $requests->links('vendor.pagination.custom', ['itemName' => 'subscription_requests']) }}
         </div>
     </div>
+
+    @push('styles')
+        <style>
+            /* User Info Cell */
+            .user-info-cell {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .user-name-cell {
+                font-weight: 600;
+                color: var(--text-primary);
+                font-size: 14px;
+            }
+
+            .user-email-cell {
+                font-size: 12px;
+                color: var(--text-secondary);
+                opacity: 0.8;
+            }
+
+            /* Approver Name */
+            .approver-name {
+                font-weight: 500;
+                color: var(--text-primary);
+            }
+
+            .text-muted {
+                color: var(--text-secondary);
+                opacity: 0.6;
+            }
+
+            /* Table Cell Alignment */
+            .data-table td {
+                vertical-align: middle;
+                padding: 12px 16px;
+            }
+
+            .data-table th {
+                padding: 12px 16px;
+            }
+
+            /* Action Buttons */
+            .action-buttons {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* Status Pills */
+            .status-pill {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            /* Dark Mode */
+            [data-theme="dark"] .user-name-cell {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .user-email-cell {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .approver-name {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .text-muted {
+                color: var(--text-secondary);
+            }
+        </style>
+    @endpush
 @endsection
