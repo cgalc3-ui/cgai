@@ -20,7 +20,7 @@
     <!-- Filter Section -->
     <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
         <form method="GET" action="{{ route('admin.bookings') }}" class="filter-form">
-            <div class="filter-inputs" style="gap: 30px;">
+            <div class="filter-inputs">
                 <div class="filter-group">
                     <label for="status"><i class="fas fa-tasks"></i> {{ __('messages.booking_status') }}:</label>
                     <select name="status" id="status" class="filter-input">
@@ -59,13 +59,13 @@
                     <label for="date"><i class="fas fa-calendar-alt"></i> {{ __('messages.date') }}:</label>
                     <input type="date" name="date" id="date" class="filter-input" value="{{ request('date') }}">
                 </div>
-                <div class="filter-group" style="margin-inline-start: 40px;">
+                <div class="filter-group">
                     <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
                     <input type="text" name="search" id="search" class="filter-input"
                         placeholder="{{ __('messages.search_customer_placeholder') }}" value="{{ request('search') }}">
                 </div>
             </div>
-            <div class="filter-actions" style="margin-inline-start: 20px;">
+            <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="fas fa-check"></i> {{ __('messages.apply_filter') }}
                 </button>
@@ -191,11 +191,14 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
 
+    <!-- Pagination -->
+    @if($bookings->hasPages())
         <div class="pagination-wrapper">
             {{ $bookings->links('vendor.pagination.custom', ['itemName' => 'bookings']) }}
         </div>
-    </div>
+    @endif
 
     @push('styles')
         <style>
@@ -317,6 +320,350 @@
                 color: var(--text-secondary);
                 opacity: 1;
                 font-weight: 500;
+            }
+
+            [data-theme="dark"] .user-name {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .user-details {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .service-name {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .service-duration {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .time-slot-item {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .price {
+                color: var(--success-color);
+            }
+
+            [data-theme="dark"] .empty-state i {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="dark"] .empty-state h3 {
+                color: var(--text-primary);
+            }
+
+            [data-theme="dark"] .empty-state p {
+                color: var(--text-secondary);
+            }
+
+            /* Responsive Styles for Bookings Page */
+            @media (min-width: 1200px) {
+                .filter-form {
+                    flex-direction: row;
+                    align-items: flex-end;
+                    gap: 24px;
+                }
+
+                .filter-inputs {
+                    flex: 1;
+                    gap: 20px;
+                    flex-wrap: wrap;
+                }
+
+                .filter-group {
+                    min-width: 200px;
+                    flex: 1;
+                }
+
+                .filter-actions {
+                    flex-shrink: 0;
+                }
+            }
+
+            @media (min-width: 768px) and (max-width: 1199px) {
+                .filter-form {
+                    flex-direction: row;
+                    align-items: flex-end;
+                    gap: 20px;
+                }
+
+                .filter-inputs {
+                    flex: 1;
+                    gap: 15px;
+                    flex-wrap: wrap;
+                }
+
+                .filter-group {
+                    min-width: 180px;
+                    flex: 1;
+                }
+
+                .filter-actions {
+                    flex-shrink: 0;
+                }
+            }
+
+            @media (max-width: 767px) {
+                .filter-container {
+                    padding: 20px;
+                    margin-bottom: 20px;
+                }
+
+                .filter-container::before {
+                    font-size: 14px;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                }
+
+                .filter-form {
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 20px;
+                }
+
+                .filter-inputs {
+                    flex-direction: column;
+                    gap: 15px;
+                    width: 100%;
+                    flex-wrap: nowrap;
+                }
+
+                .filter-group {
+                    width: 100%;
+                    min-width: 100%;
+                    margin: 0;
+                    flex: 1;
+                }
+
+                .filter-group label {
+                    font-size: 13px;
+                    margin-bottom: 6px;
+                }
+
+                .filter-input,
+                .filter-select {
+                    height: 44px;
+                    font-size: 14px;
+                    width: 100%;
+                }
+
+                .filter-actions {
+                    width: 100%;
+                    flex-direction: row;
+                    gap: 10px;
+                    margin-top: 0;
+                    height: auto;
+                    align-self: stretch;
+                }
+
+                .filter-actions .btn {
+                    flex: 1;
+                    width: auto;
+                    height: 44px;
+                    min-width: 0;
+                }
+
+                .page-header {
+                    flex-direction: column;
+                    gap: 15px;
+                    align-items: flex-start;
+                }
+
+                .page-header-right {
+                    flex-direction: column;
+                    gap: 10px;
+                    width: 100%;
+                }
+
+                .page-header-right .btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .page-header-right .total-count {
+                    width: 100%;
+                    text-align: center;
+                }
+
+                .user-info {
+                    gap: 3px;
+                }
+
+                .user-name {
+                    font-size: 13px;
+                }
+
+                .user-details {
+                    font-size: 11px;
+                    gap: 2px;
+                }
+
+                .service-info {
+                    gap: 3px;
+                }
+
+                .service-name {
+                    font-size: 13px;
+                }
+
+                .service-duration {
+                    font-size: 11px;
+                }
+
+                .datetime-info {
+                    gap: 3px;
+                }
+
+                .datetime-info .date {
+                    font-size: 12px;
+                }
+
+                .time-slots-list {
+                    gap: 3px;
+                    margin-top: 3px;
+                }
+
+                .time-slot-item {
+                    font-size: 11px;
+                    padding: 1px 0;
+                }
+
+                .price {
+                    font-size: 13px;
+                }
+
+                .status-pill {
+                    font-size: 10px;
+                    padding: 4px 10px;
+                }
+
+                .calm-action-btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .empty-state {
+                    padding: 30px 15px;
+                }
+
+                .empty-state i {
+                    font-size: 40px;
+                    margin-bottom: 12px;
+                }
+
+                .empty-state h3 {
+                    font-size: 16px;
+                }
+
+                .empty-state p {
+                    font-size: 13px;
+                }
+            }
+
+            @media (max-width: 575px) {
+                .filter-container {
+                    padding: 15px;
+                    margin-bottom: 15px;
+                }
+
+                .filter-container::before {
+                    font-size: 13px;
+                    margin-bottom: 12px;
+                    padding-bottom: 8px;
+                }
+
+                .filter-form {
+                    gap: 15px;
+                }
+
+                .filter-inputs {
+                    gap: 12px;
+                }
+
+                .filter-group {
+                    gap: 6px;
+                }
+
+                .filter-group label {
+                    font-size: 12px;
+                }
+
+                .filter-group label i {
+                    width: 20px;
+                    height: 20px;
+                    font-size: 12px;
+                }
+
+                .filter-input,
+                .filter-select {
+                    height: 42px;
+                    font-size: 13px;
+                    padding: 0 14px;
+                }
+
+                .filter-actions {
+                    flex-direction: column;
+                    gap: 10px;
+                    height: auto;
+                }
+
+                .filter-actions .btn {
+                    width: 100%;
+                    height: 42px;
+                    font-size: 13px;
+                }
+
+                .user-name {
+                    font-size: 12px;
+                }
+
+                .user-details {
+                    font-size: 10px;
+                }
+
+                .service-name {
+                    font-size: 12px;
+                }
+
+                .service-duration {
+                    font-size: 10px;
+                }
+
+                .datetime-info .date {
+                    font-size: 11px;
+                }
+
+                .time-slot-item {
+                    font-size: 10px;
+                }
+
+                .price {
+                    font-size: 12px;
+                }
+
+                .status-pill {
+                    font-size: 9px;
+                    padding: 3px 8px;
+                }
+
+                .empty-state {
+                    padding: 25px 10px;
+                }
+
+                .empty-state i {
+                    font-size: 36px;
+                    margin-bottom: 10px;
+                }
+
+                .empty-state h3 {
+                    font-size: 14px;
+                }
+
+                .empty-state p {
+                    font-size: 12px;
+                }
             }
         </style>
     @endpush
