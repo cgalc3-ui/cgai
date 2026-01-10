@@ -16,15 +16,11 @@ class HelpGuideController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
 
-        // Set locale from request header or default to Arabic
-        $locale = $request->header('Accept-Language', 'ar');
-        if (in_array($locale, ['en', 'ar'])) {
-            App::setLocale($locale);
-        } else {
-            App::setLocale('ar'); // Default to Arabic
-        }
+        $user = $request->user();
 
         // Determine user role
         $role = 'customer';
@@ -70,15 +66,11 @@ class HelpGuideController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $user = $request->user();
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
 
-        // Set locale from request header or default to Arabic
-        $locale = $request->header('Accept-Language', 'ar');
-        if (in_array($locale, ['en', 'ar'])) {
-            App::setLocale($locale);
-        } else {
-            App::setLocale('ar'); // Default to Arabic
-        }
+        $user = $request->user();
 
         // Determine user role
         $role = 'customer';

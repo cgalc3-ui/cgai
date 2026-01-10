@@ -67,7 +67,8 @@
                             @if($user->employee && $user->employee->categories->count() > 0)
                                 <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                     @foreach($user->employee->categories as $category)
-                                        <span class="status-pill active" style="font-size: 11px; padding: 4px 10px; background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; font-weight: 500;">{{ $category->name }}</span>
+                                        <span class="status-pill active"
+                                            style="font-size: 11px; padding: 4px 10px; background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; font-weight: 500;">{{ $category->name }}</span>
                                     @endforeach
                                 </div>
                             @else
@@ -78,7 +79,8 @@
                             @if($user->employee && $user->employee->subCategories->count() > 0)
                                 <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                     @foreach($user->employee->subCategories as $subCategory)
-                                        <span class="status-pill active" style="font-size: 11px; padding: 4px 10px; background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; font-weight: 500;">{{ $subCategory->name }}</span>
+                                        <span class="status-pill active"
+                                            style="font-size: 11px; padding: 4px 10px; background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; font-weight: 500;">{{ $subCategory->name }}</span>
                                     @endforeach
                                 </div>
                             @else
@@ -177,7 +179,8 @@
                 <select id="add_staff_subcategories_select" class="form-control">
                     <option value="">{{ __('messages.select_subcategory_placeholder') }}</option>
                 </select>
-                <div id="add_staff_selected_subcategories" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                <div id="add_staff_selected_subcategories"
+                    style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
                 </div>
             </div>
 
@@ -260,7 +263,8 @@
                 <select id="edit_staff_subcategories_select" class="form-control">
                     <option value="">{{ __('messages.select_subcategory_placeholder') }}</option>
                 </select>
-                <div id="edit_staff_selected_subcategories" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                <div id="edit_staff_selected_subcategories"
+                    style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
                 </div>
             </div>
 
@@ -292,17 +296,17 @@
             #editStaffModal .modal-body {
                 padding: 28px;
             }
-            
+
             #addStaffModal .form-group,
             #editStaffModal .form-group {
                 margin-bottom: 20px;
             }
-            
+
             #addStaffModal .form-group:last-child,
             #editStaffModal .form-group:last-child {
                 margin-bottom: 0;
             }
-            
+
             /* Form labels */
             #addStaffModal .form-group label,
             #editStaffModal .form-group label {
@@ -312,7 +316,7 @@
                 color: var(--text-primary, #343a40);
                 font-size: 14px;
             }
-            
+
             /* Form inputs */
             #addStaffModal .form-control,
             #editStaffModal .form-control {
@@ -326,19 +330,19 @@
                 background: white !important;
                 box-sizing: border-box !important;
             }
-            
+
             #addStaffModal .form-control:focus,
             #editStaffModal .form-control:focus {
                 outline: none !important;
                 border-color: var(--primary-color, #6658dd) !important;
                 box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1) !important;
             }
-            
+
             #addStaffModal .form-control:hover,
             #editStaffModal .form-control:hover {
                 border-color: #d1d5db !important;
             }
-            
+
             /* Modal footer */
             #addStaffModal .modal-footer,
             #editStaffModal .modal-footer {
@@ -349,7 +353,7 @@
                 gap: 12px;
                 background: #f9fafb;
             }
-            
+
             #addStaffModal .modal-footer .btn,
             #editStaffModal .modal-footer .btn {
                 padding: 10px 20px;
@@ -363,24 +367,24 @@
                 align-items: center;
                 gap: 8px;
             }
-            
+
             #addStaffModal .modal-footer .btn-primary,
             #editStaffModal .modal-footer .btn-primary {
                 background: var(--primary-color, #6658dd);
                 color: white;
             }
-            
+
             #addStaffModal .modal-footer .btn-primary:hover,
             #editStaffModal .modal-footer .btn-primary:hover {
                 background: var(--primary-dark, #564ab1);
             }
-            
+
             #addStaffModal .modal-footer .btn-secondary,
             #editStaffModal .modal-footer .btn-secondary {
                 background: #e5e7eb;
                 color: #6b7280;
             }
-            
+
             #addStaffModal .modal-footer .btn-secondary:hover,
             #editStaffModal .modal-footer .btn-secondary:hover {
                 background: #d1d5db;
@@ -464,7 +468,7 @@
                 color: var(--text-primary, #f1f5f9) !important;
             }
         </style>
-        
+
         <style>
             .category-tag {
                 display: inline-flex;
@@ -517,9 +521,9 @@
                     .then(data => {
                         const select = document.getElementById(selectElementId);
                         if (!select) return;
-                        
+
                         select.innerHTML = '<option value="">{{ __('messages.select_subcategory_placeholder') }}</option>';
-                        
+
                         if (data.subcategories && data.subcategories.length > 0) {
                             data.subcategories.forEach(subCat => {
                                 const option = document.createElement('option');
@@ -541,45 +545,45 @@
                 const addCategoriesSelect = document.getElementById('add_staff_categories_select');
                 if (addCategoriesSelect) {
                     addCategoriesSelect.addEventListener('change', function () {
-                const select = this;
-                const selectedId = select.value;
-                const selectedOption = select.options[select.selectedIndex];
+                        const select = this;
+                        const selectedId = select.value;
+                        const selectedOption = select.options[select.selectedIndex];
 
-                if (!selectedId) {
-                    document.getElementById('add_staff_subcategories_group').style.display = 'none';
-                    return;
-                }
+                        if (!selectedId) {
+                            document.getElementById('add_staff_subcategories_group').style.display = 'none';
+                            return;
+                        }
 
-                // Show subcategories group and load subcategories
-                document.getElementById('add_staff_subcategories_group').style.display = 'block';
-                loadSubCategories(selectedId, 'add_staff_subcategories_select');
+                        // Show subcategories group and load subcategories
+                        document.getElementById('add_staff_subcategories_group').style.display = 'block';
+                        loadSubCategories(selectedId, 'add_staff_subcategories_select');
 
-                const selectedName = selectedOption.getAttribute('data-name');
-                const container = document.getElementById('add_staff_selected_categories');
+                        const selectedName = selectedOption.getAttribute('data-name');
+                        const container = document.getElementById('add_staff_selected_categories');
 
-                // Check if already selected
-                const existingTags = container.querySelectorAll('.category-tag');
-                for (let tag of existingTags) {
-                    if (tag.getAttribute('data-id') === selectedId) {
+                        // Check if already selected
+                        const existingTags = container.querySelectorAll('.category-tag');
+                        for (let tag of existingTags) {
+                            if (tag.getAttribute('data-id') === selectedId) {
+                                select.value = '';
+                                return;
+                            }
+                        }
+
+                        // Create new tag
+                        const tagDiv = document.createElement('div');
+                        tagDiv.className = 'category-tag';
+                        tagDiv.setAttribute('data-id', selectedId);
+                        tagDiv.innerHTML = `
+                            <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                            <span>${selectedName}</span>
+                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+
+                        container.appendChild(tagDiv);
                         select.value = '';
-                        return;
-                    }
-                }
-
-                // Create new tag
-                const tagDiv = document.createElement('div');
-                tagDiv.className = 'category-tag';
-                tagDiv.setAttribute('data-id', selectedId);
-                tagDiv.innerHTML = `
-                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
-                    <span>${selectedName}</span>
-                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-
-                container.appendChild(tagDiv);
-                select.value = '';
                     });
                 }
 
@@ -587,38 +591,38 @@
                 const addSubCategoriesSelect = document.getElementById('add_staff_subcategories_select');
                 if (addSubCategoriesSelect) {
                     addSubCategoriesSelect.addEventListener('change', function () {
-                const select = this;
-                const selectedId = select.value;
-                const selectedOption = select.options[select.selectedIndex];
+                        const select = this;
+                        const selectedId = select.value;
+                        const selectedOption = select.options[select.selectedIndex];
 
-                if (!selectedId) return;
+                        if (!selectedId) return;
 
-                const selectedName = selectedOption.getAttribute('data-name');
-                const container = document.getElementById('add_staff_selected_subcategories');
+                        const selectedName = selectedOption.getAttribute('data-name');
+                        const container = document.getElementById('add_staff_selected_subcategories');
 
-                // Check if already selected
-                const existingTags = container.querySelectorAll('.category-tag');
-                for (let tag of existingTags) {
-                    if (tag.getAttribute('data-id') === selectedId) {
+                        // Check if already selected
+                        const existingTags = container.querySelectorAll('.category-tag');
+                        for (let tag of existingTags) {
+                            if (tag.getAttribute('data-id') === selectedId) {
+                                select.value = '';
+                                return;
+                            }
+                        }
+
+                        // Create new tag
+                        const tagDiv = document.createElement('div');
+                        tagDiv.className = 'category-tag';
+                        tagDiv.setAttribute('data-id', selectedId);
+                        tagDiv.innerHTML = `
+                            <input type="hidden" name="employee[sub_categories][]" value="${selectedId}">
+                            <span>${selectedName}</span>
+                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+
+                        container.appendChild(tagDiv);
                         select.value = '';
-                        return;
-                    }
-                }
-
-                // Create new tag
-                const tagDiv = document.createElement('div');
-                tagDiv.className = 'category-tag';
-                tagDiv.setAttribute('data-id', selectedId);
-                tagDiv.innerHTML = `
-                    <input type="hidden" name="employee[sub_categories][]" value="${selectedId}">
-                    <span>${selectedName}</span>
-                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-
-                container.appendChild(tagDiv);
-                select.value = '';
                     });
                 }
 
@@ -626,45 +630,45 @@
                 const editCategoriesSelect = document.getElementById('edit_staff_categories_select');
                 if (editCategoriesSelect) {
                     editCategoriesSelect.addEventListener('change', function () {
-                const select = this;
-                const selectedId = select.value;
-                const selectedOption = select.options[select.selectedIndex];
+                        const select = this;
+                        const selectedId = select.value;
+                        const selectedOption = select.options[select.selectedIndex];
 
-                if (!selectedId) {
-                    document.getElementById('edit_staff_subcategories_group').style.display = 'none';
-                    return;
-                }
+                        if (!selectedId) {
+                            document.getElementById('edit_staff_subcategories_group').style.display = 'none';
+                            return;
+                        }
 
-                // Show subcategories group and load subcategories
-                document.getElementById('edit_staff_subcategories_group').style.display = 'block';
-                loadSubCategories(selectedId, 'edit_staff_subcategories_select');
+                        // Show subcategories group and load subcategories
+                        document.getElementById('edit_staff_subcategories_group').style.display = 'block';
+                        loadSubCategories(selectedId, 'edit_staff_subcategories_select');
 
-                const selectedName = selectedOption.getAttribute('data-name');
-                const container = document.getElementById('edit_staff_selected_categories');
+                        const selectedName = selectedOption.getAttribute('data-name');
+                        const container = document.getElementById('edit_staff_selected_categories');
 
-                // Check if already selected
-                const existingTags = container.querySelectorAll('.category-tag');
-                for (let tag of existingTags) {
-                    if (tag.getAttribute('data-id') === selectedId) {
+                        // Check if already selected
+                        const existingTags = container.querySelectorAll('.category-tag');
+                        for (let tag of existingTags) {
+                            if (tag.getAttribute('data-id') === selectedId) {
+                                select.value = '';
+                                return;
+                            }
+                        }
+
+                        // Create new tag
+                        const tagDiv = document.createElement('div');
+                        tagDiv.className = 'category-tag';
+                        tagDiv.setAttribute('data-id', selectedId);
+                        tagDiv.innerHTML = `
+                            <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                            <span>${selectedName}</span>
+                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+
+                        container.appendChild(tagDiv);
                         select.value = '';
-                        return;
-                    }
-                }
-
-                // Create new tag
-                const tagDiv = document.createElement('div');
-                tagDiv.className = 'category-tag';
-                tagDiv.setAttribute('data-id', selectedId);
-                tagDiv.innerHTML = `
-                    <input type="hidden" name="employee[categories][]" value="${selectedId}">
-                    <span>${selectedName}</span>
-                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-
-                container.appendChild(tagDiv);
-                select.value = '';
                     });
                 }
 
@@ -672,38 +676,38 @@
                 const editSubCategoriesSelect = document.getElementById('edit_staff_subcategories_select');
                 if (editSubCategoriesSelect) {
                     editSubCategoriesSelect.addEventListener('change', function () {
-                const select = this;
-                const selectedId = select.value;
-                const selectedOption = select.options[select.selectedIndex];
+                        const select = this;
+                        const selectedId = select.value;
+                        const selectedOption = select.options[select.selectedIndex];
 
-                if (!selectedId) return;
+                        if (!selectedId) return;
 
-                const selectedName = selectedOption.getAttribute('data-name');
-                const container = document.getElementById('edit_staff_selected_subcategories');
+                        const selectedName = selectedOption.getAttribute('data-name');
+                        const container = document.getElementById('edit_staff_selected_subcategories');
 
-                // Check if already selected
-                const existingTags = container.querySelectorAll('.category-tag');
-                for (let tag of existingTags) {
-                    if (tag.getAttribute('data-id') === selectedId) {
+                        // Check if already selected
+                        const existingTags = container.querySelectorAll('.category-tag');
+                        for (let tag of existingTags) {
+                            if (tag.getAttribute('data-id') === selectedId) {
+                                select.value = '';
+                                return;
+                            }
+                        }
+
+                        // Create new tag
+                        const tagDiv = document.createElement('div');
+                        tagDiv.className = 'category-tag';
+                        tagDiv.setAttribute('data-id', selectedId);
+                        tagDiv.innerHTML = `
+                            <input type="hidden" name="employee[sub_categories][]" value="${selectedId}">
+                            <span>${selectedName}</span>
+                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+
+                        container.appendChild(tagDiv);
                         select.value = '';
-                        return;
-                    }
-                }
-
-                // Create new tag
-                const tagDiv = document.createElement('div');
-                tagDiv.className = 'category-tag';
-                tagDiv.setAttribute('data-id', selectedId);
-                tagDiv.innerHTML = `
-                    <input type="hidden" name="employee[sub_categories][]" value="${selectedId}">
-                    <span>${selectedName}</span>
-                    <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-
-                container.appendChild(tagDiv);
-                select.value = '';
                     });
                 }
 
@@ -750,12 +754,12 @@
                             tagDiv.className = 'category-tag';
                             tagDiv.setAttribute('data-id', catId);
                             tagDiv.innerHTML = `
-                                <input type="hidden" name="employee[categories][]" value="${catId}">
-                                <span>${catName}</span>
-                                <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            `;
+                                        <input type="hidden" name="employee[categories][]" value="${catId}">
+                                        <span>${catName}</span>
+                                        <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    `;
                             container.appendChild(tagDiv);
                         }
                     });
@@ -783,12 +787,12 @@
                                     tagDiv.className = 'category-tag';
                                     tagDiv.setAttribute('data-id', subCatId);
                                     tagDiv.innerHTML = `
-                                        <input type="hidden" name="employee[sub_categories][]" value="${subCatId}">
-                                        <span>${data.subcategory.name}</span>
-                                        <button type="button" class="remove-cat" onclick="removeCategory(this)">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    `;
+                                                <input type="hidden" name="employee[sub_categories][]" value="${subCatId}">
+                                                <span>${data.subcategory.name}</span>
+                                                <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            `;
                                     subContainer.appendChild(tagDiv);
                                 }
                             })

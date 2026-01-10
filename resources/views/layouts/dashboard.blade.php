@@ -371,11 +371,24 @@
                             <i class="fas fa-cog"></i>
                         </a>
 
-                        <div class="user-profile-nav">
+                        <div class="user-profile-nav" id="userProfileNav" style="position: relative; cursor: pointer;">
                             <img src="{{ auth()->user()->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=3b82f6&color=fff' }}"
                                 alt="{{ auth()->user()->name }}" class="nav-user-avatar">
                             <span class="nav-user-name">{{ auth()->user()->name }}</span>
                             <i class="fas fa-chevron-down nav-user-arrow"></i>
+                            <div class="user-profile-menu" id="userProfileMenu" style="display: none;">
+                                <a href="{{ route('settings.index') }}" class="user-profile-menu-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    <span>{{ __('messages.settings') }}</span>
+                                </a>
+                                <form action="{{ route('logout') }}" method="POST" class="user-profile-menu-item-form">
+                                    @csrf
+                                    <button type="submit" class="user-profile-menu-item logout-menu-item">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>{{ __('messages.logout') }}</span>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -486,6 +499,29 @@
                     option.addEventListener('click', function () {
                         // The page will reload after language change, so no need to manually close
                     });
+                });
+            }
+        })();
+
+        // User Profile Dropdown
+        (function () {
+            const userProfileNav = document.getElementById('userProfileNav');
+            const userProfileMenu = document.getElementById('userProfileMenu');
+
+            if (userProfileNav && userProfileMenu) {
+                // Toggle dropdown
+                userProfileNav.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const isOpen = userProfileMenu.style.display === 'block';
+                    userProfileMenu.style.display = isOpen ? 'none' : 'block';
+                    userProfileNav.classList.toggle('active', !isOpen);
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!userProfileNav.contains(e.target)) {
+                        userProfileMenu.style.display = 'none';
+                    }
                 });
             }
         })();

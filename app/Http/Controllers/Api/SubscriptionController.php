@@ -26,8 +26,12 @@ class SubscriptionController extends Controller
     /**
      * Get all active subscriptions
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $subscriptions = Subscription::active()->get();
         $activeSubscription = auth()->user()->getActiveSubscription();
         $pendingRequest = SubscriptionRequest::where('user_id', auth()->id())
@@ -66,8 +70,12 @@ class SubscriptionController extends Controller
     /**
      * Get subscription details
      */
-    public function show(Subscription $subscription)
+    public function show(Request $request, Subscription $subscription)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         return response()->json([
             'success' => true,
             'data' => $this->filterLocaleColumns($subscription),
@@ -138,8 +146,12 @@ class SubscriptionController extends Controller
     /**
      * Get current user's active subscription
      */
-    public function active()
+    public function active(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $activeSubscription = auth()->user()->getActiveSubscription();
 
         if (!$activeSubscription) {
@@ -165,8 +177,12 @@ class SubscriptionController extends Controller
     /**
      * Get current user's subscription requests
      */
-    public function requests()
+    public function requests(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $requests = SubscriptionRequest::where('user_id', auth()->id())
             ->with([
                 'subscription' => function($query) {

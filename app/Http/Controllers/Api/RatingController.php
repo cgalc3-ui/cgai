@@ -17,6 +17,10 @@ class RatingController extends Controller
      */
     public function store(StoreRatingRequest $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $customer = $request->user();
 
         // Check if user is a customer
@@ -80,6 +84,10 @@ class RatingController extends Controller
      */
     public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $query = Rating::with(['customer', 'booking']);
 
         // Filter by rating if provided
@@ -107,6 +115,10 @@ class RatingController extends Controller
      */
     public function myRatings(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $customer = $request->user();
 
         if (!$customer->isCustomer()) {
@@ -135,8 +147,12 @@ class RatingController extends Controller
     /**
      * Get rating statistics
      */
-    public function statistics()
+    public function statistics(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $totalRatings = Rating::count();
         $averageRating = Rating::avg('rating');
         $ratingDistribution = Rating::selectRaw('rating, COUNT(*) as count')

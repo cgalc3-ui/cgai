@@ -18,7 +18,7 @@ class StoreConsultationBookingRequest extends FormRequest
             'booking_date' => 'required|date|date_format:Y-m-d|after_or_equal:today',
             'time_slot_id' => 'required|exists:time_slots,id',
             'notes' => 'nullable|string',
-            'payment_method' => 'nullable|string|in:online',
+            'payment_method' => 'nullable|string|in:online,points',
         ];
     }
 

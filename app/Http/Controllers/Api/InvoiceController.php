@@ -15,6 +15,10 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $customer = $request->user();
 
         if (!$customer->isCustomer()) {
@@ -61,7 +65,7 @@ class InvoiceController extends Controller
             ->paginate($request->per_page ?? 15);
 
         // Format invoices
-        $formattedInvoices = $invoices->getCollection()->map(function ($booking) {
+        $formattedInvoices = $invoices->getCollection()->map(function ($booking) use ($locale) {
             return [
                 'id' => $booking->id,
                 'invoice_number' => 'INV-' . str_pad($booking->id, 6, '0', STR_PAD_LEFT),
@@ -69,18 +73,18 @@ class InvoiceController extends Controller
                 'service' => $booking->booking_type === 'consultation' 
                     ? [
                         'id' => $booking->consultation_id,
-                        'name' => $booking->consultation->name ?? null,
+                        'name' => $booking->consultation ? $booking->consultation->trans('name') : null,
                         'name_en' => $booking->consultation->name_en ?? null,
                         'type' => 'consultation',
-                        'description' => $booking->consultation->description ?? null,
+                        'description' => $booking->consultation ? $booking->consultation->trans('description') : null,
                         'description_en' => $booking->consultation->description_en ?? null,
                     ]
                     : [
                         'id' => $booking->service_id,
-                        'name' => $booking->service->name ?? null,
+                        'name' => $booking->service ? $booking->service->trans('name') : null,
                         'name_en' => $booking->service->name_en ?? null,
                         'type' => 'service',
-                        'description' => $booking->service->description ?? null,
+                        'description' => $booking->service ? $booking->service->trans('description') : null,
                         'description_en' => $booking->service->description_en ?? null,
                     ],
                 'employee' => $booking->employee && $booking->employee->user ? [
@@ -124,6 +128,10 @@ class InvoiceController extends Controller
      */
     public function show(Request $request, Booking $booking)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $customer = $request->user();
 
         if (!$customer->isCustomer()) {
@@ -164,18 +172,18 @@ class InvoiceController extends Controller
             'service' => $booking->booking_type === 'consultation' 
                 ? [
                     'id' => $booking->consultation_id,
-                    'name' => $booking->consultation->name ?? null,
+                    'name' => $booking->consultation ? $booking->consultation->trans('name') : null,
                     'name_en' => $booking->consultation->name_en ?? null,
                     'type' => 'consultation',
-                    'description' => $booking->consultation->description ?? null,
+                    'description' => $booking->consultation ? $booking->consultation->trans('description') : null,
                     'description_en' => $booking->consultation->description_en ?? null,
                 ]
                 : [
                     'id' => $booking->service_id,
-                    'name' => $booking->service->name ?? null,
+                    'name' => $booking->service ? $booking->service->trans('name') : null,
                     'name_en' => $booking->service->name_en ?? null,
                     'type' => 'service',
-                    'description' => $booking->service->description ?? null,
+                    'description' => $booking->service ? $booking->service->trans('description') : null,
                     'description_en' => $booking->service->description_en ?? null,
                 ],
             'employee' => $booking->employee && $booking->employee->user ? [

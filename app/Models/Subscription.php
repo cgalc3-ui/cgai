@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Traits\Translatable;
 
 class Subscription extends Model
@@ -44,6 +45,16 @@ class Subscription extends Model
     public function userSubscriptions(): HasMany
     {
         return $this->hasMany(UserSubscription::class);
+    }
+
+    /**
+     * Get points pricing for this subscription
+     */
+    public function pointsPricing(): HasOne
+    {
+        return $this->hasOne(ServicePointsPricing::class)
+            ->where('item_type', 'subscription')
+            ->where('is_active', true);
     }
 
     /**

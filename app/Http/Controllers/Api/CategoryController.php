@@ -13,8 +13,12 @@ class CategoryController extends Controller
 {
     use ApiResponseTrait;
 
-    public function index()
+    public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         
         return response()->json([
@@ -37,8 +41,12 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    public function show(Category $category)
+    public function show(Request $request, Category $category)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $category->load('subCategories');
         
         return response()->json([

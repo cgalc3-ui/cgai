@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PointsSetting;
 use App\Models\Service;
 use App\Models\Consultation;
+use App\Models\Subscription;
 use App\Models\ServicePointsPricing;
 use App\Models\PointsTransaction;
 use App\Models\Wallet;
@@ -22,8 +23,9 @@ class PointsSettingsController extends Controller
         $settings = PointsSetting::getActive();
         $services = Service::with('pointsPricing')->get();
         $consultations = Consultation::with('pointsPricing')->get();
+        $subscriptions = Subscription::with('pointsPricing')->get();
         
-        return view('admin.points.settings', compact('settings', 'services', 'consultations'));
+        return view('admin.points.settings', compact('settings', 'services', 'consultations', 'subscriptions'));
     }
 
     /**
@@ -120,6 +122,39 @@ class PointsSettingsController extends Controller
     }
 
     /**
+     * Update subscription points pricing
+     */
+    public function updateSubscriptionPricing(Request $request, $subscriptionId)
+    {
+        $request->validate([
+            'points_price' => 'required|numeric|min:0',
+        ]);
+
+        $subscription = Subscription::findOrFail($subscriptionId);
+        
+        $pricing = ServicePointsPricing::where('subscription_id', $subscriptionId)
+            ->where('item_type', 'subscription')
+            ->first();
+
+        if ($pricing) {
+            $pricing->update([
+                'points_price' => $request->points_price,
+                'is_active' => $request->has('is_active') ? true : false,
+            ]);
+        } else {
+            ServicePointsPricing::create([
+                'subscription_id' => $subscriptionId,
+                'item_type' => 'subscription',
+                'points_price' => $request->points_price,
+                'is_active' => true,
+            ]);
+        }
+
+        return redirect()->route('admin.points.settings')
+            ->with('success', __('messages.pricing_updated_successfully'));
+    }
+
+    /**
      * Get all points transactions
      */
     public function transactions(Request $request)
@@ -186,7 +221,8 @@ class PointsSettingsController extends Controller
         $totalWallets = Wallet::count();
         $totalBalance = Wallet::sum('balance');
         $activeWallets = Wallet::where('balance', '>', 0)->count();
+        $emptyWallets = Wallet::where('balance', '=', 0)->count();
 
-        return view('admin.points.wallets', compact('wallets', 'totalWallets', 'totalBalance', 'activeWallets'));
+        return view('admin.points.wallets', compact('wallets', 'totalWallets', 'totalBalance', 'activeWallets', 'emptyWallets'));
     }
 }

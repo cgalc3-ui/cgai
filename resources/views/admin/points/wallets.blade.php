@@ -64,6 +64,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="stat-card">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">{{ __('messages.empty_wallets') ?? 'المحافظ الفارغة' }}</h3>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle orange">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-card-info">
+                    <h2 class="stat-card-value">{{ number_format($emptyWallets) }}</h2>
+                    <span class="stat-card-subtitle">{{ __('messages.no_balance') ?? 'بدون رصيد' }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Filter Section -->

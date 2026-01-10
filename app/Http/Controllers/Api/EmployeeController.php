@@ -15,6 +15,10 @@ class EmployeeController extends Controller
      */
     public function dashboard(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         if (!$user->isEmployee() && !$user->isStaff()) {
@@ -54,6 +58,10 @@ class EmployeeController extends Controller
      */
     public function bookings(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         if (!$user->employee) {

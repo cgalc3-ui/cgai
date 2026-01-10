@@ -123,18 +123,18 @@
 
                             @foreach($hours as $hour)
                                 <tr>
-                                    <td><strong>{{ $timeSlot->employee->user->name }}</strong></td>
-                                    <td>{{ \Carbon\Carbon::parse($timeSlot->date)->format('Y-m-d') }}</td>
-                                    <td>{{ $hour['start']->format('h:i A') }}</td>
-                                    <td>{{ $hour['end']->format('h:i A') }}</td>
-                                    <td class="text-center">
+                                    <td data-label="{{ __('messages.employee') }}"><strong>{{ $timeSlot->employee->user->name }}</strong></td>
+                                    <td data-label="{{ __('messages.date') }}">{{ \Carbon\Carbon::parse($timeSlot->date)->format('Y-m-d') }}</td>
+                                    <td data-label="{{ __('messages.from_hour') }}">{{ $hour['start']->format('h:i A') }}</td>
+                                    <td data-label="{{ __('messages.to_hour') }}">{{ $hour['end']->format('h:i A') }}</td>
+                                    <td class="text-center" data-label="{{ __('messages.status') }}">
                                         @if($timeSlot->is_available)
                                             <span class="status-pill completed">{{ __('messages.available') }}</span>
                                         @else
                                             <span class="status-pill cancelled">{{ __('messages.unavailable') }}</span>
                                         @endif
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center" data-label="{{ __('messages.actions') }}">
                                         <div style="display: flex; gap: 8px; justify-content: center;">
                                             <button type="button" class="calm-action-btn warning" title="{{ __('messages.edit') }}"
                                                 onclick="openEditModal('{{ route('admin.time-slots.edit', $timeSlot) }}', 'editTimeSlotModal', '{{ __('messages.edit_time_slot') }}')">
@@ -418,6 +418,357 @@
 
             [data-theme="dark"] .table-container-wrapper {
                 background: transparent;
+            }
+
+            /* Mobile: Make table full width like customers page */
+            @media (max-width: 767px) {
+                .time-slots-layout {
+                    flex-direction: column !important;
+                    gap: 15px !important;
+                }
+
+                .calendar-sidebar {
+                    width: 100% !important;
+                    order: 1 !important;
+                }
+
+                .table-container-wrapper {
+                    width: 100% !important;
+                    order: 2 !important;
+                    flex: none !important;
+                }
+
+                .table-container {
+                    width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: transparent !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                }
+
+                .data-table {
+                    width: 100% !important;
+                    font-size: 13px !important;
+                    min-width: auto !important;
+                }
+
+                .data-table thead {
+                    display: none !important;
+                }
+
+                .data-table tbody,
+                .data-table tr,
+                .data-table td {
+                    display: block !important;
+                    width: 100% !important;
+                }
+
+                .data-table tr {
+                    margin-bottom: 20px !important;
+                    background: white !important;
+                    border-radius: 20px !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+                    padding: 15px !important;
+                    border: none !important;
+                }
+
+                [data-theme="dark"] .data-table tr {
+                    background: var(--card-bg, #1e1f27) !important;
+                    border: none !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+                }
+
+                .data-table td {
+                    display: grid !important;
+                    grid-template-columns: 110px 1fr !important;
+                    gap: 12px !important;
+                    padding: 14px 20px !important;
+                    border: none !important;
+                    border-bottom: none !important;
+                    text-align: start !important;
+                    align-items: center !important;
+                    font-size: 14px !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    color: var(--text-primary) !important;
+                    font-weight: 500 !important;
+                    word-wrap: break-word !important;
+                    overflow-wrap: break-word !important;
+                }
+
+                html[dir='rtl'] .data-table td {
+                    grid-template-columns: 1fr 110px !important;
+                    text-align: end !important;
+                }
+
+                [data-theme="dark"] .data-table td {
+                    border: none !important;
+                    border-bottom: none !important;
+                    color: var(--text-primary, #f1f5f9) !important;
+                }
+
+                .data-table td:last-child {
+                    border: none !important;
+                    border-bottom: none !important;
+                }
+
+                .data-table .status-pill {
+                    padding: 4px 12px !important;
+                    font-size: 11px !important;
+                    font-weight: 800 !important;
+                    border-radius: 30px !important;
+                    display: inline-flex !important;
+                    width: fit-content !important;
+                    margin: 0 !important;
+                }
+
+                .data-table td::before {
+                    content: attr(data-label) !important;
+                    font-weight: 800 !important;
+                    color: var(--primary-color) !important;
+                    font-size: 10px !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.5px !important;
+                    opacity: 0.6 !important;
+                    white-space: nowrap !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                }
+
+                html[dir='rtl'] .data-table td::before {
+                    order: 2 !important;
+                    text-align: right !important;
+                }
+
+                .data-table td > * {
+                    order: 1 !important;
+                }
+
+                .data-table td.text-center {
+                    text-align: start !important;
+                }
+
+                html[dir='rtl'] .data-table td.text-center {
+                    text-align: end !important;
+                }
+
+                /* Actions column */
+                .data-table td:last-child {
+                    display: flex !important;
+                    justify-content: flex-start !important;
+                    background: #f8fafc !important;
+                    padding: 14px 20px !important;
+                    margin: 0 -15px -15px -15px !important;
+                    border-radius: 0 0 20px 20px !important;
+                    border-bottom: none !important;
+                    grid-template-columns: 1fr !important;
+                    width: calc(100% + 30px) !important;
+                    max-width: calc(100% + 30px) !important;
+                }
+
+                [data-theme="dark"] .data-table td:last-child {
+                    background: var(--sidebar-active-bg, #15171d) !important;
+                }
+
+                html[dir='rtl'] .data-table td:last-child {
+                    justify-content: flex-end !important;
+                }
+
+                .data-table td:last-child::before {
+                    display: none !important;
+                }
+
+                .data-table td:last-child > div {
+                    display: flex !important;
+                    gap: 8px !important;
+                    flex-wrap: wrap !important;
+                    justify-content: flex-start !important;
+                    width: 100% !important;
+                    align-items: center !important;
+                }
+
+                html[dir='rtl'] .data-table td:last-child > div {
+                    justify-content: flex-end !important;
+                }
+
+                /* Smaller action buttons */
+                .data-table .calm-action-btn {
+                    width: 36px !important;
+                    height: 36px !important;
+                    min-width: 36px !important;
+                    padding: 0 !important;
+                    border-radius: 10px !important;
+                    font-size: 14px !important;
+                    display: inline-flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                }
+
+                .data-table .calm-action-btn i {
+                    font-size: 14px !important;
+                    margin: 0 !important;
+                }
+
+                .data-table td:last-child > div form {
+                    display: inline-block !important;
+                    margin: 0 !important;
+                }
+
+                /* Pagination - Mobile */
+                .pagination-wrapper {
+                    padding: 15px 10px !important;
+                    margin-top: 20px !important;
+                    width: 100% !important;
+                }
+
+                .pagination-wrapper .custom-pagination {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    justify-content: space-between !important;
+                    align-items: center !important;
+                    width: 100% !important;
+                    gap: 15px !important;
+                }
+
+                .pagination-wrapper .pagination-info {
+                    position: static !important;
+                    flex: 0 0 auto !important;
+                    text-align: right !important;
+                }
+
+                html[dir='ltr'] .pagination-wrapper .pagination-info {
+                    text-align: left !important;
+                }
+
+                .pagination-wrapper .pagination-text {
+                    font-size: 12px !important;
+                    color: var(--text-secondary, #6b7280) !important;
+                    white-space: nowrap !important;
+                }
+
+                [data-theme="dark"] .pagination-wrapper .pagination-text {
+                    color: var(--text-secondary, #94a3b8) !important;
+                }
+
+                .pagination-wrapper .pagination-controls {
+                    flex: 0 0 auto !important;
+                    display: flex !important;
+                    gap: 4px !important;
+                    flex-wrap: wrap !important;
+                    justify-content: flex-start !important;
+                }
+
+                html[dir='rtl'] .pagination-wrapper .pagination-controls {
+                    justify-content: flex-end !important;
+                }
+
+                .pagination-wrapper .pagination-btn {
+                    min-width: 36px !important;
+                    height: 36px !important;
+                    padding: 6px 8px !important;
+                    font-size: 12px !important;
+                    border-radius: 8px !important;
+                }
+
+                [data-theme="dark"] .pagination-wrapper {
+                    background: transparent !important;
+                }
+
+                [data-theme="dark"] .pagination-wrapper .pagination-btn {
+                    background: var(--card-bg, #1e1f27) !important;
+                    border-color: var(--border-color, #2a2d3a) !important;
+                    color: var(--text-primary, #f1f5f9) !important;
+                }
+
+                [data-theme="dark"] .pagination-wrapper .pagination-btn:hover:not(.disabled):not(.active) {
+                    background: var(--sidebar-active-bg, #15171d) !important;
+                    color: var(--primary-color, #02c0ce) !important;
+                }
+
+                [data-theme="dark"] .pagination-wrapper .pagination-btn.active {
+                    background: var(--primary-color, #02c0ce) !important;
+                    color: white !important;
+                    border-color: var(--primary-color, #02c0ce) !important;
+                }
+            }
+
+            @media (max-width: 575px) {
+                .data-table {
+                    font-size: 13px !important;
+                }
+
+                .data-table tr {
+                    padding: 12px !important;
+                    border-radius: 16px !important;
+                }
+
+                .data-table td {
+                    grid-template-columns: 90px 1fr !important;
+                    padding: 12px 16px !important;
+                    font-size: 13px !important;
+                    gap: 10px !important;
+                }
+
+                html[dir='rtl'] .data-table td {
+                    grid-template-columns: 1fr 90px !important;
+                }
+
+                .data-table td::before {
+                    font-size: 9px !important;
+                }
+
+                .data-table .status-pill {
+                    padding: 4px 10px !important;
+                    font-size: 10px !important;
+                    font-weight: 800 !important;
+                    border-radius: 30px !important;
+                    display: inline-flex !important;
+                    width: fit-content !important;
+                    margin: 0 !important;
+                }
+
+                .data-table .calm-action-btn {
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    font-size: 13px !important;
+                }
+
+                .data-table .calm-action-btn i {
+                    font-size: 13px !important;
+                }
+
+                .data-table td:last-child {
+                    padding: 12px 20px !important;
+                    margin: 0 -12px -12px -12px !important;
+                    width: calc(100% + 24px) !important;
+                    max-width: calc(100% + 24px) !important;
+                }
+
+                .data-table td:last-child > div {
+                    gap: 6px !important;
+                }
+
+                /* Pagination - Extra Small */
+                .pagination-wrapper {
+                    padding: 12px 8px !important;
+                }
+
+                .pagination-wrapper .custom-pagination {
+                    gap: 10px !important;
+                }
+
+                .pagination-wrapper .pagination-text {
+                    font-size: 11px !important;
+                }
+
+                .pagination-wrapper .pagination-btn {
+                    min-width: 32px !important;
+                    height: 32px !important;
+                    padding: 5px 6px !important;
+                    font-size: 11px !important;
+                }
             }
         </style>
     @endpush

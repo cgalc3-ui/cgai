@@ -15,6 +15,10 @@ class ServiceController extends Controller
 
     public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $query = Service::with(['subCategory.category'])
             ->where('is_active', true);
 
@@ -68,8 +72,12 @@ class ServiceController extends Controller
         ], 201);
     }
 
-    public function show(Service $service)
+    public function show(Request $request, Service $service)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $service->load(['subCategory.category', 'pointsPricing']);
         
         $data = $this->filterLocaleColumns($service);

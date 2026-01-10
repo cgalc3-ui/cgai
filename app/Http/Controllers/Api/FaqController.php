@@ -14,8 +14,12 @@ class FaqController extends Controller
     /**
      * Display a listing of active FAQs.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $faqs = Faq::where('is_active', true)
             ->orderBy('category')
             ->orderBy('sort_order')
@@ -38,8 +42,12 @@ class FaqController extends Controller
     /**
      * Display a listing of FAQs by category.
      */
-    public function getByCategory($category)
+    public function getByCategory(Request $request, $category)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $faqs = Faq::where('is_active', true)
             ->where('category', $category)
             ->orderBy('sort_order')

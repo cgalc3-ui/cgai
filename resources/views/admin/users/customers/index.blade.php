@@ -225,19 +225,19 @@
             #editCustomerModal .modal-body {
                 padding: 28px;
             }
-            
+
             #addCustomerModal .form-group,
             #editCustomerModal .form-group {
                 margin-bottom: 20px;
             }
-            
+
             #addCustomerModal .form-group:last-child,
             #editCustomerModal .form-group:last-child,
             #addCustomerModal .form-row:last-child,
             #editCustomerModal .form-row:last-child {
                 margin-bottom: 0;
             }
-            
+
             /* Date and Gender fields styling */
             #addCustomerModal .form-row,
             #editCustomerModal .form-row {
@@ -248,14 +248,14 @@
                 max-width: 100% !important;
                 margin-bottom: 20px;
             }
-            
+
             #addCustomerModal .form-row .form-group,
             #editCustomerModal .form-row .form-group {
                 flex: 1 1 0 !important;
                 min-width: 0 !important;
                 margin-bottom: 0 !important;
             }
-            
+
             /* Form labels */
             #addCustomerModal .form-group label,
             #editCustomerModal .form-group label {
@@ -265,7 +265,7 @@
                 color: var(--text-primary, #343a40);
                 font-size: 14px;
             }
-            
+
             /* Form inputs */
             #addCustomerModal .form-control,
             #editCustomerModal .form-control {
@@ -279,26 +279,26 @@
                 background: white;
                 box-sizing: border-box;
             }
-            
+
             #addCustomerModal .form-control:focus,
             #editCustomerModal .form-control:focus {
                 outline: none !important;
                 border-color: var(--primary-color, #6658dd) !important;
                 box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1);
             }
-            
+
             #addCustomerModal .form-control:hover,
             #editCustomerModal .form-control:hover {
                 border-color: #d1d5db;
             }
-            
+
             /* Date input wrapper */
             #addCustomerModal .date-input-wrapper,
             #editCustomerModal .date-input-wrapper {
                 position: relative;
                 width: 100%;
             }
-            
+
             #addCustomerModal .date-input-wrapper .date-icon,
             #editCustomerModal .date-input-wrapper .date-icon {
                 position: absolute;
@@ -308,13 +308,13 @@
                 color: #6b7280;
                 pointer-events: none;
             }
-            
+
             html[dir='ltr'] #addCustomerModal .date-input-wrapper .date-icon,
             html[dir='ltr'] #editCustomerModal .date-input-wrapper .date-icon {
                 right: auto;
                 left: 12px;
             }
-            
+
             /* Modal footer */
             #addCustomerModal .modal-footer,
             #editCustomerModal .modal-footer {
@@ -325,7 +325,7 @@
                 gap: 12px;
                 background: #f9fafb;
             }
-            
+
             #addCustomerModal .modal-footer .btn,
             #editCustomerModal .modal-footer .btn {
                 padding: 10px 20px;
@@ -339,24 +339,24 @@
                 align-items: center;
                 gap: 8px;
             }
-            
+
             #addCustomerModal .modal-footer .btn-primary,
             #editCustomerModal .modal-footer .btn-primary {
                 background: var(--primary-color, #6658dd);
                 color: white;
             }
-            
+
             #addCustomerModal .modal-footer .btn-primary:hover,
             #editCustomerModal .modal-footer .btn-primary:hover {
                 background: var(--primary-dark, #564ab1);
             }
-            
+
             #addCustomerModal .modal-footer .btn-secondary,
             #editCustomerModal .modal-footer .btn-secondary {
                 background: #e5e7eb;
                 color: #6b7280;
             }
-            
+
             #addCustomerModal .modal-footer .btn-secondary:hover,
             #editCustomerModal .modal-footer .btn-secondary:hover {
                 background: #d1d5db;

@@ -116,7 +116,7 @@
                             <tr>
                                 <td>
                                     <span style="font-weight: 600; color: var(--text-primary, #1a202c);">
-                                        {{ $service->name }}
+                                        {{ $service->trans('name') }}
                                     </span>
                                 </td>
                                 <td>
@@ -152,7 +152,7 @@
                                 <td class="text-center">
                                     <button type="button" 
                                             class="calm-action-btn warning" 
-                                            onclick="openEditPricingModal({{ $service->id }}, 'service', '{{ $service->name }}', {{ $service->pointsPricing ? $service->pointsPricing->points_price : 'null' }}, {{ $service->pointsPricing && $service->pointsPricing->is_active ? 'true' : 'false' }})"
+                                            onclick="openEditPricingModal({{ $service->id }}, 'service', {{ json_encode($service->trans('name')) }}, {{ $service->pointsPricing ? $service->pointsPricing->points_price : 'null' }}, {{ $service->pointsPricing && $service->pointsPricing->is_active ? 'true' : 'false' }})"
                                             title="{{ __('messages.edit') ?? 'تعديل' }}">
                                         <i class="far fa-edit"></i>
                                     </button>
@@ -173,7 +173,7 @@
     </div>
 
     <!-- Consultations Pricing -->
-    <div class="card dashboard-card">
+    <div class="card dashboard-card" style="margin-bottom: 30px;">
         <div class="card-header">
             <h3 class="card-title">
                 <i class="fas fa-comments"></i> {{ __('messages.consultations_points_pricing') ?? 'أسعار الاستشارات بالنقاط' }}
@@ -196,7 +196,7 @@
                             <tr>
                                 <td>
                                     <span style="font-weight: 600; color: var(--text-primary, #1a202c);">
-                                        {{ $consultation->name }}
+                                        {{ $consultation->trans('name') }}
                                     </span>
                                 </td>
                                 <td>
@@ -232,7 +232,7 @@
                                 <td class="text-center">
                                     <button type="button" 
                                             class="calm-action-btn warning" 
-                                            onclick="openEditPricingModal({{ $consultation->id }}, 'consultation', '{{ $consultation->name }}', {{ $consultation->pointsPricing ? $consultation->pointsPricing->points_price : 'null' }}, {{ $consultation->pointsPricing && $consultation->pointsPricing->is_active ? 'true' : 'false' }})"
+                                            onclick="openEditPricingModal({{ $consultation->id }}, 'consultation', {{ json_encode($consultation->trans('name')) }}, {{ $consultation->pointsPricing ? $consultation->pointsPricing->points_price : 'null' }}, {{ $consultation->pointsPricing && $consultation->pointsPricing->is_active ? 'true' : 'false' }})"
                                             title="{{ __('messages.edit') ?? 'تعديل' }}">
                                         <i class="far fa-edit"></i>
                                     </button>
@@ -243,6 +243,86 @@
                                 <td colspan="5" class="text-center empty-state">
                                     <i class="fas fa-inbox" style="font-size: 48px; color: var(--text-secondary, #9ca3af); margin-bottom: 16px;"></i>
                                     <h3 style="color: var(--text-secondary, #6b7280); font-weight: 500;">{{ __('messages.no_consultations') ?? 'لا توجد استشارات' }}</h3>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscriptions Pricing -->
+    <div class="card dashboard-card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-crown"></i> {{ __('messages.subscriptions_points_pricing') ?? 'أسعار الاشتراكات بالنقاط' }}
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>{{ __('messages.subscription_name') ?? 'اسم الاشتراك' }}</th>
+                            <th>{{ __('messages.cash_price') ?? 'السعر النقدي' }}</th>
+                            <th>{{ __('messages.points_price') ?? 'سعر النقاط' }}</th>
+                            <th>{{ __('messages.status') ?? 'الحالة' }}</th>
+                            <th>{{ __('messages.actions') ?? 'الإجراءات' }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($subscriptions as $subscription)
+                            <tr>
+                                <td>
+                                    <span style="font-weight: 600; color: var(--text-primary, #1a202c);">
+                                        {{ $subscription->trans('name') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 600; color: var(--text-primary, #1a202c);">
+                                        {{ number_format($subscription->price ?? 0, 2) }}
+                                    </span>
+                                    <span style="font-size: 12px; color: var(--text-secondary, #6b7280); margin-right: 4px;">
+                                        {{ __('messages.sar') ?? 'ريال' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($subscription->pointsPricing)
+                                        <span style="font-weight: 700; color: var(--primary-color, #02c0ce); font-size: 15px;">
+                                            {{ number_format($subscription->pointsPricing->points_price, 2) }}
+                                        </span>
+                                        <span style="font-size: 12px; color: var(--text-secondary, #6b7280); margin-right: 4px;">
+                                            {{ __('messages.points') ?? 'نقطة' }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted" style="font-style: italic;">
+                                            <i class="fas fa-minus-circle" style="margin-left: 4px;"></i>
+                                            {{ __('messages.not_set') ?? 'غير محدد' }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($subscription->pointsPricing && $subscription->pointsPricing->is_active)
+                                        <span class="status-pill active">{{ __('messages.active') ?? 'نشط' }}</span>
+                                    @else
+                                        <span class="status-pill cancelled">{{ __('messages.inactive') ?? 'غير نشط' }}</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" 
+                                            class="calm-action-btn warning" 
+                                            onclick="openEditPricingModal({{ $subscription->id }}, 'subscription', {{ json_encode($subscription->trans('name')) }}, {{ $subscription->pointsPricing ? $subscription->pointsPricing->points_price : 'null' }}, {{ $subscription->pointsPricing && $subscription->pointsPricing->is_active ? 'true' : 'false' }})"
+                                            title="{{ __('messages.edit') ?? 'تعديل' }}">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center empty-state">
+                                    <i class="fas fa-inbox" style="font-size: 48px; color: var(--text-secondary, #9ca3af); margin-bottom: 16px;"></i>
+                                    <h3 style="color: var(--text-secondary, #6b7280); font-weight: 500;">{{ __('messages.no_subscriptions') ?? 'لا توجد اشتراكات' }}</h3>
                                 </td>
                             </tr>
                         @endforelse
@@ -601,6 +681,114 @@
             border-color: #2a2d3a;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .modal-body {
+            padding: 24px;
+            border-radius: 0 0 24px 24px;
+            background: white;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: white;
+            border-radius: 0 0 24px 24px;
+        }
+
         /* Form Input Focus Styles for Modal */
         #points_price:focus {
             outline: none !important;
@@ -642,6 +830,84 @@
         [data-theme="dark"] .switch-container:hover {
             border-color: var(--primary-color, #02c0ce);
         }
+
+        /* Dark Mode Modal Styles */
+        [data-theme="dark"] .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        [data-theme="dark"] .modal {
+            background: var(--card-bg, #1e1f27);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="dark"] .modal-header {
+            background: var(--card-bg, #1e1f27);
+            border-bottom-color: var(--border-color, #2a2d3a);
+        }
+
+        [data-theme="dark"] .modal-header h2 {
+            color: var(--text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .modal-close {
+            color: var(--text-secondary, #94a3b8);
+            background: transparent;
+        }
+
+        [data-theme="dark"] .modal-close:hover {
+            background: var(--sidebar-active-bg, #15171d);
+            color: var(--text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: var(--card-bg, #1e1f27);
+            color: var(--text-primary, #f1f5f9);
+        }
+
+        [data-theme="dark"] .modal-footer {
+            background: var(--card-bg, #1e1f27);
+            border-top-color: var(--border-color, #2a2d3a);
+        }
+
+        [data-theme="dark"] #item_name {
+            background: var(--sidebar-active-bg, #15171d) !important;
+            border-color: var(--border-color, #2a2d3a) !important;
+            color: var(--text-secondary, #94a3b8) !important;
+        }
+
+        [data-theme="dark"] #points_price {
+            background: var(--card-bg, #1e1f27) !important;
+            border-color: var(--border-color, #2a2d3a) !important;
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] #points_price:focus {
+            background: var(--card-bg, #1e1f27) !important;
+            border-color: var(--primary-color, #02c0ce) !important;
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] .form-group label {
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] .form-text {
+            color: var(--text-secondary, #94a3b8) !important;
+        }
+
+        [data-theme="dark"] .checkbox-label {
+            background: var(--sidebar-active-bg, #15171d) !important;
+            border-color: var(--border-color, #2a2d3a) !important;
+        }
+
+        [data-theme="dark"] .checkbox-label span {
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] .required {
+            color: #ef4444 !important;
+        }
     </style>
     @endpush
 
@@ -655,9 +921,14 @@
             document.getElementById('is_active').checked = isActive !== false;
             
             // Set form action
-            const route = itemType === 'service' 
-                ? '{{ route("admin.points.services.pricing", ":id") }}'.replace(':id', itemId)
-                : '{{ route("admin.points.consultations.pricing", ":id") }}'.replace(':id', itemId);
+            let route;
+            if (itemType === 'service') {
+                route = '{{ route("admin.points.services.pricing", ":id") }}'.replace(':id', itemId);
+            } else if (itemType === 'consultation') {
+                route = '{{ route("admin.points.consultations.pricing", ":id") }}'.replace(':id', itemId);
+            } else if (itemType === 'subscription') {
+                route = '{{ route("admin.points.subscriptions.pricing", ":id") }}'.replace(':id', itemId);
+            }
             document.getElementById('editPricingForm').action = route;
             
             document.getElementById('editPricingModal').classList.add('show');

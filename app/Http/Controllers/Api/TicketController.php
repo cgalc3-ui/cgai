@@ -19,6 +19,10 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         $query = Ticket::where('user_id', $user->id)
@@ -53,6 +57,10 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $request->validate([
             'subject' => 'required|string|max:255',
             'description' => 'required|string',
@@ -127,6 +135,10 @@ class TicketController extends Controller
      */
     public function show(Request $request, Ticket $ticket)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         // Check authorization
@@ -156,6 +168,10 @@ class TicketController extends Controller
      */
     public function addMessage(Request $request, $ticketId)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $request->validate([
             'message' => 'required|string',
             'is_internal' => 'nullable|boolean',
@@ -222,6 +238,10 @@ class TicketController extends Controller
      */
     public function updateStatus(Request $request, Ticket $ticket)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         if (!$user->isAdminOrStaff()) {

@@ -15,6 +15,10 @@ class SubCategoryController extends Controller
 
     public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $query = SubCategory::with('category')->where('is_active', true);
         
         if ($request->has('category_id')) {
@@ -49,8 +53,12 @@ class SubCategoryController extends Controller
         ], 201);
     }
 
-    public function show(SubCategory $subCategory)
+    public function show(Request $request, SubCategory $subCategory)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $subCategory->load(['category', 'services']);
 
         return response()->json([

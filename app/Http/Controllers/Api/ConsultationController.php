@@ -17,6 +17,10 @@ class ConsultationController extends Controller
      */
     public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $query = Consultation::with('category')
             ->where('is_active', true);
 
@@ -45,8 +49,12 @@ class ConsultationController extends Controller
     /**
      * Get single consultation
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $consultation = Consultation::with(['category', 'pointsPricing'])->findOrFail($id);
         
         $data = $this->filterLocaleColumns($consultation);
@@ -63,8 +71,12 @@ class ConsultationController extends Controller
     /**
      * Get consultations by category
      */
-    public function byCategory($categoryId)
+    public function byCategory(Request $request, $categoryId)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $consultations = Consultation::with(['category', 'pointsPricing'])
             ->where('category_id', $categoryId)
             ->where('is_active', true)

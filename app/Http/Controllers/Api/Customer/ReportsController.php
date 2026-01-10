@@ -30,6 +30,10 @@ class ReportsController extends Controller
      */
     public function index(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         if (!$user) {
@@ -230,15 +234,17 @@ class ReportsController extends Controller
             }
             
             $mostUsedConsultations = $mostUsedConsultationsQuery
-                ->select('consultations.id', 'consultations.name', DB::raw('count(*) as bookings_count'))
-                ->groupBy('consultations.id', 'consultations.name')
+                ->select('consultations.id', 'consultations.name', 'consultations.name_en', DB::raw('count(*) as bookings_count'))
+                ->groupBy('consultations.id', 'consultations.name', 'consultations.name_en')
                 ->orderBy('bookings_count', 'desc')
                 ->limit(5)
                 ->get()
-                ->map(function($item) {
+                ->map(function($item) use ($locale) {
+                    $consultation = \App\Models\Consultation::find($item->id);
                     return [
                         'id' => $item->id,
-                        'name' => $item->name,
+                        'name' => $consultation ? $consultation->trans('name') : $item->name,
+                        'name_en' => $item->name_en ?? null,
                         'bookings_count' => $item->bookings_count,
                     ];
                 });
@@ -254,31 +260,31 @@ class ReportsController extends Controller
             ->latest()
             ->limit(10)
             ->get()
-            ->map(function($booking) {
+            ->map(function($booking) use ($locale) {
                 return [
                     'id' => $booking->id,
                     'service' => $booking->service ? [
                         'id' => $booking->service->id,
-                        'name' => $booking->service->name,
+                        'name' => $booking->service->trans('name'),
                         'name_en' => $booking->service->name_en,
                         'sub_category' => $booking->service->subCategory ? [
                             'id' => $booking->service->subCategory->id,
-                            'name' => $booking->service->subCategory->name,
+                            'name' => $booking->service->subCategory->trans('name'),
                             'name_en' => $booking->service->subCategory->name_en,
                             'category' => $booking->service->subCategory->category ? [
                                 'id' => $booking->service->subCategory->category->id,
-                                'name' => $booking->service->subCategory->category->name,
+                                'name' => $booking->service->subCategory->category->trans('name'),
                                 'name_en' => $booking->service->subCategory->category->name_en,
                             ] : null,
                         ] : null,
                     ] : null,
                     'consultation' => $booking->consultation ? [
                         'id' => $booking->consultation->id,
-                        'name' => $booking->consultation->name,
+                        'name' => $booking->consultation->trans('name'),
                         'name_en' => $booking->consultation->name_en,
                         'category' => $booking->consultation->category ? [
                             'id' => $booking->consultation->category->id,
-                            'name' => $booking->consultation->category->name,
+                            'name' => $booking->consultation->category->trans('name'),
                             'name_en' => $booking->consultation->category->name_en,
                         ] : null,
                     ] : null,
@@ -312,17 +318,17 @@ class ReportsController extends Controller
             ->orderBy('booking_date', 'asc')
             ->orderBy('start_time', 'asc')
             ->get()
-            ->map(function($booking) {
+            ->map(function($booking) use ($locale) {
                 return [
                     'id' => $booking->id,
                     'service' => $booking->service ? [
                         'id' => $booking->service->id,
-                        'name' => $booking->service->name,
+                        'name' => $booking->service->trans('name'),
                         'name_en' => $booking->service->name_en,
                     ] : null,
                     'consultation' => $booking->consultation ? [
                         'id' => $booking->consultation->id,
-                        'name' => $booking->consultation->name,
+                        'name' => $booking->consultation->trans('name'),
                         'name_en' => $booking->consultation->name_en,
                     ] : null,
                     'employee' => $booking->employee ? [
@@ -394,6 +400,10 @@ class ReportsController extends Controller
      */
     public function activityLog(Request $request)
     {
+        // Set locale from request (query parameter or header)
+        $locale = $request->get('locale', $request->header('Accept-Language', app()->getLocale()));
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         if (!$user) {
@@ -439,8 +449,8 @@ class ReportsController extends Controller
                     'type' => 'booking',
                     'type_label' => __('messages.booking'),
                     'title' => $booking->service 
-                        ? $booking->service->name 
-                        : ($booking->consultation ? $booking->consultation->name : __('messages.booking')),
+                        ? $booking->service->trans('name')
+                        : ($booking->consultation ? $booking->consultation->trans('name') : __('messages.booking')),
                     'description' => $this->getBookingDescription($booking),
                     'status' => $booking->status,
                     'status_label' => $this->getBookingStatusLabel($booking->status),
@@ -455,11 +465,11 @@ class ReportsController extends Controller
                         'booking_id' => $booking->id,
                         'service' => $booking->service ? [
                             'id' => $booking->service->id,
-                            'name' => $booking->service->name,
+                            'name' => $booking->service->trans('name'),
                         ] : null,
                         'consultation' => $booking->consultation ? [
                             'id' => $booking->consultation->id,
-                            'name' => $booking->consultation->name,
+                            'name' => $booking->consultation->trans('name'),
                         ] : null,
                         'employee' => $booking->employee ? [
                             'id' => $booking->employee->id,
@@ -537,7 +547,7 @@ class ReportsController extends Controller
                     'id' => 'subscription_request_' . $subscriptionRequest->id,
                     'type' => 'subscription_request',
                     'type_label' => __('messages.subscription_request'),
-                    'title' => $subscriptionRequest->subscription->name ?? __('messages.subscription_request'),
+                    'title' => $subscriptionRequest->subscription ? $subscriptionRequest->subscription->trans('name') : __('messages.subscription_request'),
                     'description' => $this->getSubscriptionRequestDescription($subscriptionRequest),
                     'status' => $subscriptionRequest->status,
                     'status_label' => $this->getSubscriptionRequestStatusLabel($subscriptionRequest->status),
@@ -550,7 +560,7 @@ class ReportsController extends Controller
                         'request_id' => $subscriptionRequest->id,
                         'subscription' => [
                             'id' => $subscriptionRequest->subscription->id ?? null,
-                            'name' => $subscriptionRequest->subscription->name ?? null,
+                            'name' => $subscriptionRequest->subscription ? $subscriptionRequest->subscription->trans('name') : null,
                         ],
                     ],
                 ]);
@@ -587,7 +597,7 @@ class ReportsController extends Controller
                     'id' => 'user_subscription_' . $subscription->id,
                     'type' => 'subscription',
                     'type_label' => __('messages.subscription'),
-                    'title' => $subscription->subscription->name ?? __('messages.subscription'),
+                    'title' => $subscription->subscription ? $subscription->subscription->trans('name') : __('messages.subscription'),
                     'description' => $this->getUserSubscriptionDescription($subscription),
                     'status' => $subscription->status,
                     'status_label' => $this->getUserSubscriptionStatusLabel($subscription->status),
@@ -600,7 +610,7 @@ class ReportsController extends Controller
                         'subscription_id' => $subscription->id,
                         'subscription' => [
                             'id' => $subscription->subscription->id ?? null,
-                            'name' => $subscription->subscription->name ?? null,
+                            'name' => $subscription->subscription ? $subscription->subscription->trans('name') : null,
                         ],
                         'started_at' => $subscription->started_at,
                         'expires_at' => $subscription->expires_at,
@@ -629,8 +639,8 @@ class ReportsController extends Controller
                     'type' => 'payment',
                     'type_label' => __('messages.payment'),
                     'title' => __('messages.payment_booking') . ': ' . ($payment->service 
-                        ? $payment->service->name 
-                        : ($payment->consultation ? $payment->consultation->name : __('messages.booking'))),
+                        ? $payment->service->trans('name')
+                        : ($payment->consultation ? $payment->consultation->trans('name') : __('messages.booking'))),
                     'description' => __('messages.payment_amount_paid') . ' ' . number_format($payment->total_price, 2) . ' ' . __('messages.sar'),
                     'status' => 'paid',
                     'status_label' => __('messages.paid'),
@@ -645,11 +655,11 @@ class ReportsController extends Controller
                         'booking_id' => $payment->id,
                         'service' => $payment->service ? [
                             'id' => $payment->service->id,
-                            'name' => $payment->service->name,
+                            'name' => $payment->service->trans('name'),
                         ] : null,
                         'consultation' => $payment->consultation ? [
                             'id' => $payment->consultation->id,
-                            'name' => $payment->consultation->name,
+                            'name' => $payment->consultation->trans('name'),
                         ] : null,
                     ],
                 ]);
@@ -697,8 +707,8 @@ class ReportsController extends Controller
     private function getBookingDescription($booking)
     {
         $serviceName = $booking->service 
-            ? $booking->service->name 
-            : ($booking->consultation ? $booking->consultation->name : __('messages.booking'));
+            ? $booking->service->trans('name')
+            : ($booking->consultation ? $booking->consultation->trans('name') : __('messages.booking'));
         
         $statusLabel = $this->getBookingStatusLabel($booking->status);
         
@@ -756,8 +766,9 @@ class ReportsController extends Controller
     private function getSubscriptionRequestDescription($request)
     {
         $statusLabel = $this->getSubscriptionRequestStatusLabel($request->status);
+        $subscriptionName = $request->subscription ? $request->subscription->trans('name') : __('messages.subscription');
         
-        return __('messages.subscription_request_package') . ": {$request->subscription->name} - " . __('messages.status') . ": {$statusLabel}";
+        return __('messages.subscription_request_package') . ": {$subscriptionName} - " . __('messages.status') . ": {$statusLabel}";
     }
 
     /**
@@ -780,12 +791,13 @@ class ReportsController extends Controller
     private function getUserSubscriptionDescription($subscription)
     {
         $statusLabel = $this->getUserSubscriptionStatusLabel($subscription->status);
+        $subscriptionName = $subscription->subscription ? $subscription->subscription->trans('name') : __('messages.subscription');
         
         $expiresText = $subscription->expires_at 
             ? ' - ' . __('messages.expires_at') . ': ' . $subscription->expires_at->format('Y-m-d')
             : '';
         
-        return __('messages.subscription_package') . ": {$subscription->subscription->name} - " . __('messages.status') . ": {$statusLabel}{$expiresText}";
+        return __('messages.subscription_package') . ": {$subscriptionName} - " . __('messages.status') . ": {$statusLabel}{$expiresText}";
     }
 
     /**

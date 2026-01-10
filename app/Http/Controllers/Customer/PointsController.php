@@ -29,6 +29,80 @@ class PointsController extends Controller
         $wallet = $user->getOrCreateWallet();
         $settings = PointsSetting::getActive();
 
+        // Get current locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
+        // Get services with points pricing
+        $services = \App\Models\Service::where('is_active', true)
+            ->whereHas('pointsPricing', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->with('pointsPricing')
+            ->get()
+            ->filter(function ($service) {
+                return $service->pointsPricing !== null;
+            })
+            ->map(function ($service) use ($locale) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->trans('name'),
+                    'description' => $service->trans('description'),
+                    'price' => (float) $service->price,
+                    'points_price' => (float) $service->pointsPricing->points_price,
+                    'is_active' => $service->is_active,
+                ];
+            })
+            ->values();
+
+        // Get consultations with points pricing
+        $consultations = \App\Models\Consultation::where('is_active', true)
+            ->whereHas('pointsPricing', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->with('pointsPricing')
+            ->get()
+            ->filter(function ($consultation) {
+                return $consultation->pointsPricing !== null;
+            })
+            ->map(function ($consultation) use ($locale) {
+                return [
+                    'id' => $consultation->id,
+                    'name' => $consultation->trans('name'),
+                    'description' => $consultation->trans('description'),
+                    'price' => (float) $consultation->fixed_price,
+                    'points_price' => (float) $consultation->pointsPricing->points_price,
+                    'is_active' => $consultation->is_active,
+                ];
+            })
+            ->values();
+
+        // Get subscriptions with points pricing
+        $subscriptions = \App\Models\Subscription::where('is_active', true)
+            ->whereHas('pointsPricing', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->with('pointsPricing')
+            ->get()
+            ->filter(function ($subscription) {
+                return $subscription->pointsPricing !== null;
+            })
+            ->map(function ($subscription) use ($locale) {
+                return [
+                    'id' => $subscription->id,
+                    'name' => $subscription->trans('name'),
+                    'description' => $subscription->trans('description'),
+                    'price' => (float) $subscription->price,
+                    'points_price' => (float) $subscription->pointsPricing->points_price,
+                    'duration_type' => $subscription->duration_type,
+                    'max_debtors' => $subscription->max_debtors,
+                    'max_messages' => $subscription->max_messages,
+                    'ai_enabled' => $subscription->ai_enabled,
+                    'is_active' => $subscription->is_active,
+                ];
+            })
+            ->values();
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -37,9 +111,12 @@ class PointsController extends Controller
                     'user_id' => $wallet->user_id,
                 ],
                 'settings' => [
-                    'points_per_riyal' => (float) $settings->points_per_riyal,
-                    'is_active' => $settings->is_active,
+                    'points_per_riyal' => $settings ? (float) $settings->points_per_riyal : 10.0,
+                    'is_active' => $settings ? $settings->is_active : false,
                 ],
+                'services' => $services,
+                'consultations' => $consultations,
+                'subscriptions' => $subscriptions,
             ],
         ]);
     }

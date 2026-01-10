@@ -151,6 +151,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/settings', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'updateSettings'])->name('settings.update');
         Route::post('/services/{serviceId}/pricing', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'updateServicePricing'])->name('services.pricing');
         Route::post('/consultations/{consultationId}/pricing', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'updateConsultationPricing'])->name('consultations.pricing');
+        Route::post('/subscriptions/{subscriptionId}/pricing', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'updateSubscriptionPricing'])->name('subscriptions.pricing');
         Route::get('/transactions', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'transactions'])->name('transactions');
         Route::get('/wallets', [\App\Http\Controllers\Admin\PointsSettingsController::class, 'wallets'])->name('wallets');
     });

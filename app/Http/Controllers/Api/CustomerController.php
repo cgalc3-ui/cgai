@@ -180,12 +180,16 @@ class CustomerController extends Controller
      */
     public function dashboard(Request $request)
     {
+        // Set locale from request
+        $locale = $request->get('locale', app()->getLocale());
+        app()->setLocale($locale);
+
         $user = $request->user();
 
         if (!$user->isCustomer()) {
             return response()->json([
                 'success' => false,
-                'message' => 'ليس لديك صلاحية للوصول',
+                'message' => __('messages.unauthorized_access'),
             ], 403);
         }
 

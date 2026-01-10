@@ -88,11 +88,9 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>{{ __('messages.id') ?? 'المعرف' }}</th>
                             <th>{{ __('messages.user') ?? 'المستخدم' }}</th>
                             <th>{{ __('messages.type') ?? 'النوع' }}</th>
                             <th>{{ __('messages.points') ?? 'النقاط' }}</th>
-                            <th>{{ __('messages.amount_paid') ?? 'المبلغ المدفوع' }}</th>
                             <th>{{ __('messages.balance_before') ?? 'الرصيد قبل' }}</th>
                             <th>{{ __('messages.balance_after') ?? 'الرصيد بعد' }}</th>
                             <th>{{ __('messages.booking') ?? 'الحجز' }}</th>
@@ -102,7 +100,6 @@
                     <tbody>
                         @forelse($transactions as $transaction)
                             <tr>
-                                <td>#{{ $transaction->id }}</td>
                                 <td>
                                     <div class="user-cell">
                                         <span>{{ $transaction->user->name ?? 'N/A' }}</span>
@@ -124,13 +121,6 @@
                                         {{ $transaction->points > 0 ? '+' : '' }}{{ number_format($transaction->points, 2) }}
                                     </span>
                                 </td>
-                                <td>
-                                    @if($transaction->amount_paid)
-                                        {{ number_format($transaction->amount_paid, 2) }} {{ __('messages.sar') ?? 'ريال' }}
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
                                 <td>{{ number_format($transaction->balance_before, 2) }}</td>
                                 <td>{{ number_format($transaction->balance_after, 2) }}</td>
                                 <td>
@@ -151,7 +141,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center empty-state">
+                                <td colspan="7" class="text-center empty-state">
                                     <i class="fas fa-inbox"></i>
                                     <h3>{{ __('messages.no_transactions') ?? 'لا توجد معاملات' }}</h3>
                                 </td>

@@ -181,17 +181,17 @@
             #editAdminModal .modal-body {
                 padding: 28px;
             }
-            
+
             #addAdminModal .form-group,
             #editAdminModal .form-group {
                 margin-bottom: 20px;
             }
-            
+
             #addAdminModal .form-group:last-child,
             #editAdminModal .form-group:last-child {
                 margin-bottom: 0;
             }
-            
+
             /* Form labels */
             #addAdminModal .form-group label,
             #editAdminModal .form-group label {
@@ -201,7 +201,7 @@
                 color: var(--text-primary, #343a40);
                 font-size: 14px;
             }
-            
+
             /* Form inputs */
             #addAdminModal .form-control,
             #editAdminModal .form-control {
@@ -215,19 +215,19 @@
                 background: white !important;
                 box-sizing: border-box !important;
             }
-            
+
             #addAdminModal .form-control:focus,
             #editAdminModal .form-control:focus {
                 outline: none !important;
                 border-color: var(--primary-color, #6658dd) !important;
                 box-shadow: 0 0 0 3px rgba(102, 88, 221, 0.1) !important;
             }
-            
+
             #addAdminModal .form-control:hover,
             #editAdminModal .form-control:hover {
                 border-color: #d1d5db !important;
             }
-            
+
             /* Modal footer */
             #addAdminModal .modal-footer,
             #editAdminModal .modal-footer {
@@ -238,7 +238,7 @@
                 gap: 12px;
                 background: #f9fafb;
             }
-            
+
             #addAdminModal .modal-footer .btn,
             #editAdminModal .modal-footer .btn {
                 padding: 10px 20px;
@@ -252,24 +252,24 @@
                 align-items: center;
                 gap: 8px;
             }
-            
+
             #addAdminModal .modal-footer .btn-primary,
             #editAdminModal .modal-footer .btn-primary {
                 background: var(--primary-color, #6658dd);
                 color: white;
             }
-            
+
             #addAdminModal .modal-footer .btn-primary:hover,
             #editAdminModal .modal-footer .btn-primary:hover {
                 background: var(--primary-dark, #564ab1);
             }
-            
+
             #addAdminModal .modal-footer .btn-secondary,
             #editAdminModal .modal-footer .btn-secondary {
                 background: #e5e7eb;
                 color: #6b7280;
             }
-            
+
             #addAdminModal .modal-footer .btn-secondary:hover,
             #editAdminModal .modal-footer .btn-secondary:hover {
                 background: #d1d5db;
@@ -318,6 +318,158 @@
             [data-theme="dark"] #editAdminModal .modal-footer .btn-secondary:hover {
                 background: var(--bg-light, #15171d) !important;
                 color: var(--text-primary, #f1f5f9) !important;
+            }
+
+            /* Mobile: Table Borders - Stronger */
+            @media (max-width: 767px) {
+                .data-table tr {
+                    border: 3px solid #9ca3af !important;
+                    border-radius: 20px !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+                }
+
+                [data-theme="dark"] .data-table tr {
+                    border: 3px solid #4b5563 !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+                }
+
+                .data-table td {
+                    border-bottom: 2px solid #d1d5db !important;
+                }
+
+                [data-theme="dark"] .data-table td {
+                    border-bottom: 2px solid #4b5563 !important;
+                }
+
+                .data-table td:last-child {
+                    border-bottom: none !important;
+                }
+
+                /* Actions column - last row, aligned to start (first column) */
+                .data-table td:last-child {
+                    display: flex !important;
+                    justify-content: flex-start !important;
+                    background: #f8fafc !important;
+                    padding: 14px 20px !important;
+                    margin: 0 !important;
+                    border-bottom: none !important;
+                    grid-template-columns: 1fr !important;
+                }
+
+                [data-theme="dark"] .data-table td:last-child {
+                    background: var(--sidebar-active-bg, #15171d) !important;
+                }
+
+                html[dir='rtl'] .data-table td:last-child {
+                    justify-content: flex-end !important;
+                }
+
+                .data-table td:last-child::before {
+                    display: none !important;
+                }
+
+                .data-table td:last-child > div {
+                    display: flex !important;
+                    gap: 8px !important;
+                    flex-wrap: wrap !important;
+                    justify-content: flex-start !important;
+                    width: 100% !important;
+                    align-items: center !important;
+                }
+
+                html[dir='rtl'] .data-table td:last-child > div {
+                    justify-content: flex-end !important;
+                }
+
+                /* Smaller action buttons */
+                .data-table .calm-action-btn {
+                    width: 36px !important;
+                    height: 36px !important;
+                    min-width: 36px !important;
+                    padding: 0 !important;
+                    border-radius: 10px !important;
+                    font-size: 14px !important;
+                    display: inline-flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                }
+
+                .data-table .calm-action-btn i {
+                    font-size: 14px !important;
+                    margin: 0 !important;
+                }
+
+                .data-table .calm-action-btn.warning {
+                    background: #fffbeb !important;
+                    color: #d97706 !important;
+                    border-color: #fef3c7 !important;
+                }
+
+                .data-table .calm-action-btn.danger {
+                    background: #fff1f2 !important;
+                    color: #e11d48 !important;
+                    border-color: #fecaca !important;
+                }
+
+                .data-table td:last-child > div form {
+                    display: inline-block !important;
+                    margin: 0 !important;
+                }
+            }
+
+            /* Extra Small Screens */
+            @media (max-width: 575px) {
+                .data-table .calm-action-btn {
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    font-size: 13px !important;
+                }
+
+                .data-table .calm-action-btn i {
+                    font-size: 13px !important;
+                }
+
+                .data-table td:last-child {
+                    padding: 12px 20px !important;
+                }
+
+                .data-table td:last-child > div {
+                    gap: 6px !important;
+                }
+            }
+
+            /* Mobile: Smaller Filter Buttons */
+            @media (max-width: 767px) {
+                .filter-actions .btn {
+                    height: 38px !important;
+                    padding: 0 16px !important;
+                    font-size: 13px !important;
+                    min-width: 80px !important;
+                    gap: 6px !important;
+                }
+
+                .filter-actions .btn i {
+                    font-size: 12px !important;
+                }
+            }
+
+            @media (max-width: 575px) {
+                .filter-actions .btn {
+                    height: 36px !important;
+                    padding: 0 12px !important;
+                    font-size: 12px !important;
+                    min-width: 70px !important;
+                    gap: 4px !important;
+                }
+
+                .filter-actions .btn i {
+                    font-size: 11px !important;
+                }
+
+                .filter-actions {
+                    gap: 8px !important;
+                }
             }
         </style>
     @endpush

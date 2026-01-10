@@ -12,6 +12,7 @@ class ServicePointsPricing extends Model
     protected $fillable = [
         'service_id',
         'consultation_id',
+        'subscription_id',
         'item_type',
         'points_price',
         'is_active',
@@ -39,7 +40,15 @@ class ServicePointsPricing extends Model
     }
 
     /**
-     * Get pricing for a service or consultation
+     * Get the subscription
+     */
+    public function subscription(): BelongsTo
+    {
+        return $this->belongsTo(Subscription::class);
+    }
+
+    /**
+     * Get pricing for a service, consultation, or subscription
      */
     public static function getPricing($itemType, $itemId)
     {
@@ -48,11 +57,18 @@ class ServicePointsPricing extends Model
                 ->where('item_type', 'service')
                 ->where('is_active', true)
                 ->first();
-        } else {
+        } elseif ($itemType === 'consultation') {
             return static::where('consultation_id', $itemId)
                 ->where('item_type', 'consultation')
                 ->where('is_active', true)
                 ->first();
+        } elseif ($itemType === 'subscription') {
+            return static::where('subscription_id', $itemId)
+                ->where('item_type', 'subscription')
+                ->where('is_active', true)
+                ->first();
         }
+        
+        return null;
     }
 }
