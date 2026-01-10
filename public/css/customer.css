@@ -977,32 +977,747 @@ body {
     justify-content: center;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ============================================
+   RESPONSIVE STYLES - ALL SCREEN SIZES
+   ============================================ */
+
+/* Large Screens (1200px and up) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px;
+    }
+    
+    .services-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .employees-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Medium Screens / Tablets (768px to 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .container {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+    
+    .header-content {
+        padding: 12px 0;
+    }
+    
+    .logo a {
+        font-size: 20px;
+    }
+    
+    .logo i {
+        font-size: 24px;
+    }
+    
+    .header-nav {
+        gap: 15px;
+    }
+    
+    .nav-link {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+    
+    .services-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .employees-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .time-slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+    
     .payment-container {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .page-header h1 {
+        font-size: 28px;
+    }
+    
+    .service-category {
+        padding: 25px;
+    }
+    
+    .category-title {
+        font-size: 22px;
+    }
+}
+
+/* Small Screens / Mobile Landscape (576px to 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .customer-header {
+        position: sticky;
+        top: 0;
+    }
+    
+    .header-content {
+        padding: 10px 0;
+    }
+    
+    .logo a {
+        font-size: 18px;
+    }
+    
+    .logo i {
+        font-size: 22px;
+    }
+    
+    .header-nav {
+        gap: 10px;
+    }
+    
+    .nav-link {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .nav-link span {
+        display: none;
+    }
+    
+    .customer-main {
+        padding: 30px 0;
+    }
+    
+    .page-header {
+        margin-bottom: 30px;
+    }
+    
+    .page-header h1 {
+        font-size: 24px;
+    }
+    
+    .page-header p {
+        font-size: 14px;
     }
     
     .booking-steps {
         flex-direction: column;
         gap: 15px;
+        padding: 15px;
     }
     
     .step::after {
         display: none;
     }
     
+    .step-number {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .step-label {
+        font-size: 11px;
+    }
+    
     .services-list,
     .employees-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .service-card {
+        padding: 20px;
+    }
+    
+    .service-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    
+    .service-content h3 {
+        font-size: 18px;
+    }
+    
+    .service-content p {
+        font-size: 13px;
+    }
+    
+    .employee-card {
+        padding: 20px;
+    }
+    
+    .employee-avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 32px;
+    }
+    
+    .employee-content h3 {
+        font-size: 18px;
     }
     
     .time-slots-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+    }
+    
+    .time-slot-card {
+        padding: 15px;
+    }
+    
+    .payment-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .booking-summary-card,
+    .payment-methods-card {
+        padding: 20px;
+    }
+    
+    .summary-card {
+        padding: 20px;
+    }
+    
+    .summary-card h3 {
+        font-size: 18px;
+    }
+    
+    .date-selector {
+        padding: 20px;
+    }
+    
+    .date-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .date-form input[type="date"] {
+        width: 100%;
+        min-width: 100%;
     }
     
     .success-actions {
         flex-direction: column;
+        gap: 10px;
+    }
+    
+    .success-actions .btn {
+        width: 100%;
+    }
+    
+    .booking-card {
+        padding: 20px;
+    }
+    
+    .booking-info {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .booking-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .booking-footer .btn {
+        width: 100%;
+    }
+}
+
+/* Extra Small Screens / Mobile Portrait (up to 575px) */
+@media (max-width: 575px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .customer-header {
+        position: sticky;
+        top: 0;
+    }
+    
+    .header-content {
+        padding: 10px 0;
+        flex-wrap: wrap;
+    }
+    
+    .logo {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .logo a {
+        font-size: 16px;
+        gap: 8px;
+    }
+    
+    .logo i {
+        font-size: 20px;
+    }
+    
+    .logo span {
+        font-size: 16px;
+    }
+    
+    .header-nav {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .nav-link {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+    
+    .nav-link i {
+        font-size: 14px;
+    }
+    
+    .nav-link span {
+        display: none;
+    }
+    
+    .customer-main {
+        padding: 20px 0;
+    }
+    
+    .page-header {
+        margin-bottom: 25px;
+        text-align: right;
+    }
+    
+    .page-header h1 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+    
+    .page-header p {
+        font-size: 13px;
+    }
+    
+    .alert {
+        padding: 12px 15px;
+        font-size: 13px;
+    }
+    
+    .alert i {
+        font-size: 16px;
+    }
+    
+    .booking-steps {
+        flex-direction: column;
+        gap: 12px;
+        padding: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .step {
+        width: 100%;
+    }
+    
+    .step::after {
+        display: none;
+    }
+    
+    .step-number {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+    
+    .step-label {
+        font-size: 10px;
+    }
+    
+    .services-grid {
+        gap: 25px;
+    }
+    
+    .service-category {
+        padding: 20px;
+    }
+    
+    .category-title {
+        font-size: 18px;
+        margin-bottom: 15px;
+        padding-bottom: 12px;
+    }
+    
+    .services-list {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .service-card {
+        padding: 18px;
+    }
+    
+    .service-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+    }
+    
+    .service-content h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .service-content p {
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .service-meta {
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    
+    .service-meta span {
+        font-size: 12px;
+    }
+    
+    .btn {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+    
+    .btn-sm {
+        padding: 8px 14px;
+        font-size: 11px;
+    }
+    
+    .employees-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .employee-card {
+        padding: 18px;
+    }
+    
+    .employee-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+    
+    .employee-content h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .employee-specialization {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+    
+    .employee-bio {
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .employee-rate {
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .service-summary {
+        margin-bottom: 25px;
+    }
+    
+    .summary-card {
+        padding: 18px;
+    }
+    
+    .summary-card h3 {
+        font-size: 16px;
+        margin-bottom: 15px;
+        padding-bottom: 12px;
+    }
+    
+    .summary-item {
+        padding: 10px 0;
+        font-size: 13px;
+    }
+    
+    .summary-item.total {
+        font-size: 16px;
+        margin-top: 8px;
+        padding-top: 12px;
+    }
+    
+    .summary-item.total .value {
+        font-size: 20px;
+    }
+    
+    .date-selector {
+        padding: 18px;
+        margin-bottom: 25px;
+    }
+    
+    .date-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .date-form label {
+        font-size: 13px;
+    }
+    
+    .date-form input[type="date"] {
+        width: 100%;
+        min-width: 100%;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .time-slots-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    
+    .time-slot-card {
+        padding: 12px;
+    }
+    
+    .time-slot-time {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .review-booking-container {
+        max-width: 100%;
+    }
+    
+    .booking-details-card {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .booking-details-card h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+    }
+    
+    .detail-row {
+        padding: 12px 0;
+        font-size: 13px;
+    }
+    
+    .detail-row.total {
+        font-size: 18px;
+        margin-top: 12px;
+        padding-top: 15px;
+    }
+    
+    .detail-value.price {
+        font-size: 20px;
+    }
+    
+    .booking-form {
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    
+    .form-control {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+    
+    .payment-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .booking-summary-card,
+    .payment-methods-card {
+        padding: 20px;
+    }
+    
+    .payment-methods-card h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+    
+    .payment-method {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .payment-method input[type="radio"] {
+        margin-left: 0;
+        margin-bottom: 8px;
+    }
+    
+    .payment-method label {
+        padding: 12px;
+        font-size: 13px;
+    }
+    
+    .payment-info {
+        padding: 12px;
+        margin-top: 15px;
+    }
+    
+    .payment-info .note {
+        font-size: 12px;
+    }
+    
+    .success-container {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+    
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 40px;
+        margin-bottom: 25px;
+    }
+    
+    .success-container h1 {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+    
+    .success-message {
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+    
+    .success-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .success-actions .btn {
+        width: 100%;
+    }
+    
+    .bookings-list {
+        gap: 15px;
+    }
+    
+    .booking-card {
+        padding: 18px;
+    }
+    
+    .booking-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 15px;
+        padding-bottom: 12px;
+    }
+    
+    .booking-id {
+        width: 100%;
+    }
+    
+    .booking-body {
+        margin-bottom: 15px;
+    }
+    
+    .booking-info {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .info-item {
+        font-size: 13px;
+    }
+    
+    .info-item i {
+        width: 18px;
+        font-size: 14px;
+    }
+    
+    .booking-footer {
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 12px;
+    }
+    
+    .booking-footer .btn {
+        width: 100%;
+    }
+    
+    .badge {
+        padding: 3px 10px;
+        font-size: 11px;
+    }
+    
+    .empty-state {
+        padding: 40px 15px;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state p {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .customer-footer {
+        padding: 15px 0;
+    }
+    
+    .customer-footer p {
+        font-size: 12px;
+    }
+    
+    .login-required {
+        padding: 30px 20px;
+    }
+    
+    .login-prompt i {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+    
+    .login-prompt h3 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+    
+    .login-prompt p {
+        font-size: 13px;
+        margin-bottom: 20px;
     }
 }
 
