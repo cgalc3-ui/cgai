@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SubCategorySeeder::class,
             ServiceSeeder::class,
-            ServiceDurationSeeder::class,
             EmployeeSeeder::class,
             TimeSlotSeeder::class,
         ]);

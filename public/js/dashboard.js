@@ -11,33 +11,192 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 5000);
     });
 
-    // Mobile menu toggle
-    const menuToggle = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
-
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
-    }
-
     // Sidebar collapse toggle
     const sidebarToggle = document.getElementById('sidebarToggle');
     const dashboardContainer = document.getElementById('dashboardContainer');
+    const sidebar = document.getElementById('sidebar');
 
-    // Check for saved sidebar state
+    // Create sidebar overlay for mobile
+    let sidebarOverlay = document.querySelector('.sidebar-overlay');
+    if (!sidebarOverlay) {
+        sidebarOverlay = document.createElement('div');
+        sidebarOverlay.className = 'sidebar-overlay';
+        document.body.appendChild(sidebarOverlay);
+    }
+
+    // Check if we're on mobile
+    function isMobile() {
+        return window.innerWidth <= 767;
+    }
+
+    // Toggle sidebar on mobile
+    function toggleSidebarMobile() {
+        if (!sidebar) return;
+        
+        const isOpen = sidebar.classList.contains('open');
+        if (isOpen) {
+            closeSidebarMobile();
+        } else {
+            openSidebarMobile();
+        }
+    }
+
+    // Open sidebar on mobile
+    function openSidebarMobile() {
+        if (!sidebar) return;
+        
+        // Make sidebar visible first (but still off-screen)
+        sidebar.style.visibility = 'visible';
+        sidebar.style.opacity = '1';
+        sidebar.style.pointerEvents = 'auto';
+        
+        // Force reflow to ensure visibility is applied
+        sidebar.offsetHeight;
+        
+        // Then add open class to trigger slide-in animation
+        requestAnimationFrame(() => {
+            sidebar.classList.add('open');
+        });
+        
+        // Show overlay
+        if (sidebarOverlay) {
+            sidebarOverlay.style.display = 'block';
+            sidebarOverlay.style.visibility = 'visible';
+            sidebarOverlay.style.opacity = '1';
+            sidebarOverlay.style.pointerEvents = 'auto';
+            sidebarOverlay.classList.add('show');
+        }
+        
+        // Prevent body scroll
+        document.body.classList.add('sidebar-open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close sidebar on mobile
+    function closeSidebarMobile() {
+        if (!sidebar) return;
+        
+        // Remove open class to trigger slide-out animation
+        sidebar.classList.remove('open');
+        
+        // Hide overlay
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.remove('show');
+            sidebarOverlay.style.display = 'none';
+            sidebarOverlay.style.visibility = 'hidden';
+            sidebarOverlay.style.opacity = '0';
+            sidebarOverlay.style.pointerEvents = 'none';
+        }
+        
+        // Restore body scroll
+        document.body.classList.remove('sidebar-open');
+        document.body.style.overflow = '';
+        
+        // Hide sidebar after slide-out animation completes
+        setTimeout(() => {
+            if (!sidebar.classList.contains('open')) {
+                sidebar.style.visibility = 'hidden';
+                sidebar.style.opacity = '1'; // Keep opacity at 1
+                sidebar.style.pointerEvents = 'none';
+            }
+        }, 300);
+    }
+    
+    // Initialize sidebar as hidden on mobile
+    if (isMobile() && sidebar) {
+        sidebar.style.visibility = 'hidden';
+        sidebar.style.opacity = '1'; // Keep opacity at 1, only use visibility
+        sidebar.style.pointerEvents = 'none';
+        sidebar.classList.remove('open');
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.remove('show');
+        }
+    }
+
+    // Check for saved sidebar state (only on desktop)
     const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-    if (isCollapsed) {
+    if (isCollapsed && !isMobile()) {
         if (dashboardContainer) dashboardContainer.classList.add('sidebar-collapsed');
     }
 
     if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', () => {
-            if (dashboardContainer) {
-                dashboardContainer.classList.toggle('sidebar-collapsed');
-                localStorage.setItem('sidebarCollapsed', dashboardContainer.classList.contains('sidebar-collapsed'));
+        sidebarToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (isMobile()) {
+                toggleSidebarMobile();
+            } else {
+                if (dashboardContainer) {
+                    dashboardContainer.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', dashboardContainer.classList.contains('sidebar-collapsed'));
+                }
             }
         });
+    }
+
+    // Close sidebar when clicking overlay
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+            closeSidebarMobile();
+        });
+    }
+
+    // Close sidebar when clicking outside on mobile
+    if (sidebar) {
+        document.addEventListener('click', (e) => {
+            if (isMobile() && sidebar.classList.contains('open')) {
+                if (!sidebar.contains(e.target) && 
+                    sidebarToggle && !sidebarToggle.contains(e.target) &&
+                    !sidebarOverlay.contains(e.target)) {
+                    closeSidebarMobile();
+                }
+            }
+        });
+    }
+    
+    // Close sidebar when pressing Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isMobile() && sidebar && sidebar.classList.contains('open')) {
+            closeSidebarMobile();
+        }
+    });
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (!isMobile()) {
+                closeSidebarMobile();
+                // Restore collapsed state on desktop
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (dashboardContainer) {
+                    if (isCollapsed) {
+                        dashboardContainer.classList.add('sidebar-collapsed');
+                    } else {
+                        dashboardContainer.classList.remove('sidebar-collapsed');
+                    }
+                }
+            } else {
+                // Ensure sidebar is hidden on mobile after resize
+                if (sidebar && !sidebar.classList.contains('open')) {
+                    sidebar.style.visibility = 'hidden';
+                    sidebar.style.opacity = '0';
+                }
+            }
+        }, 250);
+    });
+    
+    // Initialize on page load
+    if (isMobile() && sidebar) {
+        // Ensure sidebar starts hidden
+        sidebar.style.visibility = 'hidden';
+        sidebar.style.opacity = '0';
+        sidebar.classList.remove('open');
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.remove('show');
+        }
     }
 
     // Ensure active nav group is open on load
@@ -87,7 +246,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Modal functionality
     initModals();
+
+    // Make tables responsive on mobile
+    makeTablesResponsive();
 });
+
+// Make tables responsive by adding data-label attributes
+function makeTablesResponsive() {
+    const tables = document.querySelectorAll('.data-table');
+    
+    tables.forEach(table => {
+        const headers = table.querySelectorAll('thead th');
+        const rows = table.querySelectorAll('tbody tr');
+        
+        headers.forEach((header, index) => {
+            const headerText = header.textContent.trim();
+            rows.forEach(row => {
+                const cell = row.querySelectorAll('td')[index];
+                if (cell) {
+                    cell.setAttribute('data-label', headerText);
+                }
+            });
+        });
+    });
+}
 
 // Toggle navigation group
 function toggleNavGroup(element) {

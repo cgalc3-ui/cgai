@@ -135,6 +135,68 @@
         .alert li {
             margin: 5px 0;
         }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .login-container {
+                padding: 30px 25px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+
+            .login-header p {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            body {
+                padding: 10px;
+            }
+
+            .login-container {
+                padding: 25px 20px;
+                border-radius: 15px;
+            }
+
+            .login-header {
+                margin-bottom: 25px;
+            }
+
+            .login-header h1 {
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+
+            .login-header p {
+                font-size: 12px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .form-group label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .form-group input {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .btn-login {
+                padding: 12px;
+                font-size: 15px;
+            }
+        }
     </style>
 </head>
 <body>

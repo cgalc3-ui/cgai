@@ -87,7 +87,6 @@
     <div class="filter-container" data-filter-title="{{ __('messages.filter_options') }}">
         <form method="GET" action="{{ route('admin.invoices.index') }}" class="filter-form">
             <div class="filter-inputs">
-                <div class="filter-group-container">
                 <div class="filter-group">
                     <label for="customer_id"><i class="fas fa-user"></i> {{ __('messages.customer') }}:</label>
                     <select name="customer_id" id="customer_id" class="filter-input">
@@ -120,14 +119,13 @@
                         <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('messages.cancelled') }}</option>
                     </select>
                 </div>
-                <div class="filter-group date-from-group">
+                <div class="filter-group">
                     <label for="date_from"><i class="fas fa-calendar-alt"></i> {{ __('messages.date_from') }}:</label>
                     <input type="date" name="date_from" id="date_from" class="filter-input" value="{{ request('date_from') }}">
                 </div>
-                <div class="filter-group date-to-group">
+                <div class="filter-group">
                     <label for="date_to"><i class="fas fa-calendar-alt"></i> {{ __('messages.date_to') }}:</label>
                     <input type="date" name="date_to" id="date_to" class="filter-input" value="{{ request('date_to') }}">
-                </div>
                 </div>
                 <div class="filter-group">
                     <label for="search"><i class="fas fa-search"></i> {{ __('messages.search') }}:</label>
@@ -274,20 +272,6 @@
                 background: rgba(59, 130, 246, 0.1);
                 color: #3b82f6;
             }
-            .filter-group-container {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 100%;
-                padding: 0 0px;
-                gap: 97px;
-                margin: 0 auto;
-                max-width: 100%;
-                width: 100%;
-                flex-direction: row;
-                flex: 1 !important;
-
-            }
 
             .stat-card-icon-circle.purple {
                 background: rgba(168, 85, 247, 0.1);
@@ -298,20 +282,304 @@
                 opacity: 0.9;
             }
 
-                /* Add margin between date fields */
-            .date-from-group {
-                margin-inline-end:0 60px !important;
+            /* Responsive Styles for Invoices Page */
+            @media (min-width: 1200px) {
+                .filter-form {
+                    flex-direction: row;
+                    align-items: flex-end;
+                    gap: 24px;
+                }
+
+                .filter-inputs {
+                    flex: 1;
+                    gap: 20px;
+                    flex-wrap: wrap;
+                }
+
+                .filter-group {
+                    min-width: 200px;
+                    flex: 1;
+                }
+
+                .filter-actions {
+                    flex-shrink: 0;
+                }
             }
 
-            /* .date-to-group {
-                margin-inline-start: 0 !important;
-            } */
-            .filter-group {
-                margin:0 20px !important;
-                min-width: 200px !important;
+            @media (min-width: 768px) and (max-width: 1199px) {
+                .filter-form {
+                    flex-direction: row;
+                    align-items: flex-end;
+                    gap: 20px;
+                }
+
+                .filter-inputs {
+                    flex: 1;
+                    gap: 15px;
+                    flex-wrap: wrap;
+                }
+
+                .filter-group {
+                    min-width: 180px;
+                    flex: 1;
+                }
+
+                .filter-actions {
+                    flex-shrink: 0;
+                }
             }
-            .filter-input {
-                width: 100%;
+
+            @media (max-width: 767px) {
+                .filter-container {
+                    padding: 20px;
+                    margin-bottom: 20px;
+                }
+
+                .filter-container::before {
+                    font-size: 14px;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                }
+
+                .filter-form {
+                    flex-direction: column;
+                    align-items: stretch;
+                    gap: 20px;
+                }
+
+                .filter-inputs {
+                    flex-direction: column;
+                    gap: 15px;
+                    width: 100%;
+                    flex-wrap: nowrap;
+                }
+
+                .filter-group {
+                    width: 100%;
+                    min-width: 100%;
+                    margin: 0;
+                    flex: 1;
+                }
+
+                .filter-group label {
+                    font-size: 13px;
+                    margin-bottom: 6px;
+                }
+
+                .filter-input,
+                .filter-select {
+                    height: 44px;
+                    font-size: 14px;
+                    width: 100%;
+                }
+
+                .filter-actions {
+                    width: 100%;
+                    flex-direction: row;
+                    gap: 10px;
+                    margin-top: 0;
+                    height: auto;
+                    align-self: stretch;
+                }
+
+                .filter-actions .btn {
+                    flex: 1;
+                    width: auto;
+                    height: 44px;
+                    min-width: 0;
+                }
+
+                .page-header {
+                    flex-direction: column;
+                    gap: 15px;
+                    align-items: flex-start;
+                }
+
+                .page-header-right {
+                    flex-direction: column;
+                    gap: 10px;
+                    width: 100%;
+                }
+
+                .page-header-right .btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .page-header-right .total-count {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+
+            @media (max-width: 575px) {
+                .filter-container {
+                    padding: 15px;
+                    margin-bottom: 15px;
+                }
+
+                .filter-container::before {
+                    font-size: 13px;
+                    margin-bottom: 12px;
+                    padding-bottom: 8px;
+                }
+
+                .filter-form {
+                    gap: 15px;
+                }
+
+                .filter-inputs {
+                    gap: 12px;
+                }
+
+                .filter-group {
+                    gap: 6px;
+                }
+
+                .filter-group label {
+                    font-size: 12px;
+                }
+
+                .filter-group label i {
+                    width: 20px;
+                    height: 20px;
+                    font-size: 12px;
+                }
+
+                .filter-input,
+                .filter-select {
+                    height: 42px;
+                    font-size: 13px;
+                    padding: 0 14px;
+                }
+
+                .filter-actions {
+                    flex-direction: column;
+                    gap: 10px;
+                    height: auto;
+                }
+
+                .filter-actions .btn {
+                    width: 100%;
+                    height: 42px;
+                    font-size: 13px;
+                }
+
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+
+                .stat-card {
+                    padding: 18px;
+                }
+
+                .stat-card-value {
+                    font-size: 22px;
+                }
+
+                .stat-card-icon-circle {
+                    width: 45px;
+                    height: 45px;
+                    font-size: 20px;
+                }
+
+                .page-header {
+                    padding: 15px;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 15px;
+                }
+
+                .page-header-left {
+                    width: 100%;
+                }
+
+                .page-header-left h2 {
+                    font-size: 18px;
+                }
+
+                .page-header-left p {
+                    font-size: 12px;
+                }
+
+                .page-header-right {
+                    margin-top: 0;
+                    width: 100%;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .page-header-right .btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .page-header-right .total-count {
+                    width: 100%;
+                    text-align: center;
+                    padding: 8px 12px;
+                    font-size: 12px;
+                }
+
+                .table-container {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    margin-bottom: 15px;
+                }
+
+                .data-table {
+                    font-size: 11px;
+                }
+
+                .data-table th,
+                .data-table td {
+                    padding: 8px 6px;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                    gap: 6px;
+                }
+
+                .calm-action-btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .user-info .user-name {
+                    font-size: 12px;
+                }
+
+                .user-info .user-details {
+                    font-size: 11px;
+                }
+
+                .service-name {
+                    font-size: 12px;
+                }
+
+                .datetime-info .date {
+                    font-size: 11px;
+                }
+
+                .datetime-info .time {
+                    font-size: 10px;
+                }
+
+                .price {
+                    font-size: 13px;
+                }
+
+                .badge {
+                    font-size: 10px;
+                    padding: 4px 8px;
+                }
+
+                .pagination-wrapper {
+                    padding: 15px 10px !important;
+                }
             }
         </style>
     @endpush
