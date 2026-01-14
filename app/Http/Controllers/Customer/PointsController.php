@@ -130,7 +130,7 @@ class PointsController extends Controller
         $transactions = PointsTransaction::where('user_id', $user->id)
             ->with(['booking'])
             ->latest()
-            ->paginate(20);
+            ->paginate(10);
 
         return response()->json([
             'success' => true,

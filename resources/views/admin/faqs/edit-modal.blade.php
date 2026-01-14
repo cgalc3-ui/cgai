@@ -20,6 +20,18 @@
     </div>
 
     <div class="form-group">
+        <label for="role">{{ __('messages.role') }} <span class="required">*</span></label>
+        <select id="role" name="role" class="form-control" required>
+            <option value="customer" {{ old('role', $faq->role ?? 'customer') == 'customer' ? 'selected' : '' }}>{{ __('messages.customer_role') }}</option>
+            <option value="staff" {{ old('role', $faq->role ?? 'customer') == 'staff' ? 'selected' : '' }}>{{ __('messages.staff_role') }}</option>
+            <option value="admin" {{ old('role', $faq->role ?? 'customer') == 'admin' ? 'selected' : '' }}>{{ __('messages.admin_role') }}</option>
+        </select>
+        @error('role')
+            <span class="error-message">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
         <label for="category">{{ __('messages.category') }} <span class="required">*</span></label>
         <select id="category" name="category" class="form-control" required>
             <option value="general" {{ old('category', $faq->category) == 'general' ? 'selected' : '' }}>{{ __('messages.general') }}</option>

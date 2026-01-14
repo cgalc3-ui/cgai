@@ -91,7 +91,7 @@
                     <div class="stat-card-value-container">
                         <h2 class="stat-card-value">{{ number_format($stats['completed_bookings'] ?? 0) }}</h2>
                         <span class="stat-card-trend up">
-                            <i class="fas fa-arrow-up"></i> {{ number_format($stats['completed_bookings'] ?? 0) }}
+                            <i class="fas fa-check-circle"></i>
                         </span>
                     </div>
                     <span class="stat-card-subtitle">{{ __('messages.completed') }}</span>
@@ -1200,7 +1200,7 @@
                                 setTimeout(() => loadTickets(), 300);
                             }
                             // Show success message
-                            alert('{{ __('messages.success') }}');
+                            Toast.success('{{ __('messages.success') }}');
                         } else {
                             // Show validation errors
                             if (data.errors) {
@@ -1221,13 +1221,13 @@
                                         : data.errors['attachments.*'];
                                 }
                             } else {
-                                alert('{{ __('messages.error') }}: ' + (data.message || '{{ __('messages.error') }}'));
+                                Toast.error(data.message || '{{ __('messages.error') }}');
                             }
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('{{ __('messages.error') }}');
+                        Toast.error('{{ __('messages.error') }}');
                     })
                     .finally(() => {
                         // Re-enable submit button

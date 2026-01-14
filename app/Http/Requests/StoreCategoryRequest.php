@@ -20,6 +20,7 @@ class StoreCategoryRequest extends FormRequest
             'slug' => 'nullable|string|max:255|unique:categories,slug',
             'description' => 'nullable|string',
             'description_en' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'nullable|boolean',
         ];
     }

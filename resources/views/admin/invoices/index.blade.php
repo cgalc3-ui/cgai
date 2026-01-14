@@ -285,47 +285,63 @@
             /* Responsive Styles for Invoices Page */
             @media (min-width: 1200px) {
                 .filter-form {
+                    display: flex;
                     flex-direction: row;
                     align-items: flex-end;
                     gap: 24px;
+                    width: 100%;
                 }
 
                 .filter-inputs {
+                    display: flex;
                     flex: 1;
                     gap: 20px;
                     flex-wrap: wrap;
+                    min-width: 0;
                 }
 
                 .filter-group {
-                    min-width: 200px;
-                    flex: 1;
+                    min-width: 180px;
+                    max-width: 250px;
+                    flex: 1 1 auto;
                 }
 
                 .filter-actions {
+                    display: flex;
                     flex-shrink: 0;
+                    gap: 12px;
+                    align-items: center;
                 }
             }
 
             @media (min-width: 768px) and (max-width: 1199px) {
                 .filter-form {
+                    display: flex;
                     flex-direction: row;
                     align-items: flex-end;
                     gap: 20px;
+                    width: 100%;
                 }
 
                 .filter-inputs {
+                    display: flex;
                     flex: 1;
                     gap: 15px;
                     flex-wrap: wrap;
+                    min-width: 0;
                 }
 
                 .filter-group {
-                    min-width: 180px;
-                    flex: 1;
+                    min-width: 160px;
+                    max-width: 220px;
+                    flex: 1 1 auto;
                 }
 
                 .filter-actions {
+                    display: flex;
                     flex-shrink: 0;
+                    gap: 12px;
+                    align-items: center;
                 }
             }
 

@@ -14,6 +14,9 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Toast CSS -->
+    <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
+    
     <style>
         * {
             margin: 0;
@@ -206,15 +209,6 @@
             <p>مرحباً بك في لوحة التحكم</p>
         </div>
 
-        @if($errors->any())
-            <div class="alert alert-error">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
 
         <form action="{{ route('login.submit') }}" method="POST" id="loginForm">
             @csrf
@@ -241,7 +235,23 @@
             </button>
         </form>
 
+        <script src="{{ asset('js/toast.js') }}"></script>
         <script>
+            // Show toast notifications from session
+            @if(session('success'))
+                Toast.success('{{ session('success') }}');
+            @endif
+
+            @if(session('error'))
+                Toast.error('{{ session('error') }}');
+            @endif
+
+            @if($errors->any())
+                @foreach($errors->all() as $error)
+                    Toast.error('{{ $error }}');
+                @endforeach
+            @endif
+
             document.getElementById('loginForm').addEventListener('submit', function(e) {
                 const btn = document.getElementById('submitBtn');
                 btn.disabled = true;

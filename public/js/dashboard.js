@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Toggle sidebar on mobile
     function toggleSidebarMobile() {
         if (!sidebar) return;
-        
+
         const isOpen = sidebar.classList.contains('open');
         if (isOpen) {
             closeSidebarMobile();
@@ -44,20 +44,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Open sidebar on mobile
     function openSidebarMobile() {
         if (!sidebar) return;
-        
+
         // Make sidebar visible first (but still off-screen)
         sidebar.style.visibility = 'visible';
         sidebar.style.opacity = '1';
         sidebar.style.pointerEvents = 'auto';
-        
+
         // Force reflow to ensure visibility is applied
         sidebar.offsetHeight;
-        
+
         // Then add open class to trigger slide-in animation
         requestAnimationFrame(() => {
             sidebar.classList.add('open');
         });
-        
+
         // Show overlay
         if (sidebarOverlay) {
             sidebarOverlay.style.display = 'block';
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sidebarOverlay.style.pointerEvents = 'auto';
             sidebarOverlay.classList.add('show');
         }
-        
+
         // Prevent body scroll
         document.body.classList.add('sidebar-open');
         document.body.style.overflow = 'hidden';
@@ -75,10 +75,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close sidebar on mobile
     function closeSidebarMobile() {
         if (!sidebar) return;
-        
+
         // Remove open class to trigger slide-out animation
         sidebar.classList.remove('open');
-        
+
         // Hide overlay
         if (sidebarOverlay) {
             sidebarOverlay.classList.remove('show');
@@ -87,11 +87,11 @@ document.addEventListener('DOMContentLoaded', function () {
             sidebarOverlay.style.opacity = '0';
             sidebarOverlay.style.pointerEvents = 'none';
         }
-        
+
         // Restore body scroll
         document.body.classList.remove('sidebar-open');
         document.body.style.overflow = '';
-        
+
         // Hide sidebar after slide-out animation completes
         setTimeout(() => {
             if (!sidebar.classList.contains('open')) {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, 300);
     }
-    
+
     // Initialize sidebar as hidden on mobile
     if (isMobile() && sidebar) {
         sidebar.style.visibility = 'hidden';
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
         sidebarToggle.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            
+
             if (isMobile()) {
                 toggleSidebarMobile();
             } else {
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sidebar) {
         document.addEventListener('click', (e) => {
             if (isMobile() && sidebar.classList.contains('open')) {
-                if (!sidebar.contains(e.target) && 
+                if (!sidebar.contains(e.target) &&
                     sidebarToggle && !sidebarToggle.contains(e.target) &&
                     !sidebarOverlay.contains(e.target)) {
                     closeSidebarMobile();
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
+
     // Close sidebar when pressing Escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && isMobile() && sidebar && sidebar.classList.contains('open')) {
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, 250);
     });
-    
+
     // Initialize on page load
     if (isMobile() && sidebar) {
         // Ensure sidebar starts hidden
@@ -254,11 +254,11 @@ document.addEventListener('DOMContentLoaded', function () {
 // Make tables responsive by adding data-label attributes
 function makeTablesResponsive() {
     const tables = document.querySelectorAll('.data-table');
-    
+
     tables.forEach(table => {
         const headers = table.querySelectorAll('thead th');
         const rows = table.querySelectorAll('tbody tr');
-        
+
         headers.forEach((header, index) => {
             const headerText = header.textContent.trim();
             rows.forEach(row => {
@@ -332,6 +332,14 @@ function closeModal(modalElement) {
 
     if (modalElement) {
         modalElement.classList.remove('show');
+
+        // Handle explicit display styles set by some scripts
+        setTimeout(() => {
+            if (!modalElement.classList.contains('show')) {
+                modalElement.style.display = 'none';
+            }
+        }, 300);
+
         document.body.style.overflow = '';
 
         // Reset form if exists

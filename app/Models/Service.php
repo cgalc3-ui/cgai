@@ -110,4 +110,12 @@ class Service extends Model
             ->where('item_type', 'service')
             ->where('is_active', true);
     }
+
+    /**
+     * Get all ratings/reviews for this service
+     */
+    public function reviews()
+    {
+        return $this->morphMany(Rating::class, 'ratable')->where('is_approved', true);
+    }
 }

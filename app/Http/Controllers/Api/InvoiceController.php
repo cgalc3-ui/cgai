@@ -62,7 +62,7 @@ class InvoiceController extends Controller
         // Order by paid_at if exists, otherwise by created_at
         $invoices = $query->orderBy('paid_at', 'desc')
             ->orderBy('created_at', 'desc')
-            ->paginate($request->per_page ?? 15);
+            ->paginate($request->per_page ?? 10);
 
         // Format invoices
         $formattedInvoices = $invoices->getCollection()->map(function ($booking) use ($locale) {

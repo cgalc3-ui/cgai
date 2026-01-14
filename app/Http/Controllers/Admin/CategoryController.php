@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -24,18 +25,18 @@ class CategoryController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('name_en', 'like', "%{$search}%");
+                    ->orWhere('name_en', 'like', "%{$search}%");
             });
         }
 
-        $categories = $query->latest()->paginate(15)->withQueryString();
+        $categories = $query->latest()->paginate(10)->withQueryString();
         return view('admin.categories.index', compact('categories'));
     }
 
     public function create(Request $request)
     {
         $view = view('admin.categories.create-modal');
-        
+
         return response()->json([
             'html' => $view->render()
         ]);
@@ -45,11 +46,15 @@ class CategoryController extends Controller
     {
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
+
         if (empty($data['slug'])) {
             unset($data['slug']);
         }
-        
+
+        if ($request->hasFile('image')) {
+            $data['image'] = Storage::url($request->file('image')->store('categories', 'public'));
+        }
+
         Category::create($data);
 
         if ($request->ajax()) {
@@ -67,7 +72,7 @@ class CategoryController extends Controller
     public function edit(Request $request, Category $category)
     {
         $view = view('admin.categories.edit-modal', compact('category'));
-        
+
         return response()->json([
             'html' => $view->render()
         ]);
@@ -77,11 +82,23 @@ class CategoryController extends Controller
     {
         $data = $request->validated();
         $data['is_active'] = $request->has('is_active') ? true : false;
-        
+
         if (empty($data['slug'])) {
             unset($data['slug']);
         }
-        
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($category->image) {
+                $oldPath = str_replace(Storage::url(''), '', $category->image);
+                if (empty($oldPath)) {
+                    $oldPath = str_replace('/storage/', '', $category->image);
+                }
+                Storage::disk('public')->delete($oldPath);
+            }
+            $data['image'] = Storage::url($request->file('image')->store('categories', 'public'));
+        }
+
         $category->update($data);
 
         if ($request->ajax()) {

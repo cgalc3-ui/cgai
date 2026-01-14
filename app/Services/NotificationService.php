@@ -211,5 +211,155 @@ class NotificationService
             ]
         );
     }
+
+    /**
+     * Ready App Order created notification
+     */
+    public function readyAppOrderCreated($order)
+    {
+        $app = $order->app;
+        $user = $order->user;
+
+        // Notify customer
+        $this->notifyCustomer(
+            $user,
+            'ready_app_order_created',
+            'messages.ready_app_order_created_success',
+            'messages.ready_app_order_created_message',
+            [
+                'order_id' => $order->id,
+                'app_id' => $app->id,
+                'app_name' => $app->name,
+                'app_name_en' => $app->name_en,
+                'price' => $order->price,
+                'currency' => $order->currency,
+            ]
+        );
+
+        // Notify admins
+        $this->notifyAdmins(
+            'new_ready_app_order',
+            'messages.new_ready_app_order',
+            'messages.new_ready_app_order_from_customer',
+            [
+                'order_id' => $order->id,
+                'customer_id' => $user->id,
+                'app_id' => $app->id,
+                'customer' => $user->name,
+                'app_name' => $app->name,
+                'app_name_en' => $app->name_en,
+                'price' => $order->price,
+            ]
+        );
+    }
+
+    /**
+     * Ready App Order status updated notification
+     */
+    public function readyAppOrderStatusUpdated($order, $oldStatus)
+    {
+        $statusKeys = [
+            'approved' => 'messages.ready_app_order_approved',
+            'processing' => 'messages.ready_app_order_processing',
+            'completed' => 'messages.ready_app_order_completed',
+            'cancelled' => 'messages.ready_app_order_cancelled',
+            'rejected' => 'messages.ready_app_order_rejected',
+        ];
+
+        $titleKey = $statusKeys[$order->status] ?? 'messages.ready_app_order_status_updated';
+        $app = $order->app;
+        $user = $order->user;
+
+        // Notify customer
+        $this->notifyCustomer(
+            $user,
+            'ready_app_order_status_updated',
+            $titleKey,
+            'messages.ready_app_order_status_updated_message',
+            [
+                'order_id' => $order->id,
+                'old_status' => $oldStatus,
+                'new_status' => $order->status,
+                'app_name' => $app->name,
+                'app_name_en' => $app->name_en,
+                'status_key' => $titleKey,
+            ]
+        );
+    }
+
+    /**
+     * AI Service Order created notification
+     */
+    public function aiServiceOrderCreated($order)
+    {
+        $service = $order->service;
+        $user = $order->user;
+
+        // Notify customer
+        $this->notifyCustomer(
+            $user,
+            'ai_service_order_created',
+            'messages.ai_service_order_created_success',
+            'messages.ai_service_order_created_message',
+            [
+                'order_id' => $order->id,
+                'service_id' => $service->id,
+                'service_name' => $service->name,
+                'service_name_en' => $service->name_en,
+                'price' => $order->price,
+                'currency' => $order->currency,
+            ]
+        );
+
+        // Notify admins
+        $this->notifyAdmins(
+            'new_ai_service_order',
+            'messages.new_ai_service_order',
+            'messages.new_ai_service_order_from_customer',
+            [
+                'order_id' => $order->id,
+                'customer_id' => $user->id,
+                'service_id' => $service->id,
+                'customer' => $user->name,
+                'service_name' => $service->name,
+                'service_name_en' => $service->name_en,
+                'price' => $order->price,
+            ]
+        );
+    }
+
+    /**
+     * AI Service Order status updated notification
+     */
+    public function aiServiceOrderStatusUpdated($order, $oldStatus)
+    {
+        $statusKeys = [
+            'approved' => 'messages.ai_service_order_approved',
+            'processing' => 'messages.ai_service_order_processing',
+            'completed' => 'messages.ai_service_order_completed',
+            'cancelled' => 'messages.ai_service_order_cancelled',
+            'rejected' => 'messages.ai_service_order_rejected',
+        ];
+
+        $titleKey = $statusKeys[$order->status] ?? 'messages.ai_service_order_status_updated';
+        $service = $order->service;
+        $user = $order->user;
+
+        // Notify customer
+        $this->notifyCustomer(
+            $user,
+            'ai_service_order_status_updated',
+            $titleKey,
+            'messages.ai_service_order_status_updated_message',
+            [
+                'order_id' => $order->id,
+                'old_status' => $oldStatus,
+                'new_status' => $order->status,
+                'service_name' => $service->name,
+                'service_name_en' => $service->name_en,
+                'status_key' => $titleKey,
+            ]
+        );
+    }
 }
 

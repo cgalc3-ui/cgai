@@ -179,7 +179,7 @@ class PointsSettingsController extends Controller
             $query->whereDate('created_at', '<=', $request->to_date);
         }
 
-        $transactions = $query->paginate(20);
+        $transactions = $query->paginate(10);
 
         // Get all customers for filter dropdown
         $customers = User::where('role', 'customer')
@@ -215,7 +215,7 @@ class PointsSettingsController extends Controller
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $wallets = $query->paginate(20);
+        $wallets = $query->paginate(10);
 
         // Statistics
         $totalWallets = Wallet::count();

@@ -19,7 +19,8 @@ class SubscriptionController extends Controller
 
     public function __construct(NotificationService $notificationService)
     {
-        $this->middleware('auth:sanctum');
+        // Allow public access to listing and details, keep other actions protected
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
         $this->notificationService = $notificationService;
     }
 
@@ -33,13 +34,19 @@ class SubscriptionController extends Controller
         app()->setLocale($locale);
 
         $subscriptions = Subscription::active()->get();
-        $activeSubscription = auth()->user()->getActiveSubscription();
-        $pendingRequest = SubscriptionRequest::where('user_id', auth()->id())
-            ->where('status', 'pending')
-            ->with(['subscription' => function($query) {
-                $query->select('id', 'name', 'name_en', 'price', 'duration_type', 'description', 'description_en', 'is_active');
-            }])
-            ->first();
+
+        // If the user is not authenticated, avoid calling auth()->user() or auth()->id()
+        $activeSubscription = null;
+        $pendingRequest = null;
+        if (auth()->check()) {
+            $activeSubscription = auth()->user()->getActiveSubscription();
+            $pendingRequest = SubscriptionRequest::where('user_id', auth()->id())
+                ->where('status', 'pending')
+                ->with(['subscription' => function($query) {
+                    $query->select('id', 'name', 'name_en', 'price', 'duration_type', 'description', 'description_en', 'is_active');
+                }])
+                ->first();
+        }
 
         // Filter locale columns
         $filteredSubscriptions = $subscriptions->map(function ($subscription) {

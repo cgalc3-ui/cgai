@@ -15,6 +15,8 @@ class Subscription extends Model
         'name_en',
         'description',
         'description_en',
+        'features',
+        'features_en',
         'price',
         'duration_type',
         'max_debtors',
@@ -29,6 +31,9 @@ class Subscription extends Model
         'max_messages' => 'integer',
         'ai_enabled' => 'boolean',
         'is_active' => 'boolean',
+        'features' => 'array',
+        'features_en' => 'array',
+        'duration_type' => 'string',
     ];
 
     /**

@@ -36,6 +36,37 @@
         @enderror
     </div>
 
+    <!-- Features Section -->
+    <div class="form-group">
+        <label>{{ __('messages.features') ?? 'المميزات' }} (AR)</label>
+        <div id="featuresContainer">
+            <div class="feature-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" name="features[]" class="form-control" placeholder="{{ __('messages.feature_name_placeholder') ?? 'اسم الميزة' }}">
+                <button type="button" class="btn btn-danger remove-feature" style="padding: 8px 12px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary add-feature" style="margin-top: 10px; padding: 8px 16px;">
+            <i class="fas fa-plus"></i> {{ __('messages.add_feature') ?? 'إضافة ميزة' }}
+        </button>
+    </div>
+
+    <div class="form-group">
+        <label>{{ __('messages.features') ?? 'Features' }} (EN)</label>
+        <div id="featuresEnContainer">
+            <div class="feature-item" style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" name="features_en[]" class="form-control" placeholder="{{ __('messages.feature_name_placeholder') ?? 'Feature Name' }}" style="direction: ltr; text-align: left;">
+                <button type="button" class="btn btn-danger remove-feature" style="padding: 8px 12px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary add-feature-en" style="margin-top: 10px; padding: 8px 16px;">
+            <i class="fas fa-plus"></i> {{ __('messages.add_feature') ?? 'Add Feature' }}
+        </button>
+    </div>
+
     <div class="form-row">
         <div class="form-group">
             <label for="price">{{ __('messages.price') }} ({{ __('messages.sar') }}) <span class="required">*</span></label>
@@ -59,25 +90,6 @@
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group">
-            <label for="max_debtors">{{ __('messages.max_debtors') }} <span class="required">*</span></label>
-            <input type="number" id="max_debtors" name="max_debtors" value="{{ old('max_debtors', 0) }}" class="form-control" min="0" required>
-            <small class="form-text text-muted">{{ __('messages.zero_for_unlimited') }}</small>
-            @error('max_debtors')
-                <span class="error-message">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="max_messages">{{ __('messages.max_messages') }} <span class="required">*</span></label>
-            <input type="number" id="max_messages" name="max_messages" value="{{ old('max_messages', 0) }}" class="form-control" min="0" required>
-            <small class="form-text text-muted">{{ __('messages.zero_for_unlimited') }}</small>
-            @error('max_messages')
-                <span class="error-message">{{ $message }}</span>
-            @enderror
-        </div>
-    </div>
 
     <div class="form-group">
         <label class="checkbox-label">
@@ -304,66 +316,4 @@
     }
 </style>
 
-<script>
-    (function() {
-        const form = document.getElementById('subscriptionCreateForm');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const formData = new FormData(form);
-                const submitBtn = form.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
-                
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        closeModal('createSubscriptionModal');
-                        if (data.redirect) {
-                            window.location.href = data.redirect;
-                        } else {
-                            window.location.reload();
-                        }
-                    } else {
-                        // Handle validation errors
-                        form.querySelectorAll('.error-message').forEach(el => el.remove());
-                        form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-                        
-                        if (data.errors) {
-                            Object.keys(data.errors).forEach(key => {
-                                const input = form.querySelector(`[name="${key}"]`);
-                                if (input) {
-                                    input.classList.add('error');
-                                    const errorMsg = document.createElement('span');
-                                    errorMsg.className = 'error-message';
-                                    errorMsg.textContent = data.errors[key][0];
-                                    input.parentNode.appendChild(errorMsg);
-                                }
-                            });
-                        }
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                });
-            });
-        }
-    })();
-</script>
 

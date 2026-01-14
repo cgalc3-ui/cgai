@@ -39,7 +39,7 @@ class TicketController extends Controller
         }
 
         $tickets = $query->orderBy('created_at', 'desc')
-            ->paginate($request->get('per_page', 20));
+            ->paginate($request->get('per_page', 10));
 
         // Filter locale columns
         $tickets->getCollection()->transform(function ($ticket) {

@@ -60,7 +60,7 @@ class InvoiceController extends Controller
             });
         }
 
-        $invoices = $query->orderBy('paid_at', 'desc')->paginate(20);
+        $invoices = $query->orderBy('paid_at', 'desc')->paginate(10);
 
         // Statistics
         $stats = [

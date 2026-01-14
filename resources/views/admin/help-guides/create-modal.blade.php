@@ -49,15 +49,6 @@
         @enderror
     </div>
 
-    <div class="form-group">
-        <label for="icon">{{ __('messages.icon') }}</label>
-        <input type="text" id="icon" name="icon" value="{{ old('icon', 'fas fa-info-circle') }}" 
-            class="form-control" placeholder="fas fa-info-circle">
-        <small class="form-help">{{ __('messages.help_guide_icon_help') }}</small>
-        @error('icon')
-            <span class="error-message">{{ $message }}</span>
-        @enderror
-    </div>
 
     <div class="form-group">
         <label for="sort_order">{{ __('messages.sort_order') }}</label>
@@ -77,10 +68,10 @@
 
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i> {{ __('messages.save') }}
+            {{ __('messages.save') }}
         </button>
         <button type="button" class="btn btn-secondary" onclick="closeModal('createHelpGuideModal'); return false;">
-            <i class="fas fa-times"></i> {{ __('messages.cancel') }}
+            {{ __('messages.cancel') }}
         </button>
     </div>
 </form>
@@ -292,7 +283,7 @@
                 const originalText = submitBtn.innerHTML;
                 
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
+                submitBtn.innerHTML = '{{ __('messages.loading') }}...';
                 
                 fetch(form.action, {
                     method: 'POST',

@@ -143,7 +143,7 @@
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-warning">{{ __('messages.change_password') }}</button>
+                            <button type="submit" class="btn btn-primary">{{ __('messages.change_password') }}</button>
                         </div>
                     </form>
                 </div>
@@ -302,7 +302,7 @@
             }
 
             .btn-primary:hover {
-                background: #2563eb;
+                opacity: 0.9;
             }
 
             .btn-warning {
@@ -311,7 +311,7 @@
             }
 
             .btn-warning:hover {
-                background: #d97706;
+                opacity: 0.9;
             }
 
             /* Dark Mode Styles */
@@ -375,7 +375,7 @@
             }
 
             [data-theme="dark"] .btn-primary:hover {
-                background: var(--primary-dark);
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .btn-warning {
@@ -383,7 +383,7 @@
             }
 
             [data-theme="dark"] .btn-warning:hover {
-                background: #d97706;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] select.form-control {
@@ -458,7 +458,7 @@
             }
 
             .avatar-upload-label:hover {
-                background: #2563eb;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .avatar-upload-label {
@@ -466,7 +466,7 @@
             }
 
             [data-theme="dark"] .avatar-upload-label:hover {
-                background: var(--primary-dark);
+                opacity: 0.9;
             }
         </style>
     @endpush

@@ -71,6 +71,40 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/purchase', [\App\Http\Controllers\Customer\PointsController::class, 'purchase']);
             Route::get('/transactions', [\App\Http\Controllers\Customer\PointsController::class, 'transactions']);
         });
+
+        // Ready Apps
+        Route::prefix('ready-apps')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'index']);
+            Route::get('/favorites', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'favorites']);
+            Route::get('/orders', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'orders']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'show']);
+            Route::post('/{id}/purchase', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'purchase']);
+            Route::post('/{id}/inquiry', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'inquiry']);
+            Route::post('/{id}/favorite', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'toggleFavorite']);
+            Route::delete('/{id}/favorite', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'toggleFavorite']);
+        });
+
+        // AI Services (Ready Services)
+        Route::prefix('ai-services')->group(function () {
+            Route::get('/favorites', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'favorites']);
+            Route::get('/orders', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'orders']);
+            Route::post('/{id}/purchase', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'purchase']);
+            Route::post('/{id}/inquiry', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'inquiry']);
+            Route::post('/{id}/favorite', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'toggleFavorite']);
+            Route::delete('/{id}/favorite', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'toggleFavorite']);
+        });
+
+        // AI Service Requests (Custom Requests)
+        Route::prefix('ai-service-requests')->group(function () {
+            Route::get('/categories', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'categories']);
+            Route::get('/', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'index']);
+            Route::post('/', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'store']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'show']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'destroy']);
+            Route::post('/{id}/accept-quote', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'acceptQuote']);
+            Route::post('/{id}/reject-quote', [\App\Http\Controllers\Api\Customer\AiServiceRequestsController::class, 'rejectQuote']);
+        });
     });
 
     // Employee routes
@@ -99,14 +133,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Subscriptions routes
     Route::prefix('subscriptions')->group(function () {
-        Route::get('/', [SubscriptionController::class, 'index']);
         Route::get('/active', [SubscriptionController::class, 'active']);
         Route::get('/requests', [SubscriptionController::class, 'requests']);
         Route::get('/{subscription}', [SubscriptionController::class, 'show']);
         Route::post('/', [SubscriptionController::class, 'store']);
     });
 });
+        // AI Services (Ready Services)
+        Route::prefix('customer/ai-services')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'index']);
 
+            Route::get('/{id}', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'show']);
+
+        });
 // Payment Callback (Public)
 Route::any('/payment/callback', [\App\Http\Controllers\Api\PaymentController::class, 'callback']);
 
@@ -141,9 +180,44 @@ Route::prefix('faqs')->group(function () {
     Route::get('/category/{category}', [FaqController::class, 'getByCategory']);
 });
 
+// Navigation API routes (Public - for frontend)
+Route::prefix('navigation')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\NavigationController::class, 'index']);
+});
+
+// Hero API routes (Public - for frontend)
+Route::prefix('hero')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\HeroController::class, 'index']);
+});
+
 // Public Ratings API routes
 Route::prefix('ratings')->group(function () {
     Route::get('/', [RatingController::class, 'index']);
     Route::get('/statistics', [RatingController::class, 'statistics']);
 });
 
+// Public Ready Apps API routes (for browsing without authentication)
+Route::prefix('ready-apps')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'index']);
+    Route::get('/{id}', [\App\Http\Controllers\Api\Customer\ReadyAppsController::class, 'show']);
+});
+
+// Public AI Services API routes (for browsing without authentication)
+Route::prefix('ai-services')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'index']);
+    Route::get('/{id}', [\App\Http\Controllers\Api\Customer\AiServicesController::class, 'show']);
+});
+
+// Public Customer Facing API routes
+Route::get('/navigation', [\App\Http\Controllers\Api\NavigationController::class, 'index']);
+Route::get('/hero', [\App\Http\Controllers\Api\HeroController::class, 'index']);
+Route::get('/company-logo', [\App\Http\Controllers\Api\CompanyLogoController::class, 'index']);
+Route::get('/footer', [\App\Http\Controllers\Api\FooterController::class, 'index']);
+Route::get('/consultation-booking-section', [\App\Http\Controllers\Api\ConsultationBookingSectionController::class, 'index']);
+Route::get('/technologies-section', [\App\Http\Controllers\Api\TechnologiesSectionController::class, 'index']);
+Route::get('/services-section', [\App\Http\Controllers\Api\HomeServicesSectionController::class, 'index']);
+Route::get('/ready-apps-section', [\App\Http\Controllers\Api\HomeReadyAppsSectionController::class, 'index']);
+
+Route::prefix('subscriptions')->group(function () {
+        Route::get('/', [SubscriptionController::class, 'index']);
+   });

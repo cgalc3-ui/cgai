@@ -52,7 +52,7 @@ class SubscriptionRequestController extends Controller
             });
         }
 
-        $requests = $query->latest()->paginate(15)->withQueryString();
+        $requests = $query->latest()->paginate(10)->withQueryString();
 
         // Get subscriptions for filter dropdown
         $subscriptions = \App\Models\Subscription::orderBy('name')->get();

@@ -33,7 +33,7 @@ class FaqController extends Controller
             });
         }
 
-        $faqs = $query->orderBy('sort_order')->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $faqs = $query->orderBy('sort_order')->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
         
         // Get unique categories for filter dropdown
         $categories = Faq::select('category')->distinct()->orderBy('category')->pluck('category');
@@ -56,6 +56,7 @@ class FaqController extends Controller
             'question' => 'required|string|max:255',
             'answer' => 'required|string',
             'category' => 'required|string',
+            'role' => 'required|string|in:customer,staff,admin',
             'sort_order' => 'integer',
         ]);
 
@@ -87,6 +88,7 @@ class FaqController extends Controller
             'question' => 'required|string|max:255',
             'answer' => 'required|string',
             'category' => 'required|string',
+            'role' => 'required|string|in:customer,staff,admin',
             'sort_order' => 'integer',
         ]);
 

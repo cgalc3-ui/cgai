@@ -73,7 +73,7 @@
                                     <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.users.admins.delete', $user) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('{{ __('messages.delete_admin_confirm') }}')">
+                                    onsubmit="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_admin_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.submit(); }); return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">

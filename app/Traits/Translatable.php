@@ -19,13 +19,15 @@ trait Translatable
         if ($locale === 'en') {
             $enAttribute = $attribute . '_en';
             // Return English value if it exists and is not empty
-            if (!empty($this->attributes[$enAttribute])) {
-                return $this->attributes[$enAttribute];
+            // Use getAttribute to ensure the value is loaded
+            $enValue = $this->getAttribute($enAttribute);
+            if (!empty($enValue)) {
+                return $enValue;
             }
         }
 
         // Return default (Arabic) value
-        return $this->attributes[$attribute] ?? null;
+        return $this->getAttribute($attribute) ?? null;
     }
 
     /**

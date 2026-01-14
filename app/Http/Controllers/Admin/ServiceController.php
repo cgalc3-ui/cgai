@@ -42,7 +42,7 @@ class ServiceController extends Controller
             });
         }
 
-        $services = $query->latest()->paginate(15)->withQueryString();
+        $services = $query->latest()->paginate(10)->withQueryString();
 
         // Get categories and sub categories for filter dropdowns
         $categories = Category::where('is_active', true)->orderBy('name')->get();

@@ -50,7 +50,7 @@
                                     <i class="far fa-edit"></i>
                                 </a>
                                 <form action="{{ route('admin.customers.delete', $customer) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('{{ __('messages.delete_customer_confirm') }}')">
+                                    onsubmit="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_customer_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.submit(); }); return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">

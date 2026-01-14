@@ -1,0 +1,125 @@
+{
+	"info": {
+		"_postman_id": "services-section-api",
+		"name": "Services Section API",
+		"description": "API endpoints for Services Section",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Services Section",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Locale",
+						"value": "ar",
+						"type": "text",
+						"description": "Language: ar or en"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/services-section?locale=ar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"services-section"
+					],
+					"query": [
+						{
+							"key": "locale",
+							"value": "ar",
+							"description": "Language: ar or en"
+						}
+					]
+				},
+				"description": "Get services section with heading, description, and categories list"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/services-section?locale=ar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"services-section"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": 1,\n        \"heading\": \"نبني حلول رقمية ذكية تُحدث فرقًا حقيقيًا\",\n        \"description\": \"حلول ذكاء اصطناعي وأنظمة ذكية وتجارب مستخدم مصممة لاحتياجات أعمالك.\",\n        \"categories\": [\n            {\n                \"id\": 2,\n                \"name\": \"الخدمات البرمجية\",\n                \"slug\": \"software-services\",\n                \"description\": \"خدمات تطوير البرمجيات والتطبيقات\",\n                \"image\": \"http://192.168.1.116:8000/storage/categories/image.jpg\"\n            },\n            {\n                \"id\": 3,\n                \"name\": \"الخدمات التقنية\",\n                \"slug\": \"technical-services\",\n                \"description\": \"خدمات الدعم التقني والصيانة\",\n                \"image\": \"http://192.168.1.116:8000/storage/categories/image2.jpg\"\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Services Section (English)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Locale",
+						"value": "en",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/services-section?locale=en",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"services-section"
+					],
+					"query": [
+						{
+							"key": "locale",
+							"value": "en"
+						}
+					]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://192.168.1.116:8000",
+			"type": "string"
+		}
+	]
+}
+

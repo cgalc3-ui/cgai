@@ -20,7 +20,19 @@ class FaqController extends Controller
         $locale = $request->get('locale', app()->getLocale());
         app()->setLocale($locale);
 
+        // تحديد دور المستخدم من الـ request أو من المستخدم المسجل دخوله
+        $role = $request->get('role', 'customer');
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->isAdmin()) {
+                $role = 'admin';
+            } elseif ($user->isStaff()) {
+                $role = 'staff';
+            }
+        }
+
         $faqs = Faq::where('is_active', true)
+            ->where('role', $role)
             ->orderBy('category')
             ->orderBy('sort_order')
             ->get()
@@ -48,7 +60,19 @@ class FaqController extends Controller
         $locale = $request->get('locale', app()->getLocale());
         app()->setLocale($locale);
 
+        // تحديد دور المستخدم من الـ request أو من المستخدم المسجل دخوله
+        $role = $request->get('role', 'customer');
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->isAdmin()) {
+                $role = 'admin';
+            } elseif ($user->isStaff()) {
+                $role = 'staff';
+            }
+        }
+
         $faqs = Faq::where('is_active', true)
+            ->where('role', $role)
             ->where('category', $category)
             ->orderBy('sort_order')
             ->get();

@@ -87,8 +87,6 @@
                     <th>{{ __('messages.name') }}</th>
                     <th>{{ __('messages.price') }}</th>
                     <th>{{ __('messages.duration_type') }}</th>
-                    <th>{{ __('messages.max_debtors') }}</th>
-                    <th>{{ __('messages.max_messages') }}</th>
                     <th class="text-center">{{ __('messages.ai_enabled') }}</th>
                     <th class="text-center">{{ __('messages.status') }}</th>
                     <th class="text-center">{{ __('messages.actions') }}</th>
@@ -100,8 +98,6 @@
                         <td>{{ $subscription->trans('name') }}</td>
                         <td>{{ number_format($subscription->price, 2) }} {{ __('messages.sar') }}</td>
                         <td>{{ $subscription->trans('duration_text') ?? $subscription->duration_text }}</td>
-                        <td>{{ $subscription->max_debtors == 0 ? __('messages.unlimited') : $subscription->max_debtors }}</td>
-                        <td>{{ $subscription->max_messages == 0 ? __('messages.unlimited') : $subscription->max_messages }}</td>
                         <td class="text-center">
                             @if($subscription->ai_enabled)
                                 <span class="status-pill completed">{{ __('messages.enabled') }}</span>
@@ -128,7 +124,7 @@
                                 </button>
                                 <form action="{{ route('admin.subscriptions.destroy', $subscription) }}" method="POST"
                                     class="d-inline"
-                                    onsubmit="return confirm('{{ __('messages.delete_subscription_confirm') }}')">
+                                    onsubmit="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_subscription_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.submit(); }); return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
@@ -140,7 +136,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center">{{ __('messages.no_subscriptions') }}</td>
+                        <td colspan="6" class="text-center">{{ __('messages.no_subscriptions') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -199,6 +195,23 @@
             .then(response => response.json())
             .then(data => {
                 modalBody.innerHTML = data.html;
+                
+                // Wait a bit for DOM to be ready
+                setTimeout(() => {
+                    // Re-execute scripts after content is loaded
+                    const scripts = modalBody.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => {
+                            newScript.setAttribute(attr.name, attr.value);
+                        });
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                    
+                    // Initialize feature buttons after scripts are executed
+                    initializeFeatureButtons(modalBody);
+                }, 200);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -233,31 +246,158 @@
             .then(response => response.json())
             .then(data => {
                 modalBody.innerHTML = data.html;
-                // Update form action and add AJAX handler
-                const form = modalBody.querySelector('form');
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        handleFormSubmit(form, modalId);
+                
+                // Wait a bit for DOM to be ready
+                setTimeout(() => {
+                    // Re-execute scripts after content is loaded
+                    const scripts = modalBody.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => {
+                            newScript.setAttribute(attr.name, attr.value);
+                        });
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
                     });
-                }
+                    
+                    // Initialize feature buttons after scripts are executed
+                    initializeFeatureButtons(modalBody);
+                    
+                    // Update form action and add AJAX handler
+                    const form = modalBody.querySelector('form');
+                    if (form) {
+                        // Remove any existing listeners
+                        const newForm = form.cloneNode(true);
+                        form.parentNode.replaceChild(newForm, form);
+                        
+                        newForm.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            handleFormSubmit(newForm, modalId);
+                        });
+                    }
+                }, 200);
             })
             .catch(error => {
                 console.error('Error:', error);
                 modalBody.innerHTML = '<div class="alert alert-error">{{ __('messages.error') }}</div>';
             });
         }
+        
+        function initializeFeatureButtons(container) {
+            // Remove any existing listeners by using a unique handler
+            const handler = function(e) {
+                // Add feature (Arabic)
+                if (e.target.closest('.add-feature')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const btn = e.target.closest('.add-feature');
+                    const featuresContainer = container.querySelector('#featuresContainer');
+                    if (featuresContainer) {
+                        const newItem = document.createElement('div');
+                        newItem.className = 'feature-item';
+                        newItem.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px;';
+                        newItem.innerHTML = `
+                            <input type="text" name="features[]" class="form-control" placeholder="اسم الميزة">
+                            <button type="button" class="btn btn-danger remove-feature" style="padding: 8px 12px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        featuresContainer.appendChild(newItem);
+                    }
+                    return false;
+                }
+                
+                // Add feature (English)
+                if (e.target.closest('.add-feature-en')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const btn = e.target.closest('.add-feature-en');
+                    const featuresEnContainer = container.querySelector('#featuresEnContainer');
+                    if (featuresEnContainer) {
+                        const newItem = document.createElement('div');
+                        newItem.className = 'feature-item';
+                        newItem.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px;';
+                        newItem.innerHTML = `
+                            <input type="text" name="features_en[]" class="form-control" placeholder="Feature Name" style="direction: ltr; text-align: left;">
+                            <button type="button" class="btn btn-danger remove-feature" style="padding: 8px 12px;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        featuresEnContainer.appendChild(newItem);
+                    }
+                    return false;
+                }
+                
+                // Remove feature
+                if (e.target.closest('.remove-feature')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const item = e.target.closest('.feature-item');
+                    if (item) {
+                        const featuresContainer = item.closest('#featuresContainer, #featuresEnContainer');
+                        if (featuresContainer && featuresContainer.querySelectorAll('.feature-item').length > 1) {
+                            item.remove();
+                        }
+                    }
+                    return false;
+                }
+            };
+            
+            // Remove old listener if exists
+            if (container._featureButtonHandler) {
+                container.removeEventListener('click', container._featureButtonHandler);
+            }
+            
+            // Add new listener
+            container.addEventListener('click', handler, true);
+            container._featureButtonHandler = handler;
+        }
 
         function handleFormSubmit(form, modalId) {
             const formData = new FormData(form);
             const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
+            const originalText = submitBtn ? submitBtn.innerHTML : '';
             
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
+            // Get the method from _method field or form method attribute
+            let method = form.method.toUpperCase();
+            const methodField = form.querySelector('input[name="_method"]');
+            if (methodField) {
+                method = methodField.value.toUpperCase();
+            }
+            
+            // For PUT/PATCH/DELETE, use POST with _method
+            if (method === 'PUT' || method === 'PATCH' || method === 'DELETE') {
+                if (!formData.has('_method')) {
+                    formData.append('_method', method);
+                }
+                method = 'POST';
+            }
+            
+            // Remove empty feature fields to avoid validation issues
+            const features = formData.getAll('features[]');
+            const featuresEn = formData.getAll('features_en[]');
+            formData.delete('features[]');
+            formData.delete('features_en[]');
+            
+            features.forEach(feature => {
+                if (feature && feature.trim() !== '') {
+                    formData.append('features[]', feature.trim());
+                }
+            });
+            
+            featuresEn.forEach(feature => {
+                if (feature && feature.trim() !== '') {
+                    formData.append('features_en[]', feature.trim());
+                }
+            });
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
+            }
             
             fetch(form.action, {
-                method: form.method,
+                method: method,
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -265,7 +405,14 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'حدث خطأ');
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     closeModal(modalId);
@@ -280,26 +427,41 @@
                         // Clear previous errors
                         form.querySelectorAll('.error-message').forEach(el => el.remove());
                         form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+                        form.querySelectorAll('input, select, textarea').forEach(el => {
+                            el.style.borderColor = '';
+                        });
                         
                         Object.keys(data.errors).forEach(key => {
-                            const input = form.querySelector(`[name="${key}"]`);
+                            let input = form.querySelector(`[name="${key}"]`);
+                            if (!input) {
+                                // Try to find by name attribute with brackets
+                                input = form.querySelector(`[name="${key}[]"]`);
+                            }
                             if (input) {
                                 input.classList.add('error');
+                                input.style.borderColor = '#ef4444';
                                 const errorMsg = document.createElement('span');
                                 errorMsg.className = 'error-message';
-                                errorMsg.textContent = data.errors[key][0];
+                                errorMsg.textContent = Array.isArray(data.errors[key]) ? data.errors[key][0] : data.errors[key];
                                 input.parentNode.appendChild(errorMsg);
+                            } else {
+                                // If input not found, show error at form level
+                                console.warn('Input not found for error:', key, data.errors[key]);
                             }
                         });
                     }
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
             });
         }
 

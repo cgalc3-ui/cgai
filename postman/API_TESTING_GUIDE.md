@@ -1180,6 +1180,432 @@
 
 ---
 
+## 📱 Ready Apps (التطبيقات الجاهزة)
+
+### 🔓 Public Routes (لا تحتاج Token)
+
+#### 1. Get All Ready Apps (Public)
+- **Method**: `GET`
+- **URL**: `{{base_url}}/ready-apps`
+- **Headers**: 
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`) - **مهم**: يحدد اللغة المطلوبة
+- **Query Parameters**:
+  - `category` (optional): فلترة حسب slug الفئة
+  - `search` (optional): البحث في الأسماء والأوصاف
+  - `page` (optional): رقم الصفحة
+  - `per_page` (optional): عدد العناصر في الصفحة
+- **Example**: `{{base_url}}/ready-apps?category=restaurant-systems&search=مطعم&page=1&per_page=12`
+- **Response**: قائمة التطبيقات مع pagination والفئات
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 2. Get Ready App Details (Public)
+- **Method**: `GET`
+- **URL**: `{{base_url}}/ready-apps/{id}`
+- **Headers**: 
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`) - **مهم**: يحدد اللغة المطلوبة
+- **Response**: تفاصيل كاملة للتطبيق (صور، مميزات، لقطات شاشة، تقييمات، تطبيقات مشابهة)
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+### 🔒 Customer Routes (تحتاج Token)
+
+#### 1. Get All Ready Apps
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ready-apps`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`) - **مهم**: يحدد اللغة المطلوبة
+- **Query Parameters**: نفس Public route
+- **Response**: قائمة التطبيقات مع pagination والفئات
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 2. Get Ready App Details
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ready-apps/{id}`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`) - **مهم**: يحدد اللغة المطلوبة
+- **Response**: تفاصيل كاملة للتطبيق مع `is_favorite` للعميل
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 3. Purchase Ready App
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ready-apps/{id}/purchase`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Content-Type: application/json`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Body**:
+  ```json
+  {
+    "pricing_plan_id": 2,
+    "notes": "أريد تثبيت النظام في المطعم",
+    "contact_preference": "phone"
+  }
+  ```
+- **Parameters**:
+  - `pricing_plan_id` (optional): معرف الباقة (للاستخدام المستقبلي)
+  - `notes` (optional): ملاحظات العميل
+  - `contact_preference` (required): `phone` أو `email` أو `both`
+- **Response**: بيانات الطلب (order_id, app_id, price, status)
+- **Note**: يتم إنشاء طلب في حالة `pending` وزيادة عداد `purchases_count`
+
+#### 4. Create Inquiry
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ready-apps/{id}/inquiry`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Content-Type: application/json`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Body**:
+  ```json
+  {
+    "subject": "استفسار عن النظام",
+    "message": "أريد معرفة المزيد عن المميزات",
+    "contact_preference": "email"
+  }
+  ```
+- **Parameters**:
+  - `subject` (required): موضوع الاستفسار
+  - `message` (required): نص الاستفسار
+  - `contact_preference` (required): `phone` أو `email` أو `both`
+- **Response**: بيانات التذكرة (ticket_id, app_id, status)
+- **Note**: يتم إنشاء تذكرة دعم مرتبطة بالتطبيق
+
+#### 5. Toggle Favorite
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ready-apps/{id}/favorite`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: `{ "is_favorite": true/false }`
+- **Note**: إذا كان التطبيق في المفضلة، سيتم إزالته، وإلا سيتم إضافته
+
+#### 6. Remove from Favorites
+- **Method**: `DELETE`
+- **URL**: `{{base_url}}/customer/ready-apps/{id}/favorite`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: `{ "is_favorite": false }`
+
+#### 7. Get Favorite Apps
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ready-apps/favorites`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`) - **مهم**: يحدد اللغة المطلوبة
+- **Response**: قائمة التطبيقات المفضلة مع `favorited_at`
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+### 📝 ملاحظات مهمة عن Ready Apps API:
+
+1. **Locale Header**: جميع الـ endpoints تدعم `locale` في الـ header:
+   - `locale: ar` - إرجاع البيانات بالعربية
+   - `locale: en` - إرجاع البيانات بالإنجليزية
+   - يمكن استخدام `X-Locale` أو `Accept-Language` أيضاً
+
+2. **الترجمة التلقائية**: البيانات تُرجع تلقائياً حسب locale:
+   - إذا كان `locale: ar` → تُرجع الحقول العربية (name, description, etc.)
+   - إذا كان `locale: en` → تُرجع الحقول الإنجليزية (name_en, description_en, etc.)
+
+3. **Public vs Protected**: 
+   - Public routes لا تحتاج Token (للتصفح فقط)
+   - Customer routes تحتاج Token (للشراء والمفضلة)
+
+4. **الطلبات**: 
+   - عند إنشاء طلب شراء، يتم إنشاء `ReadyAppOrder` في حالة `pending`
+   - يمكن للأدمن متابعة الطلبات من `/admin/ready-apps/orders`
+
+5. **المفضلة**: 
+   - يمكن للعميل إضافة/إزالة تطبيقات من المفضلة
+   - يتم حفظ `favorited_at` timestamp
+
+---
+
+## 🤖 AI Services API
+
+قسم خدمات الذكاء الاصطناعي يتيح للعملاء تصفح وشراء الخدمات الجاهزة أو طلب خدمات مخصصة.
+
+### 📋 Public Endpoints (لا يتطلب Token)
+
+#### 1. Get All AI Services (Public)
+- **Method**: `GET`
+- **URL**: `{{base_url}}/ai-services`
+- **Headers**: 
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`) - **مهم**: يحدد اللغة المطلوبة
+- **Query Parameters**:
+  - `category` (optional): فلترة حسب slug الفئة
+  - `search` (optional): البحث في الأسماء والأوصاف
+  - `page` (optional): رقم الصفحة
+  - `per_page` (optional): عدد العناصر في الصفحة
+- **Response**: قائمة الخدمات الجاهزة مع pagination
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 2. Get AI Service Details (Public)
+- **Method**: `GET`
+- **URL**: `{{base_url}}/ai-services/{id}`
+- **Headers**: 
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: تفاصيل الخدمة الكاملة
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+### 🔐 Customer Endpoints (يتطلب Token)
+
+#### 1. Get All AI Services
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ai-services`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Query Parameters**: نفس Public endpoint
+- **Response**: قائمة الخدمات مع معلومات المفضلة للعميل
+
+#### 2. Get AI Service Details
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ai-services/{id}`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: تفاصيل الخدمة مع حالة المفضلة
+
+#### 3. Purchase AI Service
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ai-services/{id}/purchase`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Content-Type: application/json`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Body**:
+  ```json
+  {
+    "pricing_plan_id": 2,
+    "notes": "أريد استخدام هذه الخدمة في مشروعي",
+    "contact_preference": "phone"
+  }
+  ```
+- **Response**: طلب شراء جديد
+- **Note**: يتم إنشاء `AiServiceOrder` في حالة `pending`
+
+#### 4. Create Inquiry
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ai-services/{id}/inquiry`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Content-Type: application/json`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Body**:
+  ```json
+  {
+    "subject": "استفسار عن الخدمة",
+    "message": "أريد معرفة المزيد عن المميزات",
+    "contact_preference": "email"
+  }
+  ```
+- **Response**: تذكرة دعم مرتبطة بالخدمة
+
+#### 5. Toggle Favorite
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ai-services/{id}/favorite`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: حالة المفضلة (تمت الإضافة/الإزالة)
+- **Note**: إذا كانت الخدمة في المفضلة، سيتم إزالتها، وإلا سيتم إضافتها
+
+#### 6. Remove from Favorites
+- **Method**: `DELETE`
+- **URL**: `{{base_url}}/customer/ai-services/{id}/favorite`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: تأكيد الإزالة
+
+#### 7. Get Favorite Services
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ai-services/favorites`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: قائمة الخدمات المفضلة مع `favorited_at`
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 8. Get Customer Orders
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ai-services/orders`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Query Parameters**:
+  - `status` (optional): فلترة حسب الحالة (pending, processing, approved, rejected, completed, cancelled)
+  - `page` (optional): رقم الصفحة
+  - `per_page` (optional): عدد العناصر في الصفحة
+- **Response**: قائمة طلبات العميل على الخدمات الجاهزة
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+### 🛠️ Custom AI Service Requests (يتطلب Token)
+
+#### 1. Get Categories
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ai-service-requests/categories`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: قائمة فئات خدمات الذكاء الاصطناعي
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 2. Get My Custom Requests
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ai-service-requests`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Query Parameters**:
+  - `status` (optional): فلترة حسب الحالة (pending, reviewing, quoted, approved, in_progress, completed, cancelled, rejected)
+  - `category_id` (optional): فلترة حسب الفئة
+  - `page` (optional): رقم الصفحة
+  - `per_page` (optional): عدد العناصر في الصفحة
+- **Response**: قائمة الطلبات المخصصة للعميل
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 3. Create Custom Request
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ai-service-requests`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Body** (multipart/form-data):
+  - `category_id` (required): معرف الفئة
+  - `title` (required): عنوان الطلب
+  - `description` (required): وصف الطلب
+  - `use_case` (required): حالة الاستخدام
+  - `expected_features[]` (optional): المميزات المتوقعة (يمكن إضافة عدة قيم)
+  - `budget_range` (required): نطاق الميزانية (low, medium, high, custom)
+  - `custom_budget` (required if budget_range = custom): الميزانية المخصصة
+  - `urgency` (required): الأولوية (low, medium, high)
+  - `deadline` (optional): الموعد النهائي (YYYY-MM-DD)
+  - `contact_preference` (required): تفضيل التواصل (phone, email, both)
+  - `attachments[]` (optional): مرفقات (صور أو مستندات)
+- **Response**: طلب مخصص جديد
+- **Note**: يتم إنشاء `AiServiceRequest` في حالة `pending`
+
+#### 4. Get Request Details
+- **Method**: `GET`
+- **URL**: `{{base_url}}/customer/ai-service-requests/{id}`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: تفاصيل الطلب المخصص الكاملة مع المرفقات
+- **Note**: البيانات تُرجع حسب locale في الـ header
+
+#### 5. Update Custom Request
+- **Method**: `PUT`
+- **URL**: `{{base_url}}/customer/ai-service-requests/{id}`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Body** (multipart/form-data): نفس Create Request (جميع الحقول اختيارية)
+- **Response**: الطلب المحدث
+- **Note**: يمكن التحديث فقط إذا كانت الحالة `pending`
+
+#### 6. Delete/Cancel Request
+- **Method**: `DELETE`
+- **URL**: `{{base_url}}/customer/ai-service-requests/{id}`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: تأكيد الحذف/الإلغاء
+- **Note**: يمكن الحذف فقط إذا كانت الحالة `pending` أو `cancelled`
+
+#### 7. Accept Quote
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ai-service-requests/{id}/accept-quote`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: تأكيد قبول عرض السعر
+- **Note**: يجب أن تكون الحالة `quoted`. بعد القبول، تصبح الحالة `approved`
+
+#### 8. Reject Quote
+- **Method**: `POST`
+- **URL**: `{{base_url}}/customer/ai-service-requests/{id}/reject-quote`
+- **Headers**: 
+  - `Authorization: Bearer {{token}}`
+  - `Accept: application/json`
+  - `locale: ar` (أو `en`)
+- **Response**: تأكيد رفض عرض السعر
+- **Note**: يجب أن تكون الحالة `quoted`. بعد الرفض، تصبح الحالة `rejected`
+
+### 📝 ملاحظات مهمة عن AI Services API:
+
+1. **Locale Header**: جميع الـ endpoints تدعم `locale` في الـ header:
+   - `locale: ar` - إرجاع البيانات بالعربية
+   - `locale: en` - إرجاع البيانات بالإنجليزية
+   - يمكن استخدام `X-Locale` أو `Accept-Language` أيضاً
+
+2. **الترجمة التلقائية**: البيانات تُرجع تلقائياً حسب locale:
+   - إذا كان `locale: ar` → تُرجع الحقول العربية (name, description, etc.)
+   - إذا كان `locale: en` → تُرجع الحقول الإنجليزية (name_en, description_en, etc.)
+
+3. **Public vs Protected**: 
+   - Public routes لا تحتاج Token (للتصفح فقط)
+   - Customer routes تحتاج Token (للشراء والمفضلة والطلبات)
+
+4. **الطلبات الجاهزة**: 
+   - عند إنشاء طلب شراء، يتم إنشاء `AiServiceOrder` في حالة `pending`
+   - يمكن للأدمن متابعة الطلبات من `/admin/ai-services/orders`
+
+5. **الطلبات المخصصة**: 
+   - عند إنشاء طلب مخصص، يتم إنشاء `AiServiceRequest` في حالة `pending`
+   - يمكن للأدمن متابعة الطلبات من `/admin/ai-services/requests`
+   - الأدمن يمكنه تقديم عرض سعر (`estimated_price`) وتحديث الحالة إلى `quoted`
+   - العميل يمكنه قبول أو رفض عرض السعر
+
+6. **المفضلة**: 
+   - يمكن للعميل إضافة/إزالة خدمات من المفضلة
+   - يتم حفظ `favorited_at` timestamp
+
+7. **المرفقات**: 
+   - يمكن رفع مرفقات في الطلبات المخصصة (صور أو مستندات)
+   - يتم حفظ المرفقات في `storage/app/public/ai-service-requests/`
+
+8. **حالات الطلبات المخصصة**:
+   - `pending`: في انتظار المراجعة
+   - `reviewing`: قيد المراجعة من الأدمن
+   - `quoted`: تم تقديم عرض سعر
+   - `approved`: تم قبول عرض السعر
+   - `in_progress`: قيد التنفيذ
+   - `completed`: مكتمل
+   - `cancelled`: ملغي
+   - `rejected`: مرفوض
+
+---
+
 ## 📞 الدعم
 
 إذا واجهت أي مشاكل:
@@ -1188,6 +1614,7 @@
 3. تأكد من إضافة Header `Accept: application/json`
 4. تأكد من صحة Token في الطلبات المحمية
 5. تأكد من أن الخدمة تحتوي على `specialization_id` و `hourly_rate`
-6. للطلبات التي تحتاج ملفات (مثل Avatar)، استخدم `multipart/form-data`
+6. للطلبات التي تحتاج ملفات (مثل Avatar أو المرفقات)، استخدم `multipart/form-data`
 7. تأكد من صحة معرفات الـ IDs في الـ URLs
+8. للطلبات المخصصة، تأكد من إرسال جميع الحقول المطلوبة
 

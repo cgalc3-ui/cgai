@@ -94,30 +94,6 @@
                     </div>
                     <div class="m-detail-item">
                         <span class="m-detail-label">
-                            <i class="fas fa-user-friends"></i> {{ __('messages.max_debtors') }}
-                        </span>
-                        <span class="m-detail-value">
-                            @if($subscription->max_debtors == 0)
-                                <span class="badge badge-info">{{ __('messages.unlimited') }}</span>
-                            @else
-                                {{ $subscription->max_debtors }}
-                            @endif
-                        </span>
-                    </div>
-                    <div class="m-detail-item">
-                        <span class="m-detail-label">
-                            <i class="fas fa-envelope"></i> {{ __('messages.max_messages') }}
-                        </span>
-                        <span class="m-detail-value">
-                            @if($subscription->max_messages == 0)
-                                <span class="badge badge-info">{{ __('messages.unlimited') }}</span>
-                            @else
-                                {{ $subscription->max_messages }}
-                            @endif
-                        </span>
-                    </div>
-                    <div class="m-detail-item">
-                        <span class="m-detail-label">
                             <i class="fas fa-robot"></i> {{ __('messages.ai_enabled') }}
                         </span>
                         <span class="m-detail-value">

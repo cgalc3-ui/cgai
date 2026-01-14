@@ -87,6 +87,7 @@
                 <tr>
                     <th>{{ __('messages.question') }}</th>
                     <th>{{ __('messages.category') }}</th>
+                    <th class="text-center">{{ __('messages.role') }}</th>
                     <th class="text-center">{{ __('messages.sort_order') }}</th>
                     <th class="text-center">{{ __('messages.status') }}</th>
                     <th class="text-center">{{ __('messages.actions') }}</th>
@@ -119,6 +120,15 @@
                             @endphp
                             {{ __('messages.' . $categoryKey) }}
                         </span></td>
+                        <td class="text-center">
+                            @if($faq->role === 'admin')
+                                <span class="status-pill active">{{ __('messages.admin_role') }}</span>
+                            @elseif($faq->role === 'staff')
+                                <span class="status-pill active">{{ __('messages.staff_role') }}</span>
+                            @else
+                                <span class="status-pill active">{{ __('messages.customer_role') }}</span>
+                            @endif
+                        </td>
                         <td class="text-center">{{ $faq->sort_order }}</td>
                         <td class="text-center">
                             @if($faq->is_active)
@@ -134,7 +144,7 @@
                                     <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.faqs.destroy', $faq) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('{{ __('messages.delete_faq_confirm') }}')">
+                                    onsubmit="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_faq_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.submit(); }); return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
@@ -146,7 +156,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center">{{ __('messages.no_faqs') }}</td>
+                        <td colspan="6" class="text-center">{{ __('messages.no_faqs') }}</td>
                     </tr>
                 @endforelse
             </tbody>

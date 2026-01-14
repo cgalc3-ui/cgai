@@ -32,7 +32,7 @@ class NotificationController extends Controller
             $query->where('type', $request->type);
         }
 
-        $notifications = $query->paginate($request->get('per_page', 20));
+        $notifications = $query->paginate($request->get('per_page', 10));
 
         // Transform notifications to include translated title and message
         $transformedData = $notifications->getCollection()->map(function ($notification) use ($locale) {

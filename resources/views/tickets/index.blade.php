@@ -166,7 +166,7 @@
                 align-items: center;
                 gap: 8px;
                 padding: 12px 24px;
-                background: #3b82f6;
+                background: var(--primary-color);
                 color: white;
                 border-radius: 8px;
                 text-decoration: none;
@@ -178,7 +178,7 @@
             }
 
             .btn-create-ticket:hover {
-                background: #2563eb;
+                background: var(--primary-dark);
                 transform: translateY(-1px);
             }
 
@@ -277,7 +277,7 @@
                 align-items: center;
                 gap: 6px;
                 padding: 8px 16px;
-                background: #3b82f6;
+                background: var(--primary-color);
                 color: white;
                 border-radius: 6px;
                 text-decoration: none;
@@ -287,7 +287,7 @@
             }
 
             .btn-view-ticket:hover {
-                background: #2563eb;
+                background: var(--primary-dark);
             }
 
             .empty-state {
@@ -454,7 +454,7 @@
                 align-items: center;
                 gap: 8px;
                 padding: 12px 24px;
-                background: #3b82f6;
+                background: var(--primary-color);
                 color: white;
                 border: none;
                 border-radius: 8px;
@@ -465,7 +465,7 @@
             }
 
             .btn-submit:hover:not(:disabled) {
-                background: #2563eb;
+                background: var(--primary-dark);
             }
 
             .btn-submit:disabled {
@@ -490,6 +490,148 @@
 
             .btn-cancel:hover {
                 background: #e5e7eb;
+            }
+
+            /* Dark Mode Styles */
+            [data-theme="dark"] .tickets-container {
+                background: var(--card-bg, #1e1f27);
+                border-color: var(--border-color, #2a2d3a);
+            }
+
+            [data-theme="dark"] .tickets-header {
+                border-bottom-color: var(--border-color, #2a2d3a);
+            }
+
+            [data-theme="dark"] .header-left h2 {
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .header-left p {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .ticket-card {
+                background: var(--sidebar-active-bg, #15171d);
+                border-color: var(--border-color, #2a2d3a);
+            }
+
+            [data-theme="dark"] .ticket-card:hover {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            [data-theme="dark"] .ticket-title a {
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .ticket-title a:hover {
+                color: var(--primary-color, #02c0ce);
+            }
+
+            [data-theme="dark"] .ticket-meta {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .ticket-description {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .ticket-last-message {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .empty-state i {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .empty-state h3 {
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .empty-state p {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .modal-overlay {
+                background: rgba(0, 0, 0, 0.7);
+            }
+
+            [data-theme="dark"] .modal-container {
+                background: var(--card-bg, #1e1f27);
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            }
+
+            [data-theme="dark"] .modal-header {
+                border-bottom-color: var(--border-color, #2a2d3a);
+            }
+
+            [data-theme="dark"] .modal-header h2 {
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .modal-close {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .modal-close:hover {
+                background: var(--sidebar-active-bg, #15171d);
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .modal-body {
+                background: var(--card-bg, #1e1f27);
+            }
+
+            [data-theme="dark"] .form-group label {
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .form-input,
+            [data-theme="dark"] .form-select,
+            [data-theme="dark"] .form-textarea {
+                background: var(--sidebar-active-bg, #15171d);
+                border-color: var(--border-color, #2a2d3a);
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .form-input:focus,
+            [data-theme="dark"] .form-select:focus,
+            [data-theme="dark"] .form-textarea:focus {
+                border-color: var(--primary-color, #02c0ce);
+                box-shadow: 0 0 0 3px rgba(2, 192, 206, 0.1);
+            }
+
+            [data-theme="dark"] .form-help {
+                color: var(--text-secondary, #94a3b8);
+            }
+
+            [data-theme="dark"] .btn-cancel {
+                background: var(--sidebar-active-bg, #15171d);
+                color: var(--text-primary, #f1f5f9);
+                border: 1px solid var(--border-color, #2a2d3a);
+            }
+
+            [data-theme="dark"] .btn-cancel:hover {
+                background: var(--bg-light, #15171d);
+                border-color: var(--border-color, #2a2d3a);
+            }
+
+            [data-theme="dark"] .filter-container {
+                background: var(--card-bg, #1e1f27);
+                border-color: var(--border-color, #2a2d3a);
+            }
+
+            [data-theme="dark"] .filter-group label {
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .filter-select {
+                background: var(--sidebar-active-bg, #15171d);
+                border-color: var(--border-color, #2a2d3a);
+                color: var(--text-primary, #f1f5f9);
+            }
+
+            [data-theme="dark"] .filter-select:focus {
+                border-color: var(--primary-color, #02c0ce);
             }
         </style>
     @endpush
@@ -626,7 +768,11 @@
                                         : data.errors['attachments.*'];
                                 }
                             } else {
-                                alert('{{ __('messages.error') }}: ' + (data.message || '{{ __('messages.ticket_created_success') }}'));
+                                if (data.message && data.message.includes('success')) {
+                                    Toast.success(data.message || '{{ __('messages.ticket_created_success') }}');
+                                } else {
+                                    Toast.error(data.message || '{{ __('messages.error') }}');
+                                }
                             }
                         }
                     })
@@ -646,7 +792,7 @@
                                     : error.errors.attachments;
                             }
                         } else {
-                            alert('{{ __('messages.error_loading_tickets') }}');
+                            Toast.error('{{ __('messages.error_loading_tickets') }}');
                         }
                     })
                     .finally(() => {

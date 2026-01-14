@@ -324,7 +324,7 @@ class AdminController extends Controller
             });
         }
 
-        $users = $query->latest()->paginate(20)->withQueryString();
+        $users = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.users.admins.index', compact('users', 'searchQuery'));
     }
@@ -452,7 +452,7 @@ class AdminController extends Controller
             });
         }
 
-        $users = $query->with(['employee.categories', 'employee.subCategories'])->latest()->paginate(20)->withQueryString();
+        $users = $query->with(['employee.categories', 'employee.subCategories'])->latest()->paginate(10)->withQueryString();
         $categories = Category::where('is_active', true)->get();
 
         return view('admin.users.staff.index', compact('users', 'searchQuery', 'categories'));
@@ -736,7 +736,7 @@ class AdminController extends Controller
             });
         }
 
-        $users = $query->latest()->paginate(20)->withQueryString();
+        $users = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.users.customers.index', compact('users', 'searchQuery'));
     }
@@ -1004,7 +1004,7 @@ class AdminController extends Controller
             });
         }
 
-        $bookings = $query->latest('booking_date')->latest('start_time')->paginate(20)->withQueryString();
+        $bookings = $query->latest('booking_date')->latest('start_time')->paginate(10)->withQueryString();
 
         return view('admin.bookings.index', compact('bookings'));
     }
@@ -1096,7 +1096,7 @@ class AdminController extends Controller
             $query->where('date', $dateFilter);
         }
 
-        $timeSlots = $query->latest('date')->latest('start_time')->paginate(20)->withQueryString();
+        $timeSlots = $query->latest('date')->latest('start_time')->paginate(10)->withQueryString();
         $employees = Employee::with('user')->get();
 
         return view('admin.time-slots.index', compact('timeSlots', 'employeeFilter', 'dateFilter', 'employees'));
@@ -1287,7 +1287,7 @@ class AdminController extends Controller
             $query->where('employee_id', $employeeFilter);
         }
 
-        $schedules = $query->latest()->paginate(20)->withQueryString();
+        $schedules = $query->latest()->paginate(10)->withQueryString();
         $employees = Employee::with('user')->get();
 
         return view('admin.time-slots.schedules', compact('schedules', 'employeeFilter', 'employees'));
@@ -1523,7 +1523,7 @@ class AdminController extends Controller
             });
         }
 
-        $tickets = $query->latest()->paginate(20)->withQueryString();
+        $tickets = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.tickets.index', compact('tickets'));
     }

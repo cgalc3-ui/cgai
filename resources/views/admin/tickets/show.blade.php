@@ -218,9 +218,7 @@
             }
 
             .btn-back:hover {
-                background: #e5e7eb;
-                color: #1f2937;
-                border-color: #d1d5db;
+                opacity: 0.9;
             }
 
             .btn-back i {
@@ -327,9 +325,8 @@
             }
 
             .btn-update:hover {
-                background: #2563eb;
+                opacity: 0.9;
                 transform: translateY(-1px);
-                box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
             }
 
             .description-section {
@@ -629,8 +626,8 @@
             }
 
             .btn-send:hover {
+                opacity: 0.9;
                 transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
             }
 
             .btn-send:active {
@@ -690,9 +687,7 @@
             }
 
             [data-theme="dark"] .btn-back:hover {
-                background: var(--bg-light) !important;
-                color: var(--primary-color) !important;
-                border-color: var(--primary-color) !important;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .info-card {
@@ -743,7 +738,7 @@
             }
 
             [data-theme="dark"] .btn-update:hover {
-                background: var(--primary-dark) !important;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .description-section {
@@ -869,7 +864,7 @@
             }
 
             [data-theme="dark"] .btn-send:hover {
-                background: var(--primary-dark) !important;
+                opacity: 0.9;
             }
         </style>
     @endpush

@@ -2174,6 +2174,175 @@
 			"description": "جميع endpoints الخاصة بالموظف"
 		},
 		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "1. Get All Subscriptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/subscriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions"
+							]
+						},
+						"description": "الحصول على جميع الباقات المتاحة مع بيانات الاشتراك النشط والطلبات المعلقة للمستخدم. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Active Subscription",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"active"
+							]
+						},
+						"description": "الحصول على بيانات الاشتراك النشط للمستخدم الحالي. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Get My Subscription Requests",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/requests",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"requests"
+							]
+						},
+						"description": "الحصول على تاريخ طلبات الاشتراك الخاصة بالمستخدم. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get Subscription Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"1"
+							]
+						},
+						"description": "الحصول على تفاصيل باقة معينة عبر ID. يتطلب Token."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Store Subscription Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "subscription_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "payment_proof",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions"
+							]
+						},
+						"description": "إرسال طلب اشتراك جديد مع رفع إثبات الدفع. يتطلب Token."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بالاشتراكات والباقات"
+		},
+		{
 			"name": "FAQs",
 			"item": [
 				{
@@ -2228,6 +2397,264 @@
 				}
 			],
 			"description": "جميع endpoints الخاصة بالأسئلة الشائعة (FAQs)"
+		},
+		{
+			"name": "Navigation",
+			"item": [
+				{
+					"name": "1. Get Navigation Items",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"type": "text",
+								"description": "ar أو en - اللغة المطلوبة للترجمة"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/navigation?locale=ar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"navigation"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "ar أو en - اللغة المطلوبة (اختياري، يمكن إرساله في header أيضاً)"
+								}
+							]
+						},
+						"description": "الحصول على جميع عناصر القائمة العلوية (Logo, Menu Items, Buttons) النشطة. لا يتطلب Token (Public endpoint). يتم إرجاع البيانات المترجمة حسب locale في header أو query parameter."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بعناصر القائمة العلوية (Navigation Items) - للاستخدام في Frontend"
+		},
+		{
+			"name": "Hero",
+			"item": [
+				{
+					"name": "1. Get Hero Section",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"type": "text",
+								"description": "ar أو en - اللغة المطلوبة للترجمة"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/hero?locale=ar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"hero"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "ar أو en - اللغة المطلوبة (اختياري، يمكن إرساله في header أيضاً)"
+								}
+							]
+						},
+						"description": "الحصول على قسم الهيرو (Hero Section) النشط. لا يتطلب Token (Public endpoint). يتم إرجاع البيانات المترجمة حسب locale في header أو query parameter. يتضمن العنوان الرئيسي، العنوان الثانوي، الوصف، صورة الخلفية، والأزرار."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بقسم الهيرو (Hero Section) - للاستخدام في Frontend"
+		},
+		{
+			"name": "Companies",
+			"item": [
+				{
+					"name": "1. Get Company Logos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"type": "text",
+								"description": "ar أو en - اللغة المطلوبة للترجمة"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/company-logo?locale=ar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"company-logo"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "ar أو en - اللغة المطلوبة (اختياري، يمكن إرساله في header أيضاً)"
+								}
+							]
+						},
+						"description": "الحصول على قسم شعارات الشركات (Company Logos) النشط. لا يتطلب Token (Public endpoint). يتم إرجاع البيانات المترجمة حسب locale في header أو query parameter. يتضمن العنوان الرئيسي وقائمة الشعارات مع روابطها."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بقسم الشركات (Companies Section) - للاستخدام في Frontend"
+		},
+		{
+			"name": "Footer",
+			"item": [
+				{
+					"name": "1. Get Footer Section",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"type": "text",
+								"description": "ar أو en - اللغة المطلوبة للترجمة"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/footer?locale=ar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"footer"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "ar أو en - اللغة المطلوبة (اختياري، يمكن إرساله في header أيضاً)"
+								}
+							]
+						},
+						"description": "الحصول على قسم الفوتر (Footer Section) النشط. لا يتطلب Token (Public endpoint). يتم إرجاع البيانات المترجمة حسب locale في header أو query parameter. يتضمن روابط الدعم والمساعدة، المحتوى، الروابط السريعة، معلومات الشركة، وروابط التواصل الاجتماعي."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بقسم الفوتر (Footer Section) - للاستخدام في Frontend"
+		},
+		{
+			"name": "Consultation Booking Section",
+			"item": [
+				{
+					"name": "1. Get Consultation Booking Section",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"type": "text",
+								"description": "ar أو en - اللغة المطلوبة للترجمة"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/consultation-booking-section?locale=ar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"consultation-booking-section"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "ar أو en - اللغة المطلوبة (اختياري، يمكن إرساله في header أيضاً)"
+								}
+							]
+						},
+						"description": "الحصول على قسم حجز الاستشارة (Consultation Booking Section) النشط. لا يتطلب Token (Public endpoint). يتم إرجاع البيانات المترجمة حسب locale في header أو query parameter. يتضمن العنوان، الوصف، صورة الخلفية، والأزرار."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بقسم حجز الاستشارة (Consultation Booking Section) - للاستخدام في Frontend"
+		},
+		{
+			"name": "Technologies Section",
+			"item": [
+				{
+					"name": "1. Get Technologies Section",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"type": "text",
+								"description": "ar أو en - اللغة المطلوبة للترجمة"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/technologies-section?locale=ar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"technologies-section"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "ar أو en - اللغة المطلوبة (اختياري، يمكن إرساله في header أيضاً)"
+								}
+							]
+						},
+						"description": "الحصول على قسم التقنيات (Technologies Section) النشط. لا يتطلب Token (Public endpoint). يتم إرجاع البيانات المترجمة حسب locale في header أو query parameter. يتضمن العنوان، الوصف، صورة القسم، والأزرار."
+					},
+					"response": []
+				}
+			],
+			"description": "جميع endpoints الخاصة بقسم التقنيات (Technologies Section) - للاستخدام في Frontend"
 		},
 		{
 			"name": "Settings",
@@ -2517,13 +2944,39 @@
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"booking_id\": 1,\n    \"rating\": 5,\n    \"comment\": \"خدمة ممتازة، أنصح بها بشدة\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "booking_id",
+									"value": "",
+									"description": "رقم الحجز (اختياري)",
+									"type": "text"
+								},
+								{
+									"key": "ratable_id",
+									"value": "1",
+									"description": "معرف العنصر المراد تقييمه",
+									"type": "text"
+								},
+								{
+									"key": "ratable_type",
+									"value": "ai_service",
+									"description": "نوع العنصر: service, consultation, ai_service, ready_app",
+									"type": "text"
+								},
+								{
+									"key": "rating",
+									"value": "5",
+									"description": "التقييم من 1 إلى 5",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "أداة ذكاء اصطناعي رائعة ومفيدة جداً",
+									"description": "نص التقييم",
+									"type": "text"
 								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{base_url}}/customer/ratings",
@@ -2535,7 +2988,7 @@
 								"ratings"
 							]
 						},
-						"description": "إنشاء تقييم جديد لحجز منتهي. الشروط: الحجز يجب أن يكون منتهياً (status = 'completed'), الحجز يجب أن ينتمي للعميل المصادق عليه, لا يمكن تقييم نفس الحجز مرتين, rating: من 1 إلى 5 (مطلوب), comment: نصي (اختياري، حد أقصى 1000 حرف), يتطلب Token"
+						"description": "إنشاء تقييم جديد. يمكن التقييم عبر رقم الحجز (للاستشارات والخدمات) أو التقييم المباشر لأدوات الذكاء الاصطناعي والتطبيقات الجاهزة باستخدام الحقول المتعددة (Polymorphic). الشروط: إذا تم استخدام booking_id يجب أن يكون الحجز منتهياً وينتمي للعميل. الحقول المتاحة: booking_id (اختياري), ratable_id (مطلوب في حال عدم وجود رقم حجز), ratable_type (مطلوب في حال عدم وجود رقم حجز: service, consultation, ai_service, ready_app), rating: من 1 إلى 5 (مطلوب), comment: نص التقييم (اختياري)، يتطلب Token"
 					},
 					"response": []
 				},
@@ -2596,13 +3049,18 @@
 									"description": "فلترة حسب التقييم (1-5) - اختياري"
 								},
 								{
+									"key": "ratable_type",
+									"value": "ai_service",
+									"description": "فلترة حسب نوع العنصر (اختياري)"
+								},
+								{
 									"key": "per_page",
 									"value": "15",
-									"description": "عدد التقييمات في الصفحة - اختياري (افتراضي: 15)"
+									"description": "عدد التقييمات في الصفحة - اختياري (افتراضي: 10)"
 								}
 							]
 						},
-						"description": "الحصول على جميع التقييمات (عام - لا يتطلب Token). يمكن الفلترة حسب rating."
+						"description": "الحصول على جميع التقييمات (عام - لا يتطلب Token). يمكن الفلترة حسب rating أو ratable_type."
 					},
 					"response": []
 				},
@@ -2870,6 +3328,1375 @@
 				}
 			],
 			"description": "نظام النقاط والمحفظة. يتيح للعملاء شراء نقاط واستخدامها في الحجز. ترتيب الـ Endpoints: 1: الحصول على رصيد المحفظة (يتطلب Token), 2: شراء نقاط (يتطلب Token), 3: الحصول على سجل المعاملات (يتطلب Token)"
+		},
+		{
+			"name": "Ready Apps",
+			"item": [
+				{
+					"name": "Public - Ready Apps",
+					"item": [
+						{
+							"name": "1. Get All Ready Apps (Public)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/ready-apps?category=restaurant-systems&search=مطعم&page=1&per_page=12",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ready-apps"
+									],
+									"query": [
+										{
+											"key": "category",
+											"value": "restaurant-systems",
+											"description": "فلترة حسب slug الفئة (اختياري)"
+										},
+										{
+											"key": "search",
+											"value": "مطعم",
+											"description": "البحث في الأسماء والأوصاف (اختياري)"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "رقم الصفحة (اختياري)"
+										},
+										{
+											"key": "per_page",
+											"value": "12",
+											"description": "عدد العناصر في الصفحة (اختياري)"
+										}
+									]
+								},
+								"description": "جلب قائمة التطبيقات الجاهزة (Public - لا يتطلب Token). يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get Ready App Details (Public)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/ready-apps/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ready-apps",
+										"1"
+									]
+								},
+								"description": "جلب تفاصيل تطبيق معين (Public - لا يتطلب Token). يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						}
+					],
+					"description": "Endpoints عامة للتصفح بدون تسجيل دخول"
+				},
+				{
+					"name": "Customer - Ready Apps",
+					"item": [
+						{
+							"name": "1. Get All Ready Apps",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ready-apps?category=restaurant-systems&search=مطعم&page=1&per_page=12",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ready-apps"
+									],
+									"query": [
+										{
+											"key": "category",
+											"value": "restaurant-systems",
+											"description": "فلترة حسب slug الفئة (اختياري)"
+										},
+										{
+											"key": "search",
+											"value": "مطعم",
+											"description": "البحث في الأسماء والأوصاف (اختياري)"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "رقم الصفحة (اختياري)"
+										},
+										{
+											"key": "per_page",
+											"value": "12",
+											"description": "عدد العناصر في الصفحة (اختياري)"
+										}
+									]
+								},
+								"description": "جلب قائمة التطبيقات الجاهزة. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get Ready App Details",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ready-apps/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ready-apps",
+										"1"
+									]
+								},
+								"description": "جلب تفاصيل تطبيق معين. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "3. Purchase Ready App",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pricing_plan_id\": 2,\n    \"notes\": \"أريد تثبيت النظام في المطعم\",\n    \"contact_preference\": \"phone\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/ready-apps/1/purchase",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ready-apps",
+										"1",
+										"purchase"
+									]
+								},
+								"description": "إنشاء طلب شراء تطبيق. يتطلب Token. pricing_plan_id: اختياري (للاستخدام المستقبلي), notes: ملاحظات العميل, contact_preference: phone/email/both."
+							},
+							"response": []
+						},
+						{
+							"name": "4. Create Inquiry",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"subject\": \"استفسار عن النظام\",\n    \"message\": \"أريد معرفة المزيد عن المميزات\",\n    \"contact_preference\": \"email\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/ready-apps/1/inquiry",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ready-apps",
+										"1",
+										"inquiry"
+									]
+								},
+								"description": "إنشاء طلب استفسار عن تطبيق. يتطلب Token. يتم إنشاء تذكرة دعم مرتبطة بالتطبيق."
+							},
+							"response": []
+						},
+						{
+							"name": "5. Toggle Favorite",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ready-apps/1/favorite",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ready-apps",
+										"1",
+										"favorite"
+									]
+								},
+								"description": "إضافة/إزالة تطبيق من المفضلة. يتطلب Token. إذا كان التطبيق في المفضلة، سيتم إزالته، وإلا سيتم إضافته."
+							},
+							"response": []
+						},
+						{
+							"name": "6. Remove from Favorites",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ready-apps/1/favorite",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ready-apps",
+										"1",
+										"favorite"
+									]
+								},
+								"description": "إزالة تطبيق من المفضلة. يتطلب Token."
+							},
+							"response": []
+						},
+						{
+							"name": "7. Get Favorite Apps",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ready-apps/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ready-apps",
+										"favorites"
+									]
+								},
+								"description": "جلب قائمة التطبيقات المفضلة للعميل. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						}
+					],
+					"description": "جميع endpoints الخاصة بالتطبيقات الجاهزة للعميل. يتطلب Token لجميع الـ endpoints. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+				}
+			],
+			"description": "قسم التطبيقات الجاهزة (Ready Applications). يتيح للعملاء تصفح وشراء التطبيقات الجاهزة. ترتيب الـ Endpoints: Public: 1-2 (لا يتطلب Token), Customer: 1-7 (يتطلب Token). ملاحظة: locale يتم إرساله في الـ header (locale أو X-Locale) ويتم إرجاع البيانات المترجمة بناءً عليه."
+		},
+		{
+			"name": "AI Services",
+			"item": [
+				{
+					"name": "Public - AI Services",
+					"item": [
+						{
+							"name": "1. Get All AI Services (Public)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/ai-services?category=data-analysis&search=ذكاء&page=1&per_page=12",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ai-services"
+									],
+									"query": [
+										{
+											"key": "category",
+											"value": "data-analysis",
+											"description": "فلترة حسب slug الفئة (اختياري)"
+										},
+										{
+											"key": "search",
+											"value": "ذكاء",
+											"description": "البحث في الأسماء والأوصاف (اختياري)"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "رقم الصفحة (اختياري)"
+										},
+										{
+											"key": "per_page",
+											"value": "12",
+											"description": "عدد العناصر في الصفحة (اختياري)"
+										},
+										{
+											"key": "is_free",
+											"value": "true",
+											"description": "فلترة الأدوات المجانية فقط (true/false) (اختياري)",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "free",
+											"description": "فلترة حسب النوع (free/paid) (اختياري)",
+											"disabled": true
+										}
+									]
+								},
+								"description": "جلب قائمة خدمات الذكاء الاصطناعي الجاهزة (Public - لا يتطلب Token). الفلترة متاحة حسب الفئة، البحث، والنوع (مجاني/مدفوع). يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get AI Service Details (Public)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/ai-services/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ai-services",
+										"1"
+									]
+								},
+								"description": "جلب تفاصيل خدمة ذكاء اصطناعي معينة (Public - لا يتطلب Token). يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						}
+					],
+					"description": "Endpoints عامة للتصفح بدون تسجيل دخول"
+				},
+				{
+					"name": "Customer - AI Services",
+					"item": [
+						{
+							"name": "1. Get All AI Services",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services?category=data-analysis&search=ذكاء&page=1&per_page=12",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services"
+									],
+									"query": [
+										{
+											"key": "category",
+											"value": "data-analysis",
+											"description": "فلترة حسب slug الفئة (اختياري)"
+										},
+										{
+											"key": "search",
+											"value": "ذكاء",
+											"description": "البحث في الأسماء والأوصاف (اختياري)"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "رقم الصفحة (اختياري)"
+										},
+										{
+											"key": "per_page",
+											"value": "12",
+											"description": "عدد العناصر في الصفحة (اختياري)"
+										},
+										{
+											"key": "is_free",
+											"value": "true",
+											"description": "فلترة الأدوات المجانية فقط (true/false) (اختياري)",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "free",
+											"description": "فلترة حسب النوع (free/paid) (اختياري)",
+											"disabled": true
+										}
+									]
+								},
+								"description": "جلب قائمة خدمات الذكاء الاصطناعي الجاهزة. يتطلب Token. الفلترة متاحة حسب الفئة، البحث، والنوع (مجاني/مدفوع). يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get AI Service Details",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services",
+										"1"
+									]
+								},
+								"description": "جلب تفاصيل خدمة ذكاء اصطناعي معينة. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "3. Purchase AI Service",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pricing_plan_id\": 2,\n    \"notes\": \"أريد استخدام هذه الخدمة في مشروعي\",\n    \"contact_preference\": \"phone\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services/1/purchase",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services",
+										"1",
+										"purchase"
+									]
+								},
+								"description": "إنشاء طلب شراء خدمة ذكاء اصطناعي. يتطلب Token. pricing_plan_id: اختياري (للاستخدام المستقبلي), notes: ملاحظات العميل, contact_preference: phone/email/both."
+							},
+							"response": []
+						},
+						{
+							"name": "4. Create Inquiry",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"subject\": \"استفسار عن الخدمة\",\n    \"message\": \"أريد معرفة المزيد عن المميزات\",\n    \"contact_preference\": \"email\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services/1/inquiry",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services",
+										"1",
+										"inquiry"
+									]
+								},
+								"description": "إنشاء طلب استفسار عن خدمة ذكاء اصطناعي. يتطلب Token. يتم إنشاء تذكرة دعم مرتبطة بالخدمة."
+							},
+							"response": []
+						},
+						{
+							"name": "5. Toggle Favorite",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services/1/favorite",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services",
+										"1",
+										"favorite"
+									]
+								},
+								"description": "إضافة/إزالة خدمة من المفضلة. يتطلب Token. إذا كانت الخدمة في المفضلة، سيتم إزالتها، وإلا سيتم إضافتها."
+							},
+							"response": []
+						},
+						{
+							"name": "6. Remove from Favorites",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services/1/favorite",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services",
+										"1",
+										"favorite"
+									]
+								},
+								"description": "إزالة خدمة من المفضلة. يتطلب Token."
+							},
+							"response": []
+						},
+						{
+							"name": "7. Get Favorite Services",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services/favorites",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services",
+										"favorites"
+									]
+								},
+								"description": "جلب قائمة الخدمات المفضلة للعميل. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "8. Get Customer Orders",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-services/orders?status=pending&page=1&per_page=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-services",
+										"orders"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "pending",
+											"description": "فلترة حسب الحالة (اختياري): pending, processing, approved, rejected, completed, cancelled"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "رقم الصفحة (اختياري)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "عدد العناصر في الصفحة (اختياري)"
+										}
+									]
+								},
+								"description": "جلب قائمة طلبات العميل على الخدمات الجاهزة. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						}
+					],
+					"description": "جميع endpoints الخاصة بخدمات الذكاء الاصطناعي الجاهزة للعميل. يتطلب Token لجميع الـ endpoints. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+				},
+				{
+					"name": "Customer - AI Service Requests (Custom)",
+					"item": [
+						{
+							"name": "1. Get Categories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests",
+										"categories"
+									]
+								},
+								"description": "جلب قائمة فئات خدمات الذكاء الاصطناعي لإنشاء طلب مخصص. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "2. Get My Custom Requests",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests?status=pending&category_id=1&page=1&per_page=10",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "pending",
+											"description": "فلترة حسب الحالة (اختياري): pending, reviewing, quoted, approved, in_progress, completed, cancelled, rejected"
+										},
+										{
+											"key": "category_id",
+											"value": "1",
+											"description": "فلترة حسب الفئة (اختياري)"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "رقم الصفحة (اختياري)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "عدد العناصر في الصفحة (اختياري)"
+										}
+									]
+								},
+								"description": "جلب قائمة الطلبات المخصصة للعميل. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "3. Create Custom Request",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "category_id",
+											"value": "1",
+											"type": "text",
+											"description": "معرف الفئة (مطلوب)"
+										},
+										{
+											"key": "title",
+											"value": "أداة تحليل البيانات",
+											"type": "text",
+											"description": "عنوان الطلب (مطلوب)"
+										},
+										{
+											"key": "description",
+											"value": "أريد أداة لتحليل بيانات العملاء",
+											"type": "text",
+											"description": "وصف الطلب (مطلوب)"
+										},
+										{
+											"key": "use_case",
+											"value": "تحليل سلوك العملاء واتخاذ قرارات",
+											"type": "text",
+											"description": "حالة الاستخدام (مطلوب)"
+										},
+										{
+											"key": "expected_features[]",
+											"value": "تحليل البيانات",
+											"type": "text",
+											"description": "المميزات المتوقعة (اختياري - يمكن إضافة عدة قيم)"
+										},
+										{
+											"key": "expected_features[]",
+											"value": "تقارير تفصيلية",
+											"type": "text"
+										},
+										{
+											"key": "budget_range",
+											"value": "medium",
+											"type": "text",
+											"description": "نطاق الميزانية: low, medium, high, custom (مطلوب)"
+										},
+										{
+											"key": "custom_budget",
+											"value": "5000",
+											"type": "text",
+											"description": "الميزانية المخصصة (مطلوب إذا كان budget_range = custom)"
+										},
+										{
+											"key": "urgency",
+											"value": "high",
+											"type": "text",
+											"description": "الأولوية: low, medium, high (مطلوب)"
+										},
+										{
+											"key": "deadline",
+											"value": "2026-02-01",
+											"type": "text",
+											"description": "الموعد النهائي (اختياري - YYYY-MM-DD)"
+										},
+										{
+											"key": "contact_preference",
+											"value": "both",
+											"type": "text",
+											"description": "تفضيل التواصل: phone, email, both (مطلوب)"
+										},
+										{
+											"key": "attachments[]",
+											"type": "file",
+											"src": [],
+											"description": "مرفقات (اختياري - صور أو مستندات)"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests"
+									]
+								},
+								"description": "إنشاء طلب مخصص جديد لخدمة ذكاء اصطناعي. يتطلب Token. يمكن رفع مرفقات (صور أو مستندات)."
+							},
+							"response": []
+						},
+						{
+							"name": "4. Get Request Details",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests",
+										"1"
+									]
+								},
+								"description": "جلب تفاصيل طلب مخصص معين. يتطلب Token. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+							},
+							"response": []
+						},
+						{
+							"name": "5. Update Custom Request",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "أداة تحليل البيانات - محدث",
+											"type": "text",
+											"description": "عنوان الطلب (اختياري)"
+										},
+										{
+											"key": "description",
+											"value": "أريد أداة لتحليل بيانات العملاء مع تقارير متقدمة",
+											"type": "text",
+											"description": "وصف الطلب (اختياري)"
+										},
+										{
+											"key": "use_case",
+											"value": "تحليل سلوك العملاء واتخاذ قرارات استراتيجية",
+											"type": "text",
+											"description": "حالة الاستخدام (اختياري)"
+										},
+										{
+											"key": "expected_features[]",
+											"value": "تحليل البيانات",
+											"type": "text",
+											"description": "المميزات المتوقعة (اختياري)"
+										},
+										{
+											"key": "budget_range",
+											"value": "custom",
+											"type": "text",
+											"description": "نطاق الميزانية (اختياري)"
+										},
+										{
+											"key": "custom_budget",
+											"value": "8000",
+											"type": "text",
+											"description": "الميزانية المخصصة (مطلوب إذا كان budget_range = custom)"
+										},
+										{
+											"key": "urgency",
+											"value": "medium",
+											"type": "text",
+											"description": "الأولوية (اختياري)"
+										},
+										{
+											"key": "deadline",
+											"value": "2026-02-15",
+											"type": "text",
+											"description": "الموعد النهائي (اختياري)"
+										},
+										{
+											"key": "contact_preference",
+											"value": "email",
+											"type": "text",
+											"description": "تفضيل التواصل (اختياري)"
+										},
+										{
+											"key": "attachments[]",
+											"type": "file",
+											"src": [],
+											"description": "مرفقات إضافية (اختياري)"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests",
+										"1"
+									]
+								},
+								"description": "تحديث طلب مخصص (فقط إذا كانت الحالة pending). يتطلب Token."
+							},
+							"response": []
+						},
+						{
+							"name": "6. Delete/Cancel Request",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests",
+										"1"
+									]
+								},
+								"description": "حذف/إلغاء طلب مخصص (فقط إذا كانت الحالة pending أو cancelled). يتطلب Token."
+							},
+							"response": []
+						},
+						{
+							"name": "7. Accept Quote",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests/1/accept-quote",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests",
+										"1",
+										"accept-quote"
+									]
+								},
+								"description": "قبول عرض السعر المقدم من الأدمن. يتطلب Token. يجب أن تكون الحالة quoted."
+							},
+							"response": []
+						},
+						{
+							"name": "8. Reject Quote",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									},
+									{
+										"key": "locale",
+										"value": "ar",
+										"type": "text",
+										"description": "ar أو en"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/customer/ai-service-requests/1/reject-quote",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"customer",
+										"ai-service-requests",
+										"1",
+										"reject-quote"
+									]
+								},
+								"description": "رفض عرض السعر المقدم من الأدمن. يتطلب Token. يجب أن تكون الحالة quoted."
+							},
+							"response": []
+						}
+					],
+					"description": "جميع endpoints الخاصة بالطلبات المخصصة لخدمات الذكاء الاصطناعي. يتطلب Token لجميع الـ endpoints. يتم إرجاع البيانات حسب locale في الـ header (ar/en)."
+				}
+			],
+			"description": "قسم خدمات الذكاء الاصطناعي (AI Services). يتيح للعملاء تصفح وشراء الخدمات الجاهزة أو طلب خدمات مخصصة. ترتيب الـ Endpoints: Public: 1-2 (لا يتطلب Token), Customer Services: 1-8 (يتطلب Token), Customer Requests: 1-8 (يتطلب Token). ملاحظة: locale يتم إرساله في الـ header (locale أو X-Locale) ويتم إرجاع البيانات المترجمة بناءً عليه."
 		}
 	]
 }

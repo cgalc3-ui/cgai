@@ -98,7 +98,7 @@
                                 </button>
                                 <form action="{{ route('admin.consultations.destroy', $consultation) }}" method="POST"
                                     class="d-inline"
-                                    onsubmit="return confirm('{{ __('messages.delete_consultation_confirm') }}')">
+                                    onsubmit="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_consultation_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.submit(); }); return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">

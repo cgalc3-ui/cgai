@@ -89,7 +89,7 @@ class EmployeeController extends Controller
         // Default: Order by date descending (newest first)
         $bookings = $query->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'asc')
-            ->paginate(15);
+            ->paginate(10);
 
         // Add computed attributes and filter locale columns for each booking
         $bookings->getCollection()->transform(function ($booking) {

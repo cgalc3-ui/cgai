@@ -13,7 +13,7 @@ class HelpGuideController extends Controller
      */
     public function index()
     {
-        $helpGuides = HelpGuide::ordered()->paginate(15);
+        $helpGuides = HelpGuide::ordered()->paginate(10);
         return view('admin.help-guides.index', compact('helpGuides'));
     }
 

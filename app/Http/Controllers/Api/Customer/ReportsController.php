@@ -420,7 +420,7 @@ class ReportsController extends Controller
             ], 403);
         }
 
-        $perPage = (int) $request->get('per_page', 20);
+        $perPage = (int) $request->get('per_page', 10);
         $type = $request->get('type'); // bookings, tickets, subscriptions, payments, all
         $startDate = $request->get('start_date') ? Carbon::parse($request->get('start_date')) : null;
         $endDate = $request->get('end_date') ? Carbon::parse($request->get('end_date')) : null;

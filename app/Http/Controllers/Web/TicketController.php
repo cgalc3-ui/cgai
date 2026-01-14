@@ -41,7 +41,7 @@ class TicketController extends Controller
         }
 
         $tickets = $query->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(10);
 
         return view('tickets.index', compact('tickets'));
     }

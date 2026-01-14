@@ -15,13 +15,54 @@ class UpdateSubscriptionRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'name_en' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'features' => 'nullable|array',
+            'features.*' => 'nullable|string|max:500',
+            'features_en' => 'nullable|array',
+            'features_en.*' => 'nullable|string|max:500',
             'price' => 'required|numeric|min:0',
-            'duration_type' => 'required|in:month,year,lifetime',
-            'max_debtors' => 'required|integer|min:0',
-            'max_messages' => 'required|integer|min:0',
+            'duration_type' => 'required|string|in:month,year,lifetime',
             'ai_enabled' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        // Ensure numeric fields are properly formatted
+        if ($this->has('price')) {
+            $this->merge([
+                'price' => (float) $this->price
+            ]);
+        }
+        
+        // Ensure duration_type is a string
+        if ($this->has('duration_type')) {
+            $durationType = (string) trim($this->duration_type);
+            if (in_array($durationType, ['month', 'year', 'lifetime'])) {
+                $this->merge([
+                    'duration_type' => $durationType
+                ]);
+            }
+        }
+        
+        // Filter out empty features
+        if ($this->has('features') && is_array($this->features)) {
+            $this->merge([
+                'features' => array_values(array_filter($this->features, function($feature) {
+                    return !empty(trim($feature ?? ''));
+                }))
+            ]);
+        }
+        
+        if ($this->has('features_en') && is_array($this->features_en)) {
+            $this->merge([
+                'features_en' => array_values(array_filter($this->features_en, function($feature) {
+                    return !empty(trim($feature ?? ''));
+                }))
+            ]);
+        }
     }
 }

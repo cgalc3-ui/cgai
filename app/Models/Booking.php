@@ -114,15 +114,18 @@ class Booking extends Model
         $diffInMinutes = $end->diffInMinutes($start);
 
         if ($diffInMinutes < 60) {
-            return $diffInMinutes . ' دقيقة';
+            return $diffInMinutes . ' ' . ($diffInMinutes == 1 ? __('messages.minute') : __('messages.minutes'));
         }
 
         $hours = floor($diffInMinutes / 60);
         $minutes = $diffInMinutes % 60;
 
-        $result = $hours . ' ساعة';
+        $hourText = $hours == 1 ? __('messages.hour') : __('messages.hours');
+        $result = $hours . ' ' . $hourText;
+        
         if ($minutes > 0) {
-            $result .= ' و' . $minutes . ' دقيقة';
+            $minuteText = $minutes == 1 ? __('messages.minute') : __('messages.minutes');
+            $result .= ' ' . __('messages.and') . ' ' . $minutes . ' ' . $minuteText;
         }
 
         return $result;
@@ -265,15 +268,19 @@ class Booking extends Model
     private function formatMinutes(int $minutes): string
     {
         if ($minutes < 60) {
-            return $minutes . ' دقيقة';
+            $minuteText = $minutes == 1 ? __('messages.minute') : __('messages.minutes');
+            return $minutes . ' ' . $minuteText;
         }
 
         $hours = floor($minutes / 60);
         $mins = $minutes % 60;
 
-        $result = $hours . ' ساعة';
+        $hourText = $hours == 1 ? __('messages.hour') : __('messages.hours');
+        $result = $hours . ' ' . $hourText;
+        
         if ($mins > 0) {
-            $result .= ' و' . $mins . ' دقيقة';
+            $minuteText = $mins == 1 ? __('messages.minute') : __('messages.minutes');
+            $result .= ' ' . __('messages.and') . ' ' . $mins . ' ' . $minuteText;
         }
 
         return $result;

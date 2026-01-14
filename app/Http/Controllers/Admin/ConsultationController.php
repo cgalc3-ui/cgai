@@ -34,7 +34,7 @@ class ConsultationController extends Controller
             });
         }
 
-        $consultations = $query->latest()->paginate(15)->withQueryString();
+        $consultations = $query->latest()->paginate(10)->withQueryString();
 
         // Get categories for filter dropdown
         $categories = Category::where('is_active', true)->orderBy('name')->get();

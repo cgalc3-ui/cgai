@@ -50,7 +50,7 @@ class CustomerController extends Controller
             ->with(['service', 'consultation', 'employee.user'])
             ->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'desc')
-            ->paginate(15);
+            ->paginate(10);
         
         return view('customer.bookings', compact('bookings'));
     }

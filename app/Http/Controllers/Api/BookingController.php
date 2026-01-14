@@ -636,7 +636,7 @@ class BookingController extends Controller
         $bookings = $query->orderBy('created_at', 'desc')
             ->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'desc')
-            ->paginate($request->get('per_page', 15));
+            ->paginate($request->get('per_page', 10));
 
         // Format the response to include only required data
         $formattedBookings = $bookings->getCollection()->map(function ($booking) {
@@ -771,7 +771,7 @@ class BookingController extends Controller
 
         $bookings = $query->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'desc')
-            ->paginate($request->get('per_page', 15));
+            ->paginate($request->get('per_page', 10));
 
         // Format the response
         $formattedBookings = $bookings->getCollection()->map(function ($booking) {

@@ -24,5 +24,14 @@ class AppServiceProvider extends ServiceProvider
         Notification::extend('fourjawaly-sms', function ($app) {
             return $app->make(\App\Notifications\Channels\FourJawalySmsChannel::class);
         });
+
+        // Register Morph Map for Unified Rating System
+        \Illuminate\Database\Eloquent\Relations\Relation::morphMap([
+            'service' => \App\Models\Service::class,
+            'consultation' => \App\Models\Consultation::class,
+            'ai_service' => \App\Models\AiService::class,
+            'ready_app' => \App\Models\ReadyApp::class,
+            'subscription' => \App\Models\Subscription::class,
+        ]);
     }
 }

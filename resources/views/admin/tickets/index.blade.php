@@ -207,7 +207,7 @@
             }
 
             .btn-view:hover {
-                background: #2563eb;
+                opacity: 0.9;
             }
 
             .empty-state {
@@ -287,7 +287,7 @@
             }
 
             [data-theme="dark"] .btn-primary:hover {
-                background: var(--primary-dark) !important;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .btn-secondary {
@@ -297,8 +297,7 @@
             }
 
             [data-theme="dark"] .btn-secondary:hover {
-                background: var(--bg-light) !important;
-                border-color: var(--primary-color) !important;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .data-table {

@@ -36,7 +36,7 @@ class NotificationController extends Controller
             $query->where('type', $request->type);
         }
 
-        $notifications = $query->paginate(20);
+        $notifications = $query->paginate(10);
         $unreadCount = $user->unreadNotificationsCount();
 
         return view('notifications.index', compact('notifications', 'unreadCount'));

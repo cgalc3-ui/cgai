@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateSubscriptionRequest;
 use App\Models\Subscription;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionController extends Controller
 {
@@ -51,7 +52,7 @@ class SubscriptionController extends Controller
             });
         }
 
-        $subscriptions = $query->latest()->paginate(15)->withQueryString();
+        $subscriptions = $query->latest()->paginate(10)->withQueryString();
         return view('admin.subscriptions.index', compact('subscriptions'));
     }
 
@@ -76,11 +77,44 @@ class SubscriptionController extends Controller
         $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
 
-        // Set default values for old fields
-        $data['max_debtors'] = 0;
-        $data['max_messages'] = 0;
-        $data['ai_enabled'] = false;
-        $data['duration_type'] = $data['duration_type'] ?? 'monthly';
+        // Ensure numeric values are properly cast
+        if (isset($data['price'])) {
+            $data['price'] = (float) $data['price'];
+        }
+
+        // Ensure duration_type is valid and is a string
+        if (isset($data['duration_type'])) {
+            $durationType = trim((string) $data['duration_type']);
+            if (in_array($durationType, ['month', 'year', 'lifetime'])) {
+                $data['duration_type'] = $durationType;
+            } else {
+                $data['duration_type'] = 'month';
+            }
+        } else {
+            $data['duration_type'] = 'month';
+        }
+        
+        // Force string type for duration_type
+        $data['duration_type'] = (string) $data['duration_type'];
+
+        // Filter out empty features
+        if (isset($data['features']) && is_array($data['features'])) {
+            $data['features'] = array_filter($data['features'], function($feature) {
+                return !empty(trim($feature ?? ''));
+            });
+            $data['features'] = array_values($data['features']); // Re-index array
+        } else {
+            $data['features'] = [];
+        }
+
+        if (isset($data['features_en']) && is_array($data['features_en'])) {
+            $data['features_en'] = array_filter($data['features_en'], function($feature) {
+                return !empty(trim($feature ?? ''));
+            });
+            $data['features_en'] = array_values($data['features_en']); // Re-index array
+        } else {
+            $data['features_en'] = [];
+        }
 
         $subscription = Subscription::create($data);
 
@@ -138,21 +172,51 @@ class SubscriptionController extends Controller
         $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
 
-        // Preserve old fields if not provided
-        if (!isset($data['max_debtors'])) {
-            $data['max_debtors'] = $subscription->max_debtors;
-        }
-        if (!isset($data['max_messages'])) {
-            $data['max_messages'] = $subscription->max_messages;
-        }
-        if (!isset($data['ai_enabled'])) {
-            $data['ai_enabled'] = $subscription->ai_enabled;
-        }
-        if (!isset($data['duration_type'])) {
-            $data['duration_type'] = $subscription->duration_type;
+        // Ensure numeric values are properly cast
+        if (isset($data['price'])) {
+            $data['price'] = (float) $data['price'];
         }
 
-        $subscription->update($data);
+        // Ensure duration_type is valid and is a string
+        $durationType = null;
+        if (isset($data['duration_type']) && !empty($data['duration_type'])) {
+            $durationType = trim((string) $data['duration_type']);
+            if (!in_array($durationType, ['month', 'year', 'lifetime'])) {
+                $durationType = $subscription->duration_type ?? 'month';
+            }
+        } else {
+            $durationType = $subscription->duration_type ?? 'month';
+        }
+        
+        // Remove duration_type from data array to update it separately
+        unset($data['duration_type']);
+
+        // Filter out empty features
+        if (isset($data['features']) && is_array($data['features'])) {
+            $data['features'] = array_filter($data['features'], function($feature) {
+                return !empty(trim($feature ?? ''));
+            });
+            $data['features'] = array_values($data['features']); // Re-index array
+        }
+
+        if (isset($data['features_en']) && is_array($data['features_en'])) {
+            $data['features_en'] = array_filter($data['features_en'], function($feature) {
+                return !empty(trim($feature ?? ''));
+            });
+            $data['features_en'] = array_values($data['features_en']); // Re-index array
+        }
+
+        // Update all fields except duration_type
+        $subscription->fill($data);
+        $subscription->save();
+        
+        // Update duration_type using DB facade to ensure it's treated as string
+        DB::table('subscriptions')
+            ->where('id', $subscription->id)
+            ->update(['duration_type' => $durationType]);
+        
+        // Refresh the model to get updated values
+        $subscription->refresh();
 
         // Notify all admins except the updater
         $this->notificationService->notifyAdmins(

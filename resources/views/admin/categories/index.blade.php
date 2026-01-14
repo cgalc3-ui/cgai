@@ -54,6 +54,7 @@
         <table class="data-table">
             <thead>
                 <tr>
+                    <th>{{ __('messages.image') }}</th>
                     <th>{{ __('messages.name') }}</th>
                     <th>{{ __('messages.description') }}</th>
                     <th class="text-center">{{ __('messages.status') }}</th>
@@ -64,6 +65,15 @@
             <tbody>
                 @forelse($categories as $category)
                     <tr>
+                        <td>
+                            @if($category->image)
+                                <img src="{{ $category->image }}" alt="{{ $category->trans('name') }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                            @else
+                                <div style="width: 50px; height: 50px; background: #f3f4f6; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #9ca3af;">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            @endif
+                        </td>
                         <td>{{ $category->trans('name') }}</td>
                         <td>{{ Str::limit($category->trans('description') ?? '-', 50) }}</td>
                         <td class="text-center">
@@ -81,7 +91,7 @@
                                     <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('{{ __('messages.delete_category_confirm') }}')">
+                                    onsubmit="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_category_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.submit(); }); return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
@@ -93,7 +103,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center">{{ __('messages.no_categories') }}</td>
+                        <td colspan="6" class="text-center">{{ __('messages.no_categories') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -152,6 +162,29 @@
             .then(response => response.json())
             .then(data => {
                 modalBody.innerHTML = data.html;
+                // Re-execute scripts in the loaded content
+                const scripts = modalBody.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+                
+                if (modalId === 'createCategoryModal') {
+                    setTimeout(() => {
+                        const form = modalBody.querySelector('form');
+                        if (form) {
+                            form.addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                handleFormSubmit(form, modalId);
+                            });
+                        }
+                    }, 100);
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -176,14 +209,28 @@
             .then(response => response.json())
             .then(data => {
                 modalBody.innerHTML = data.html;
+                // Re-execute scripts in the loaded content
+                const scripts = modalBody.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+                
                 // Update form action and add AJAX handler
-                const form = modalBody.querySelector('form');
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        handleFormSubmit(form, modalId);
-                    });
-                }
+                setTimeout(() => {
+                    const form = modalBody.querySelector('form');
+                    if (form) {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            handleFormSubmit(form, modalId);
+                        });
+                    }
+                }, 100);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -196,11 +243,19 @@
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             
+            // Ensure _method is set for PUT request
+            const methodInput = form.querySelector('input[name="_method"]');
+            if (methodInput && methodInput.value === 'PUT') {
+                if (!formData.has('_method')) {
+                    formData.append('_method', 'PUT');
+                }
+            }
+            
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             fetch(form.action, {
-                method: form.method,
+                method: 'POST', // Always use POST for FormData with method spoofing
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -226,13 +281,13 @@
                         
                         Object.keys(data.errors).forEach(key => {
                             const input = form.querySelector(`[name="${key}"]`);
-                            if (input) {
-                                input.classList.add('error');
-                                const errorMsg = document.createElement('span');
-                                errorMsg.className = 'error-message';
-                                errorMsg.textContent = data.errors[key][0];
-                                input.parentNode.appendChild(errorMsg);
-                            }
+                            const container = input ? input.closest('.form-group') : form;
+                            if (input) input.classList.add('error');
+                            
+                            const errorMsg = document.createElement('span');
+                            errorMsg.className = 'error-message';
+                            errorMsg.textContent = data.errors[key][0];
+                            container.appendChild(errorMsg);
                         });
                     }
                     submitBtn.disabled = false;
@@ -266,133 +321,57 @@
 
     <style>
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center;
+            z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
-
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .modal-overlay.show { opacity: 1; visibility: visible; }
         .modal-container {
-            background: white;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            /* Hide scrollbar but keep functionality */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE and Edge */
+            background: white; border-radius: 20px; width: 90%; max-width: 700px;
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.95); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            scrollbar-width: none; border: 1px solid #e5e7eb;
         }
-
-        .modal-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
-        }
-
-        .modal-overlay.show .modal-container {
-            transform: scale(1);
-        }
-
+        .modal-container::-webkit-scrollbar { display: none; }
+        .modal-overlay.show .modal-container { transform: scale(1); }
         .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 24px;
-            border-bottom: 1px solid #e5e7eb;
-            border-radius: 24px 24px 0 0;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 24px 30px; border-bottom: 1px solid #e5e7eb;
         }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1f2937;
-            margin: 0;
-        }
-
+        .modal-title { font-size: 22px; font-weight: 700; color: #1f2937; margin: 0; }
         .modal-close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #6b7280;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 6px;
-            transition: all 0.2s;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: none; border: none; font-size: 18px; color: #6b7280;
+            cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; border-radius: 10px;
         }
-
-        .modal-close:hover {
-            background: #f3f4f6;
-            color: #1f2937;
-        }
-
-        .modal-body {
-            padding: 24px;
-            border-radius: 0 0 24px 24px;
-        }
-
-        @media (max-width: 768px) {
-            .modal-container {
-                width: 95%;
-                max-height: 95vh;
-            }
-        }
+        .modal-close:hover { background: #f3f4f6; color: #1f2937; }
+        .modal-body { padding: 30px; }
 
         /* Dark Mode Styles */
+        [data-theme="dark"] .modal-overlay {
+            background: rgba(0, 0, 0, 0.7);
+        }
         [data-theme="dark"] .modal-container {
-            background: var(--card-bg, #1e1f27);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            border-radius: 24px;
+            background: #1a1d21;
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-
         [data-theme="dark"] .modal-header {
-            border-bottom-color: var(--border-color, #2a2d3a);
-            border-radius: 24px 24px 0 0;
+            border-bottom-color: rgba(255, 255, 255, 0.05);
         }
-
-        [data-theme="dark"] .modal-body {
-            border-radius: 0 0 24px 24px;
-        }
-
         [data-theme="dark"] .modal-title {
-            color: var(--text-primary, #f1f5f9);
+            color: #ffffff;
         }
-
         [data-theme="dark"] .modal-close {
-            color: var(--text-secondary, #94a3b8);
+            color: rgba(255, 255, 255, 0.5);
         }
-
         [data-theme="dark"] .modal-close:hover {
-            background: var(--sidebar-active-bg, #15171d);
-            color: var(--text-primary, #f1f5f9);
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
         }
-
-        [data-theme="dark"] .modal-form .form-actions {
-            border-top-color: var(--border-color, #2a2d3a);
-        }
-
-        [data-theme="dark"] .modal-form label {
-            color: var(--text-primary, #f1f5f9);
-        }
+        
+        .error-message { color: #ef4444; font-size: 12px; margin-top: 8px; text-align: right; display: block; }
+        .error { border-color: #ef4444 !important; }
     </style>
 @endsection

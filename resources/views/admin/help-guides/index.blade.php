@@ -11,10 +11,10 @@
         </div>
         <div class="page-header-right">
             <a href="{{ route('help-guide.index') }}" class="btn btn-secondary" style="margin-left: 10px;">
-                <i class="fas fa-eye"></i> {{ __('messages.view_as_user') }}
+                {{ __('messages.view_as_user') }}
             </a>
             <button type="button" class="btn btn-primary" onclick="openCreateModal('{{ route('admin.help-guides.create') }}', 'createHelpGuideModal', '{{ __('messages.add_help_guide') }}')">
-                <i class="fas fa-plus"></i> {{ __('messages.add_help_guide') }}
+                {{ __('messages.add_help_guide') }}
             </button>
             <span class="total-count">{{ __('messages.total_help_guides') }}: {{ $helpGuides->total() }}</span>
         </div>
@@ -26,7 +26,6 @@
                 <tr>
                     <th>{{ __('messages.role') }}</th>
                     <th>{{ __('messages.title') }}</th>
-                    <th class="text-center">{{ __('messages.icon') }}</th>
                     <th class="text-center">{{ __('messages.sort_order') }}</th>
                     <th class="text-center">{{ __('messages.status') }}</th>
                     <th class="text-center">{{ __('messages.actions') }}</th>
@@ -45,13 +44,6 @@
                             @endif
                         </td>
                         <td>{{ Str::limit($helpGuide->trans('title'), 60) }}</td>
-                        <td class="text-center">
-                            @if($helpGuide->icon)
-                                <i class="{{ $helpGuide->icon }}"></i>
-                            @else
-                                <span class="text-muted">-</span>
-                            @endif
-                        </td>
                         <td class="text-center">{{ $helpGuide->sort_order }}</td>
                         <td class="text-center">
                             @if($helpGuide->is_active)
@@ -67,7 +59,7 @@
                                     <i class="far fa-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.help-guides.destroy', $helpGuide) }}" method="POST" class="d-inline"
-                                    onsubmit="return confirm('{{ __('messages.delete_help_guide_confirm') }}')">
+                                    onsubmit="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_help_guide_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.submit(); }); return false;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="calm-action-btn danger" title="{{ __('messages.delete') }}">
@@ -79,7 +71,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">{{ __('messages.no_help_guides') }}</td>
+                        <td colspan="5" class="text-center">{{ __('messages.no_help_guides') }}</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -96,7 +88,7 @@
             <div class="modal-header">
                 <h3 class="modal-title">{{ __('messages.add_help_guide') }}</h3>
                 <button type="button" class="modal-close" onclick="closeModal('createHelpGuideModal')">
-                    <i class="fas fa-times"></i>
+                    ×
                 </button>
             </div>
             <div class="modal-body" id="createHelpGuideModalBody">
@@ -111,7 +103,7 @@
             <div class="modal-header">
                 <h3 class="modal-title">{{ __('messages.edit_help_guide') }}</h3>
                 <button type="button" class="modal-close" onclick="closeModal('editHelpGuideModal')">
-                    <i class="fas fa-times"></i>
+                    ×
                 </button>
             </div>
             <div class="modal-body" id="editHelpGuideModalBody">
@@ -125,7 +117,7 @@
             const modal = document.getElementById(modalId);
             const modalBody = document.getElementById(modalId + 'Body');
             
-            modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3b82f6;"></i></div>';
+            modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><span style="font-size: 24px; color: #3b82f6;">{{ __('messages.loading') }}...</span></div>';
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('show'), 10);
             
@@ -149,7 +141,7 @@
             const modal = document.getElementById(modalId);
             const modalBody = document.getElementById(modalId + 'Body');
             
-            modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3b82f6;"></i></div>';
+            modalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><span style="font-size: 24px; color: #3b82f6;">{{ __('messages.loading') }}...</span></div>';
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('show'), 10);
             

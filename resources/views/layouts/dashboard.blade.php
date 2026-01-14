@@ -17,13 +17,15 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/confirm.css') }}">
     @stack('styles')
     <script>
         // Apply theme BEFORE page renders to prevent flickering
         (function () {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
-            
+
             // Check for saved sidebar state before page renders
             const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
@@ -178,10 +180,100 @@
                         <i class="fas fa-file-invoice"></i>
                         <span>{{ __('messages.invoices') }}</span>
                     </a>
+                    <div class="nav-group">
+                        <div class="nav-group-header {{ request()->routeIs('admin.ready-apps*') ? 'active' : '' }}"
+                            onclick="toggleNavGroup(this)">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>{{ __('messages.ready_apps') }}</span>
+                            <i class="fas fa-chevron-down nav-arrow"></i>
+                        </div>
+                        <div class="nav-group-items {{ request()->routeIs('admin.ready-apps*') ? 'expanded' : '' }}">
+                            <a href="{{ route('admin.ready-apps.categories.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.ready-apps.categories*') ? 'active' : '' }}">
+                                <i class="fas fa-folder"></i>
+                                <span>{{ __('messages.ready_app_categories') }}</span>
+                            </a>
+                            <a href="{{ route('admin.ready-apps.apps.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.ready-apps.apps*') ? 'active' : '' }}">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>{{ __('messages.ready_apps') }}</span>
+                            </a>
+                            <a href="{{ route('admin.ready-apps.orders.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.ready-apps.orders*') ? 'active' : '' }}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>{{ __('messages.ready_app_orders') }}</span>
+                                @php
+                                    try {
+                                        $pendingOrdersCount = \App\Models\ReadyAppOrder::where('status', 'pending')->count();
+                                    } catch (\Exception $e) {
+                                        $pendingOrdersCount = 0;
+                                    }
+                                @endphp
+                                @if($pendingOrdersCount > 0)
+                                    <span class="nav-badge">{{ $pendingOrdersCount }}</span>
+                                @endif
+                            </a>
+                        </div>
+                    </div>
+                    <div class="nav-group">
+                        <div class="nav-group-header {{ request()->routeIs('admin.ai-services*') ? 'active' : '' }}"
+                            onclick="toggleNavGroup(this)">
+                            <i class="fas fa-robot"></i>
+                            <span>{{ __('messages.ai_services') }}</span>
+                            <i class="fas fa-chevron-down nav-arrow"></i>
+                        </div>
+                        <div class="nav-group-items {{ request()->routeIs('admin.ai-services*') ? 'expanded' : '' }}">
+                            <a href="{{ route('admin.ai-services.categories.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.ai-services.categories*') ? 'active' : '' }}">
+                                <i class="fas fa-folder"></i>
+                                <span>{{ __('messages.ai_service_categories') }}</span>
+                            </a>
+                            <a href="{{ route('admin.ai-services.services.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.ai-services.services*') ? 'active' : '' }}">
+                                <i class="fas fa-robot"></i>
+                                <span>{{ __('messages.ai_services_list') }}</span>
+                            </a>
+                            <a href="{{ route('admin.ai-services.orders.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.ai-services.orders*') ? 'active' : '' }}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>{{ __('messages.ai_service_orders') }}</span>
+                                @php
+                                    try {
+                                        $pendingAiServiceOrdersCount = \App\Models\AiServiceOrder::where('status', 'pending')->count();
+                                    } catch (\Exception $e) {
+                                        $pendingAiServiceOrdersCount = 0;
+                                    }
+                                @endphp
+                                @if($pendingAiServiceOrdersCount > 0)
+                                    <span class="nav-badge">{{ $pendingAiServiceOrdersCount }}</span>
+                                @endif
+                            </a>
+                            <a href="{{ route('admin.ai-services.requests.index') }}"
+                                class="nav-item {{ request()->routeIs('admin.ai-services.requests*') ? 'active' : '' }}">
+                                <i class="fas fa-file-alt"></i>
+                                <span>{{ __('messages.ai_service_requests') }}</span>
+                                @php
+                                    try {
+                                        $pendingAiServiceRequestsCount = \App\Models\AiServiceRequest::where('status', 'pending')->count();
+                                    } catch (\Exception $e) {
+                                        $pendingAiServiceRequestsCount = 0;
+                                    }
+                                @endphp
+                                @if($pendingAiServiceRequestsCount > 0)
+                                    <span class="nav-badge">{{ $pendingAiServiceRequestsCount }}</span>
+                                @endif
+                            </a>
+                        </div>
+                    </div>
                     <a href="{{ route('admin.points.settings') }}"
                         class="nav-item {{ request()->routeIs('admin.points*') ? 'active' : '' }}">
                         <i class="fas fa-coins"></i>
                         <span>{{ __('messages.points_system') ?? 'نظام النقاط' }}</span>
+                    </a>
+                    <a href="{{ route('admin.customer-facing.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.customer-facing*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>{{ __('messages.customer_facing') ?? 'وجهة العميل' }}</span>
                     </a>
 
                     <div class="nav-section-label">{{ __('messages.more_menu') ?? 'MORE' }}</div>
@@ -316,7 +408,7 @@
                         </nav>
                     </div>
                 </div>
-                
+
                 <div class="top-bar-search d-none-mobile">
                     <div class="search-input-group">
                         <i class="fas fa-search search-icon"></i>
@@ -353,11 +445,13 @@
                             </div>
                         </div>
 
-                        <button class="icon-btn theme-toggle-btn" id="themeToggle" title="{{ __('messages.toggle_theme') ?? 'Toggle Theme' }}">
+                        <button class="icon-btn theme-toggle-btn" id="themeToggle"
+                            title="{{ __('messages.toggle_theme') ?? 'Toggle Theme' }}">
                             <i class="fas fa-moon" id="themeIcon"></i>
                         </button>
 
-                        <a href="{{ route('notifications.index') }}" class="icon-btn notification-btn" title="{{ __('messages.notifications') }}">
+                        <a href="{{ route('notifications.index') }}" class="icon-btn notification-btn"
+                            title="{{ __('messages.notifications') }}">
                             <i class="far fa-bell"></i>
                             @php
                                 $unreadCount = auth()->user()->unreadNotificationsCount();
@@ -367,7 +461,8 @@
                             @endif
                         </a>
 
-                        <a href="{{ route('settings.index') }}" class="icon-btn d-none-mobile" title="{{ __('messages.settings') }}">
+                        <a href="{{ route('settings.index') }}" class="icon-btn d-none-mobile"
+                            title="{{ __('messages.settings') }}">
                             <i class="fas fa-cog"></i>
                         </a>
 
@@ -396,38 +491,51 @@
 
             <!-- Content Area -->
             <div class="content-area">
-                @if(session('success'))
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i>
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        {{ session('error') }}
-                    </div>
-                @endif
-
-                @if($errors->any())
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
                 @yield('content')
             </div>
         </main>
     </div>
 
     <!-- Scripts -->
+    <script src="{{ asset('js/toast.js') }}"></script>
+    <script src="{{ asset('js/confirm.js') }}"></script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
+    <script>
+        // Set translations for JavaScript
+        window.translations = {
+            confirm: '{{ __('messages.confirm') }}',
+            cancel: '{{ __('messages.cancel') }}',
+            ok: '{{ __('messages.ok') }}',
+            delete: '{{ __('messages.delete') }}',
+            confirm_delete: '{{ __('messages.confirm_delete') }}',
+            confirm_delete_title: '{{ __('messages.confirm_delete_title') }}',
+            warning: '{{ __('messages.warning') }}',
+            info: '{{ __('messages.info') }}'
+        };
+
+        // Show toast notifications from session
+        @if(session('success'))
+            Toast.success('{{ session('success') }}');
+        @endif
+
+        @if(session('error'))
+            Toast.error('{{ session('error') }}');
+        @endif
+
+        @if(session('warning'))
+            Toast.warning('{{ session('warning') }}');
+        @endif
+
+        @if(session('info'))
+            Toast.info('{{ session('info') }}');
+        @endif
+
+        @if($errors->any())
+            @foreach($errors->all() as $error)
+                Toast.error('{{ $error }}');
+            @endforeach
+        @endif
+    </script>
     <script>
         // Notifications polling
         (function () {
@@ -527,24 +635,24 @@
         })();
 
         // Theme Toggle
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
             const html = document.documentElement;
-            
+
             if (!themeToggle || !themeIcon) {
                 console.error('Theme toggle elements not found');
                 return;
             }
-            
+
             // Get current theme - it should already be set by the script in <head>
             const currentTheme = html.getAttribute('data-theme') || localStorage.getItem('theme') || 'light';
-            
+
             // Ensure theme is set (fallback)
             if (!html.getAttribute('data-theme')) {
                 html.setAttribute('data-theme', currentTheme);
             }
-            
+
             // Update icon based on current theme
             if (currentTheme === 'dark') {
                 themeIcon.classList.remove('fa-moon');
@@ -553,18 +661,18 @@
                 themeIcon.classList.remove('fa-sun');
                 themeIcon.classList.add('fa-moon');
             }
-            
+
             // Add click event listener
-            themeToggle.addEventListener('click', function(e) {
+            themeToggle.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 const currentTheme = html.getAttribute('data-theme') || 'light';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                
+
                 html.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
-                
+
                 // Update icon
                 if (newTheme === 'dark') {
                     themeIcon.classList.remove('fa-moon');

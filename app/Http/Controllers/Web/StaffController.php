@@ -35,6 +35,8 @@ class StaffController extends Controller
             $totalBookings = 0;
             $todayBookings = 0;
             $pendingBookings = 0;
+            $completedBookings = 0;
+            $upcomingBookings = 0;
         } else {
             $bookings = Booking::with(['customer', 'service.subCategory.category', 'consultation.category'])
                 ->where('employee_id', $employee->id)
@@ -42,13 +44,32 @@ class StaffController extends Controller
                 ->limit(10)
                 ->get();
 
-            $totalBookings = Booking::where('employee_id', $employee->id)->count();
-            $todayBookings = Booking::where('employee_id', $employee->id)
-                ->whereDate('booking_date', Carbon::today())
-                ->count();
-            $pendingBookings = Booking::where('employee_id', $employee->id)
-                ->where('status', 'pending')
-                ->count();
+            // Get all bookings for the employee
+            $allBookings = Booking::where('employee_id', $employee->id)->get();
+            
+            // Update statuses automatically for accurate statistics
+            foreach ($allBookings as $booking) {
+                $booking->updateStatusAutomatically();
+            }
+            
+            $totalBookings = $allBookings->count();
+            $todayBookings = $allBookings->filter(function($booking) {
+                return $booking->booking_date && $booking->booking_date->isToday();
+            })->count();
+            
+            $pendingBookings = $allBookings->filter(function($booking) {
+                return $booking->actual_status === 'pending';
+            })->count();
+            
+            $completedBookings = $allBookings->filter(function($booking) {
+                return $booking->actual_status === 'completed';
+            })->count();
+            
+            $upcomingBookings = $allBookings->filter(function($booking) {
+                return $booking->booking_date && 
+                       $booking->booking_date->isFuture() && 
+                       in_array($booking->actual_status, ['pending', 'in_progress']);
+            })->count();
         }
 
         $stats = [
@@ -56,6 +77,8 @@ class StaffController extends Controller
             'total_bookings' => $totalBookings,
             'today_bookings' => $todayBookings,
             'pending_bookings' => $pendingBookings,
+            'completed_bookings' => $completedBookings,
+            'upcoming_bookings' => $upcomingBookings,
         ];
 
         return view('staff.dashboard', compact('stats', 'bookings'));
@@ -90,7 +113,7 @@ class StaffController extends Controller
      */
     public function customers()
     {
-        $customers = User::where('role', 'customer')->latest()->paginate(20);
+        $customers = User::where('role', 'customer')->latest()->paginate(10);
         return view('staff.customers.index', compact('customers'));
     }
 
@@ -124,7 +147,7 @@ class StaffController extends Controller
             ->where('employee_id', $employee->id)
             ->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'asc')
-            ->paginate(15);
+            ->paginate(10);
 
         // Update statuses automatically for all bookings
         foreach ($bookings as $booking) {

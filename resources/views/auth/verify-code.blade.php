@@ -14,6 +14,9 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Toast CSS -->
+    <link rel="stylesheet" href="{{ asset('css/toast.css') }}">
+    
     <style>
         * {
             margin: 0;
@@ -189,27 +192,6 @@
             <i class="fas fa-mobile-alt"></i> {{ $phone }}
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle"></i> {{ session('success') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-error">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
 
         <form action="{{ route('verify.code.submit') }}" method="POST" id="verifyForm">
             @csrf
@@ -265,6 +247,23 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
         });
+    </script>
+    <script src="{{ asset('js/toast.js') }}"></script>
+    <script>
+        // Show toast notifications from session
+        @if(session('success'))
+            Toast.success('{{ session('success') }}');
+        @endif
+
+        @if(session('error'))
+            Toast.error('{{ session('error') }}');
+        @endif
+
+        @if($errors->any())
+            @foreach($errors->all() as $error)
+                Toast.error('{{ $error }}');
+            @endforeach
+        @endif
     </script>
 </body>
 </html>

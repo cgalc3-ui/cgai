@@ -908,6 +908,25 @@
         [data-theme="dark"] .required {
             color: #ef4444 !important;
         }
+
+        /* Ensure modal inputs have visible borders (override global rules) */
+        .modal .form-control,
+        .modal input.form-control,
+        .modal textarea.form-control,
+        #editPricingModal .form-control {
+            border: 1px solid #d1d5db !important;
+            background: #ffffff !important;
+            color: var(--text-primary, #1f2937) !important;
+            border-radius: 10px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Slightly stronger focus inside this modal */
+        #editPricingModal .form-control:focus {
+            outline: none !important;
+            border-color: var(--primary-color, #02c0ce) !important;
+            box-shadow: 0 0 0 4px rgba(2, 192, 206, 0.08) !important;
+        }
     </style>
     @endpush
 

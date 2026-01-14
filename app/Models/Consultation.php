@@ -79,4 +79,12 @@ class Consultation extends Model
             ->where('item_type', 'consultation')
             ->where('is_active', true);
     }
+
+    /**
+     * Get all ratings/reviews for this consultation
+     */
+    public function reviews()
+    {
+        return $this->morphMany(Rating::class, 'ratable')->where('is_approved', true);
+    }
 }

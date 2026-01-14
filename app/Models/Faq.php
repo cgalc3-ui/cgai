@@ -17,6 +17,7 @@ class Faq extends Model
         'answer_en',
         'category',
         'category_en',
+        'role',
         'is_active',
         'sort_order',
     ];

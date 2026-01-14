@@ -26,6 +26,9 @@ Route::get('lang/{locale}', function ($locale) {
     return redirect()->back();
 })->name('switch-language');
 
+// Public subscriptions page (allow GET /subscriptions without API token)
+Route::get('/subscriptions', [\App\Http\Controllers\Api\SubscriptionController::class, 'index']);
+
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
@@ -112,6 +115,59 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         'consultations' => 'consultation'
     ]);
 
+    // Ready Apps management
+    Route::prefix('ready-apps')->name('ready-apps.')->group(function () {
+        // Categories
+        Route::resource('categories', \App\Http\Controllers\Admin\ReadyAppCategoryController::class)->parameters([
+            'categories' => 'category'
+        ]);
+
+        // Apps
+        Route::resource('apps', \App\Http\Controllers\Admin\ReadyAppController::class)->parameters([
+            'apps' => 'app'
+        ]);
+
+        // Orders
+        Route::prefix('orders')->name('orders.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\ReadyAppOrderController::class, 'index'])->name('index');
+            Route::get('/{order}', [\App\Http\Controllers\Admin\ReadyAppOrderController::class, 'show'])->name('show');
+            Route::put('/{order}/status', [\App\Http\Controllers\Admin\ReadyAppOrderController::class, 'updateStatus'])->name('update-status');
+        });
+    });
+
+    // AI Services management
+    Route::prefix('ai-services')->name('ai-services.')->group(function () {
+        // Categories
+        Route::resource('categories', \App\Http\Controllers\Admin\AiServiceCategoryController::class)->parameters([
+            'categories' => 'category'
+        ]);
+
+        // Tags (Technologies)
+        Route::resource('tags', \App\Http\Controllers\Admin\AiServiceTagController::class)->parameters([
+            'tags' => 'tag'
+        ]);
+
+        // Services
+        Route::resource('services', \App\Http\Controllers\Admin\AiServiceController::class)->parameters([
+            'services' => 'service'
+        ]);
+
+        // Orders
+        Route::prefix('orders')->name('orders.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\AiServiceOrderController::class, 'index'])->name('index');
+            Route::get('/{order}', [\App\Http\Controllers\Admin\AiServiceOrderController::class, 'show'])->name('show');
+            Route::put('/{order}/status', [\App\Http\Controllers\Admin\AiServiceOrderController::class, 'updateStatus'])->name('update-status');
+        });
+
+        // Custom Requests
+        Route::prefix('requests')->name('requests.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\AiServiceRequestController::class, 'index'])->name('index');
+            Route::get('/{request}', [\App\Http\Controllers\Admin\AiServiceRequestController::class, 'show'])->name('show');
+            Route::put('/{request}/status', [\App\Http\Controllers\Admin\AiServiceRequestController::class, 'updateStatus'])->name('update-status');
+            Route::put('/{request}/quote', [\App\Http\Controllers\Admin\AiServiceRequestController::class, 'updateQuote'])->name('update-quote');
+        });
+    });
+
     // Tickets management
     Route::get('/tickets', [\App\Http\Controllers\Web\AdminController::class, 'tickets'])->name('tickets');
     Route::get('/tickets/{ticket}', [\App\Http\Controllers\Web\AdminController::class, 'showTicket'])->name('tickets.show');
@@ -122,6 +178,117 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Help Guides management
     Route::resource('help-guides', \App\Http\Controllers\Admin\HelpGuideController::class);
+
+    // Customer-facing content management (وجهة العميل)
+    Route::prefix('customer-facing')->name('customer-facing.')->group(function () {
+        // Main customer facing page
+        Route::get('/', [\App\Http\Controllers\Admin\CustomerFacingController::class, 'index'])->name('index');
+        
+        // Load section content (AJAX endpoint)
+        Route::get('/load-section/{section}', [\App\Http\Controllers\Admin\CustomerFacingController::class, 'loadSection'])->name('load-section');
+        
+        // Navigation management
+        Route::prefix('navigation')->name('navigation.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\NavigationController::class, 'index'])->name('index');
+
+            // Logo
+            Route::get('/logo/create', [\App\Http\Controllers\Admin\NavigationController::class, 'createLogo'])->name('logo.create');
+            Route::post('/logo', [\App\Http\Controllers\Admin\NavigationController::class, 'storeLogo'])->name('logo.store');
+
+            // Menu Items
+            Route::get('/menu-items/create', [\App\Http\Controllers\Admin\NavigationController::class, 'createMenuItem'])->name('menu-items.create');
+            Route::post('/menu-items', [\App\Http\Controllers\Admin\NavigationController::class, 'storeMenuItem'])->name('menu-items.store');
+            Route::get('/menu-items/{navigationItem}/edit', [\App\Http\Controllers\Admin\NavigationController::class, 'editMenuItem'])->name('menu-items.edit');
+            Route::put('/menu-items/{navigationItem}', [\App\Http\Controllers\Admin\NavigationController::class, 'updateMenuItem'])->name('menu-items.update');
+
+            // Buttons
+            Route::get('/buttons/create', [\App\Http\Controllers\Admin\NavigationController::class, 'createButton'])->name('buttons.create');
+            Route::post('/buttons', [\App\Http\Controllers\Admin\NavigationController::class, 'storeButton'])->name('buttons.store');
+            Route::get('/buttons/{navigationItem}/edit', [\App\Http\Controllers\Admin\NavigationController::class, 'editButton'])->name('buttons.edit');
+            Route::put('/buttons/{navigationItem}', [\App\Http\Controllers\Admin\NavigationController::class, 'updateButton'])->name('buttons.update');
+
+            // Delete
+            Route::delete('/{navigationItem}', [\App\Http\Controllers\Admin\NavigationController::class, 'destroy'])->name('destroy');
+        });
+
+        // Hero management
+        Route::prefix('hero')->name('hero.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\HeroController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\HeroController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\HeroController::class, 'store'])->name('store');
+            Route::get('/{hero}/edit', [\App\Http\Controllers\Admin\HeroController::class, 'edit'])->name('edit');
+            Route::put('/{hero}', [\App\Http\Controllers\Admin\HeroController::class, 'update'])->name('update');
+            Route::delete('/{hero}', [\App\Http\Controllers\Admin\HeroController::class, 'destroy'])->name('destroy');
+        });
+
+        // Company Logo management
+        Route::prefix('company-logo')->name('company-logo.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\CompanyLogoController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\CompanyLogoController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\CompanyLogoController::class, 'store'])->name('store');
+            Route::get('/{companyLogo}/edit', [\App\Http\Controllers\Admin\CompanyLogoController::class, 'edit'])->name('edit');
+            Route::put('/{companyLogo}', [\App\Http\Controllers\Admin\CompanyLogoController::class, 'update'])->name('update');
+            Route::delete('/{companyLogo}', [\App\Http\Controllers\Admin\CompanyLogoController::class, 'destroy'])->name('destroy');
+        });
+
+        // Footer management
+        Route::prefix('footer')->name('footer.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\FooterController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\FooterController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\FooterController::class, 'store'])->name('store');
+            Route::get('/{footer}/edit', [\App\Http\Controllers\Admin\FooterController::class, 'edit'])->name('edit');
+            Route::put('/{footer}', [\App\Http\Controllers\Admin\FooterController::class, 'update'])->name('update');
+            Route::delete('/{footer}', [\App\Http\Controllers\Admin\FooterController::class, 'destroy'])->name('destroy');
+        });
+
+        // Consultation Booking Section management
+        Route::prefix('consultation-booking-section')->name('consultation-booking-section.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\ConsultationBookingSectionController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\ConsultationBookingSectionController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\ConsultationBookingSectionController::class, 'store'])->name('store');
+            Route::get('/{consultationBookingSection}/edit', [\App\Http\Controllers\Admin\ConsultationBookingSectionController::class, 'edit'])->name('edit');
+            Route::put('/{consultationBookingSection}', [\App\Http\Controllers\Admin\ConsultationBookingSectionController::class, 'update'])->name('update');
+            Route::delete('/{consultationBookingSection}', [\App\Http\Controllers\Admin\ConsultationBookingSectionController::class, 'destroy'])->name('destroy');
+        });
+
+        // Technologies Section management
+        Route::prefix('technologies-section')->name('technologies-section.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\TechnologiesSectionController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\TechnologiesSectionController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\TechnologiesSectionController::class, 'store'])->name('store');
+            Route::get('/{technologiesSection}/edit', [\App\Http\Controllers\Admin\TechnologiesSectionController::class, 'edit'])->name('edit');
+            Route::put('/{technologiesSection}', [\App\Http\Controllers\Admin\TechnologiesSectionController::class, 'update'])->name('update');
+            Route::delete('/{technologiesSection}', [\App\Http\Controllers\Admin\TechnologiesSectionController::class, 'destroy'])->name('destroy');
+        });
+
+        // Services Section management
+        Route::prefix('services-section')->name('services-section.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'store'])->name('store');
+            Route::get('/{homeServicesSection}/edit', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'edit'])->name('edit');
+            Route::put('/{homeServicesSection}', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'update'])->name('update');
+            Route::delete('/{homeServicesSection}', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'destroy'])->name('destroy');
+            
+            // Category management
+            Route::get('/category/{category}/edit', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'editCategory'])->name('category.edit');
+            Route::put('/category/{category}', [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'updateCategory'])->name('category.update');
+        });
+
+        // Ready Apps Section management
+        Route::prefix('ready-apps-section')->name('ready-apps-section.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'store'])->name('store');
+            Route::get('/{homeReadyAppsSection}/edit', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'edit'])->name('edit');
+            Route::put('/{homeReadyAppsSection}', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'update'])->name('update');
+            Route::delete('/{homeReadyAppsSection}', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'destroy'])->name('destroy');
+            
+            // Category management
+            Route::get('/category/{category}/edit', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'editCategory'])->name('category.edit');
+            Route::put('/category/{category}', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'updateCategory'])->name('category.update');
+        });
+    });
 
     // Subscriptions management
     Route::resource('subscriptions', SubscriptionController::class)->parameters([

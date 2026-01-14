@@ -108,7 +108,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-delete" title="{{ __('messages.delete') }}"
-                                onclick="return confirm('{{ __('messages.delete_notification_confirm') }}')">
+                                onclick="event.preventDefault(); Confirm.delete({{ json_encode(__('messages.delete_notification_confirm')) }}, {{ json_encode(__('messages.confirm_delete_title')) }}).then(confirmed => { if(confirmed) this.closest('form').submit(); });">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
@@ -178,7 +178,6 @@
             }
 
             .btn-mark-all-read:hover {
-                background: #2563eb;
                 transform: translateY(-1px);
             }
 
@@ -285,7 +284,7 @@
             }
 
             .notification-link:hover {
-                background: #2563eb;
+                opacity: 0.9;
             }
 
             .notification-actions {
@@ -313,7 +312,7 @@
             }
 
             .btn-mark-read:hover {
-                background: #059669;
+                opacity: 0.9;
             }
 
             .btn-delete {
@@ -322,7 +321,7 @@
             }
 
             .btn-delete:hover {
-                background: #dc2626;
+                opacity: 0.9;
             }
 
             .empty-state {
@@ -355,6 +354,85 @@
                 justify-content: center;
             }
 
+            /* Pagination Styles */
+            .pagination-wrapper .custom-pagination {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .pagination-wrapper .pagination-info {
+                flex: 0 0 auto;
+                text-align: right;
+            }
+
+            [dir="ltr"] .pagination-wrapper .pagination-info {
+                text-align: left;
+            }
+
+            .pagination-wrapper .pagination-controls {
+                flex: 0 0 auto;
+                display: flex;
+                gap: 6px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            /* Mobile Responsive */
+            @media (max-width: 768px) {
+                .pagination-wrapper {
+                    padding: 15px 10px;
+                }
+
+                .pagination-wrapper .custom-pagination {
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 15px;
+                }
+
+                .pagination-wrapper .pagination-info {
+                    position: static;
+                    flex: 0 0 auto;
+                    text-align: center;
+                    order: 1;
+                    width: 100%;
+                }
+
+                [dir="ltr"] .pagination-wrapper .pagination-info {
+                    text-align: center;
+                }
+
+                .pagination-wrapper .pagination-controls {
+                    position: static;
+                    flex: 0 0 auto;
+                    order: 2;
+                    justify-content: center;
+                    width: 100%;
+                }
+
+                .pagination-wrapper .pagination-text {
+                    font-size: 12px;
+                    white-space: nowrap;
+                }
+
+                .pagination-wrapper .pagination-btn {
+                    width: 36px;
+                    height: 36px;
+                    font-size: 13px;
+                    min-width: 36px;
+                }
+
+                .pagination-wrapper .pagination-ellipsis {
+                    width: 36px;
+                    height: 36px;
+                    font-size: 13px;
+                }
+            }
+
             /* Dark Mode Styles */
             [data-theme="dark"] .notifications-container {
                 background: var(--card-bg);
@@ -379,7 +457,7 @@
             }
 
             [data-theme="dark"] .btn-mark-all-read:hover {
-                background: var(--primary-dark);
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .notification-item {
@@ -431,7 +509,7 @@
             }
 
             [data-theme="dark"] .notification-link:hover {
-                background: var(--primary-dark);
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .btn-mark-read {
@@ -439,7 +517,7 @@
             }
 
             [data-theme="dark"] .btn-mark-read:hover {
-                background: #059669;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .btn-delete {
@@ -447,7 +525,7 @@
             }
 
             [data-theme="dark"] .btn-delete:hover {
-                background: #dc2626;
+                opacity: 0.9;
             }
 
             [data-theme="dark"] .empty-state i {
