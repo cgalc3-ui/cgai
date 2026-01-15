@@ -1,0 +1,381 @@
+{
+	"info": {
+		"_postman_id": "customer-ai-content-api",
+		"name": "Customer AI Content API",
+		"description": "API endpoints for customer-facing AI content including Latest Technologies, AI Videos, AI Articles, and AI Jobs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Latest Technologies",
+			"item": [
+				{
+					"name": "Get Latest Technologies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"description": "Set to 'ar' for Arabic or 'en' for English"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/customer/ai-content/technologies?locale=ar",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"ai-content",
+								"technologies"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "Language: 'ar' or 'en'"
+								}
+							]
+						},
+						"description": "Get latest technologies and best technologies of the month"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for latest technologies and best technologies of the month"
+		},
+		{
+			"name": "AI Videos",
+			"item": [
+				{
+					"name": "Get All Videos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"description": "Set to 'ar' for Arabic or 'en' for English"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/customer/ai-content/videos?locale=ar&per_page=15&category_id=&search=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"ai-content",
+								"videos"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "Language: 'ar' or 'en'"
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "category_id",
+									"value": "",
+									"description": "Filter by category ID (optional)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search term (optional)"
+								}
+							]
+						},
+						"description": "Get all active AI videos with pagination and filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Video",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"description": "Set to 'ar' for Arabic or 'en' for English"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/customer/ai-content/videos/:slug?locale=ar",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"ai-content",
+								"videos",
+								":slug"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "Language: 'ar' or 'en'"
+								}
+							]
+						},
+						"description": "Get single video by slug"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for AI videos"
+		},
+		{
+			"name": "AI Articles",
+			"item": [
+				{
+					"name": "Get All Articles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"description": "Set to 'ar' for Arabic or 'en' for English"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/customer/ai-content/articles?locale=ar&per_page=15&category_id=&featured=&search=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"ai-content",
+								"articles"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "Language: 'ar' or 'en'"
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "category_id",
+									"value": "",
+									"description": "Filter by category ID (optional)"
+								},
+								{
+									"key": "featured",
+									"value": "",
+									"description": "Filter by featured: 'true' or leave empty (optional)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search term (optional)"
+								}
+							]
+						},
+						"description": "Get all active AI articles with pagination and filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Article",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"description": "Set to 'ar' for Arabic or 'en' for English"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/customer/ai-content/articles/:slug?locale=ar",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"ai-content",
+								"articles",
+								":slug"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "Language: 'ar' or 'en'"
+								}
+							]
+						},
+						"description": "Get single article by slug with full content"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for AI articles"
+		},
+		{
+			"name": "AI Jobs",
+			"item": [
+				{
+					"name": "Get All Jobs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"description": "Set to 'ar' for Arabic or 'en' for English"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/customer/ai-content/jobs?locale=ar&per_page=15&job_type=&search=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"ai-content",
+								"jobs"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "Language: 'ar' or 'en'"
+								},
+								{
+									"key": "per_page",
+									"value": "15",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "job_type",
+									"value": "",
+									"description": "Filter by job type: 'full_time', 'part_time', 'contract', 'freelance', 'internship' (optional)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search term (optional)"
+								}
+							]
+						},
+						"description": "Get all active AI jobs with pagination and filters"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Job",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "locale",
+								"value": "ar",
+								"description": "Set to 'ar' for Arabic or 'en' for English"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/customer/ai-content/jobs/:slug?locale=ar",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"customer",
+								"ai-content",
+								"jobs",
+								":slug"
+							],
+							"query": [
+								{
+									"key": "locale",
+									"value": "ar",
+									"description": "Language: 'ar' or 'en'"
+								}
+							]
+						},
+						"description": "Get single job by slug"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for AI jobs"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://192.168.1.116:8000",
+			"type": "string"
+		}
+	]
+}
+

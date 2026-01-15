@@ -72,7 +72,7 @@ class SubCategoryController extends Controller
         }
 
         return redirect()->route('admin.sub-categories.index')
-            ->with('success', 'تم إنشاء الفئة الفرعية بنجاح');
+            ->with('success', __('messages.subcategory_created_success'));
     }
 
     public function edit(Request $request, SubCategory $subCategory)
@@ -105,7 +105,7 @@ class SubCategoryController extends Controller
         }
 
         return redirect()->route('admin.sub-categories.index')
-            ->with('success', 'تم تحديث الفئة الفرعية بنجاح');
+            ->with('success', __('messages.subcategory_updated_success'));
     }
 
     public function destroy(SubCategory $subCategory)
@@ -113,6 +113,6 @@ class SubCategoryController extends Controller
         $subCategory->delete();
 
         return redirect()->route('admin.sub-categories.index')
-            ->with('success', 'تم حذف الفئة الفرعية بنجاح');
+            ->with('success', __('messages.subcategory_deleted_success'));
     }
 }

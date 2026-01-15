@@ -73,6 +73,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/bookings/{booking}', [AdminController::class, 'showBooking'])->name('bookings.show');
     Route::put('/bookings/{booking}/status', [AdminController::class, 'updateBookingStatus'])->name('bookings.update-status');
     Route::put('/bookings/{booking}/payment-status', [AdminController::class, 'updateBookingPaymentStatus'])->name('bookings.update-payment-status');
+    Route::post('/bookings/{booking}/send-reminder', [AdminController::class, 'sendBookingReminder'])->name('bookings.send-reminder');
 
     // Time Slots management
     Route::get('/time-slots', [AdminController::class, 'timeSlots'])->name('time-slots');
@@ -167,6 +168,26 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             Route::put('/{request}/quote', [\App\Http\Controllers\Admin\AiServiceRequestController::class, 'updateQuote'])->name('update-quote');
         });
     });
+
+    // Latest & Best Technologies management (using ai-news route for compatibility)
+    Route::get('/ai-news', [\App\Http\Controllers\Admin\AiNewsController::class, 'index'])->name('ai-news.index');
+    Route::post('/ai-news/latest/{service}/remove', [\App\Http\Controllers\Admin\AiNewsController::class, 'removeFromLatest'])->name('ai-news.remove-from-latest');
+    Route::post('/ai-news/best/{service}/remove', [\App\Http\Controllers\Admin\AiNewsController::class, 'removeFromBest'])->name('ai-news.remove-from-best');
+
+    // AI Videos management
+    Route::resource('ai-videos', \App\Http\Controllers\Admin\AiVideosController::class)->parameters([
+        'ai-videos' => 'aiVideo'
+    ]);
+
+    // AI Articles management
+    Route::resource('ai-articles', \App\Http\Controllers\Admin\AiArticlesController::class)->parameters([
+        'ai-articles' => 'aiArticle'
+    ]);
+
+    // AI Jobs management
+    Route::resource('ai-jobs', \App\Http\Controllers\Admin\AiJobsController::class)->parameters([
+        'ai-jobs' => 'aiJob'
+    ]);
 
     // Tickets management
     Route::get('/tickets', [\App\Http\Controllers\Web\AdminController::class, 'tickets'])->name('tickets');
@@ -288,6 +309,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             Route::get('/category/{category}/edit', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'editCategory'])->name('category.edit');
             Route::put('/category/{category}', [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'updateCategory'])->name('category.update');
         });
+
+        // Subscriptions Section management
+        Route::prefix('subscriptions-section')->name('subscriptions-section.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\SubscriptionsSectionController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Admin\SubscriptionsSectionController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Admin\SubscriptionsSectionController::class, 'store'])->name('store');
+            Route::get('/{subscriptionsSection}/edit', [\App\Http\Controllers\Admin\SubscriptionsSectionController::class, 'edit'])->name('edit');
+            Route::put('/{subscriptionsSection}', [\App\Http\Controllers\Admin\SubscriptionsSectionController::class, 'update'])->name('update');
+            Route::delete('/{subscriptionsSection}', [\App\Http\Controllers\Admin\SubscriptionsSectionController::class, 'destroy'])->name('destroy');
+        });
     });
 
     // Subscriptions management
@@ -364,6 +395,22 @@ Route::middleware('auth')->prefix('settings')->name('settings.')->group(function
     Route::put('/profile', [\App\Http\Controllers\Web\SettingsController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password', [\App\Http\Controllers\Web\SettingsController::class, 'updatePassword'])->name('password.update');
 });
+
+// Public AI Pages (Customer-facing)
+Route::get('/ai-news', [\App\Http\Controllers\Web\AiNewsController::class, 'index'])->name('ai-news.index');
+Route::get('/ai-news/{slug}', [\App\Http\Controllers\Web\AiNewsController::class, 'show'])->name('ai-news.show');
+
+Route::get('/ai-technologies', [\App\Http\Controllers\Web\AiTechnologiesController::class, 'index'])->name('ai-technologies.index');
+Route::get('/ai-technologies/{slug}', [\App\Http\Controllers\Web\AiTechnologiesController::class, 'show'])->name('ai-technologies.show');
+
+Route::get('/ai-videos', [\App\Http\Controllers\Web\AiVideosController::class, 'index'])->name('ai-videos.index');
+Route::get('/ai-videos/{slug}', [\App\Http\Controllers\Web\AiVideosController::class, 'show'])->name('ai-videos.show');
+
+Route::get('/ai-articles', [\App\Http\Controllers\Web\AiArticlesController::class, 'index'])->name('ai-articles.index');
+Route::get('/ai-articles/{slug}', [\App\Http\Controllers\Web\AiArticlesController::class, 'show'])->name('ai-articles.show');
+
+Route::get('/ai-jobs', [\App\Http\Controllers\Web\AiJobsController::class, 'index'])->name('ai-jobs.index');
+Route::get('/ai-jobs/{slug}', [\App\Http\Controllers\Web\AiJobsController::class, 'show'])->name('ai-jobs.show');
 
 // FAQ route for all authenticated users
 Route::middleware('auth')->get('/faqs', [FaqController::class, 'index'])->name('faqs.index');

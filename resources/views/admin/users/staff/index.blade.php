@@ -68,7 +68,7 @@
                                 <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                     @foreach($user->employee->categories as $category)
                                         <span class="status-pill active"
-                                            style="font-size: 11px; padding: 4px 10px; background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; font-weight: 500;">{{ $category->name }}</span>
+                                            style="font-size: 11px; padding: 4px 10px; background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; font-weight: 500;">{{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}</span>
                                     @endforeach
                                 </div>
                             @else
@@ -80,7 +80,7 @@
                                 <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                     @foreach($user->employee->subCategories as $subCategory)
                                         <span class="status-pill active"
-                                            style="font-size: 11px; padding: 4px 10px; background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; font-weight: 500;">{{ $subCategory->name }}</span>
+                                            style="font-size: 11px; padding: 4px 10px; background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; font-weight: 500;">{{ app()->getLocale() === 'en' && $subCategory->name_en ? $subCategory->name_en : $subCategory->name }}</span>
                                     @endforeach
                                 </div>
                             @else
@@ -165,8 +165,8 @@
                 <select id="add_staff_categories_select" class="form-control">
                     <option value="">{{ __('messages.select_category_placeholder') }}</option>
                     @foreach($categories as $category)
-                        <option value="{{ $category->id }}" data-name="{{ $category->name }}">
-                            {{ $category->name }}
+                        <option value="{{ $category->id }}" data-name="{{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}" data-name-ar="{{ $category->name }}" data-name-en="{{ $category->name_en ?? $category->name }}">
+                            {{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}
                         </option>
                     @endforeach
                 </select>
@@ -249,8 +249,8 @@
                 <select id="edit_staff_categories_select" class="form-control">
                     <option value="">{{ __('messages.select_category_placeholder') }}</option>
                     @foreach($categories as $category)
-                        <option value="{{ $category->id }}" data-name="{{ $category->name }}">
-                            {{ $category->name }}
+                        <option value="{{ $category->id }}" data-name="{{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}" data-name-ar="{{ $category->name }}" data-name-en="{{ $category->name_en ?? $category->name }}">
+                            {{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}
                         </option>
                     @endforeach
                 </select>
@@ -530,6 +530,8 @@
                                 option.value = subCat.id;
                                 option.textContent = subCat.name;
                                 option.setAttribute('data-name', subCat.name);
+                                option.setAttribute('data-name-ar', subCat.name_ar || subCat.name);
+                                option.setAttribute('data-name-en', subCat.name_en || subCat.name);
                                 select.appendChild(option);
                             });
                         }

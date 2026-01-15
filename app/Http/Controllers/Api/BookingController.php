@@ -623,7 +623,7 @@ class BookingController extends Controller
         }
 
         $query = Booking::where('customer_id', $customer->id)
-            ->with(['service', 'employee.user', 'timeSlots']);
+            ->with(['service', 'consultation.category', 'employee.user', 'timeSlots']);
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -639,13 +639,15 @@ class BookingController extends Controller
             ->paginate($request->get('per_page', 10));
 
         // Format the response to include only required data
-        $formattedBookings = $bookings->getCollection()->map(function ($booking) {
-            return [
+        $formattedBookings = $bookings->getCollection()->map(function ($booking) use ($request) {
+            $locale = $request->get('locale', app()->getLocale());
+            
+            $formatted = [
                 'id' => $booking->id,
                 'customer_id' => $booking->customer_id,
                 'employee_id' => $booking->employee_id,
                 'service_id' => $booking->service_id,
-                'booking_date' => $booking->booking_date,
+                'consultation_id' => $booking->consultation_id,
                 'start_time' => $booking->start_time,
                 'end_time' => $booking->end_time,
                 'total_price' => $booking->total_price,
@@ -656,30 +658,60 @@ class BookingController extends Controller
                 'points_price' => $booking->points_price ? (float) $booking->points_price : null,
                 'payment_id' => $booking->payment_id,
                 'payment_data' => $booking->payment_data,
-                'paid_at' => $booking->paid_at,
+                'paid_at' => $booking->paid_at ? $booking->paid_at->format('Y-m-d H:i:s') : null,
                 'notes' => $booking->notes,
-                'created_at' => $booking->created_at,
-                'updated_at' => $booking->updated_at,
-                'service' => $booking->service ? [
-                    'id' => $booking->service->id,
-                    'name' => $booking->service->name,
-                    'name_en' => $booking->service->name_en,
-                    'description' => $booking->service->description,
-                    'description_en' => $booking->service->description_en,
-                    'price' => $booking->service->price,
-                ] : null,
+                'created_at' => $booking->created_at ? $booking->created_at->format('Y-m-d H:i:s') : null,
+                'updated_at' => $booking->updated_at ? $booking->updated_at->format('Y-m-d H:i:s') : null,
+                'service' => null,
+                'consultation' => null,
                 'employee' => $booking->employee && $booking->employee->user ? [
                     'name' => $booking->employee->user->name,
                 ] : null,
                 'time_slots' => $booking->timeSlots->map(function ($timeSlot) {
                     return [
                         'id' => $timeSlot->id,
-                        'date' => $timeSlot->date,
+                        'date' => $timeSlot->date ? $timeSlot->date->format('Y-m-d') : null,
                         'start_time' => $timeSlot->start_time,
                         'end_time' => $timeSlot->end_time,
                     ];
                 }),
             ];
+
+            // Add service data if exists
+            if ($booking->service) {
+                $formatted['service'] = [
+                    'id' => $booking->service->id,
+                    'name' => $locale === 'en' && $booking->service->name_en 
+                        ? $booking->service->name_en 
+                        : $booking->service->name,
+                    'description' => $locale === 'en' && $booking->service->description_en 
+                        ? $booking->service->description_en 
+                        : ($booking->service->description ?? null),
+                    'price' => $booking->service->price,
+                ];
+            }
+
+            // Add consultation data if exists
+            if ($booking->consultation) {
+                $formatted['consultation'] = [
+                    'id' => $booking->consultation->id,
+                    'name' => $locale === 'en' && $booking->consultation->name_en 
+                        ? $booking->consultation->name_en 
+                        : $booking->consultation->name,
+                    'description' => $locale === 'en' && $booking->consultation->description_en 
+                        ? $booking->consultation->description_en 
+                        : ($booking->consultation->description ?? null),
+                    'fixed_price' => $booking->consultation->fixed_price,
+                    'category' => $booking->consultation->category ? [
+                        'id' => $booking->consultation->category->id,
+                        'name' => $locale === 'en' && $booking->consultation->category->name_en 
+                            ? $booking->consultation->category->name_en 
+                            : $booking->consultation->category->name,
+                    ] : null,
+                ];
+            }
+
+            return $formatted;
         });
 
         // Filter locale columns

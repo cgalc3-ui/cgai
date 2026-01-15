@@ -80,7 +80,14 @@ class PointsSettingsController extends Controller
                 'service_id' => $serviceId,
                 'item_type' => 'service',
                 'points_price' => $request->points_price,
-                'is_active' => true,
+                'is_active' => $request->has('is_active') ? true : false,
+            ]);
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.pricing_updated_successfully')
             ]);
         }
 
@@ -113,7 +120,14 @@ class PointsSettingsController extends Controller
                 'consultation_id' => $consultationId,
                 'item_type' => 'consultation',
                 'points_price' => $request->points_price,
-                'is_active' => true,
+                'is_active' => $request->has('is_active') ? true : false,
+            ]);
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.pricing_updated_successfully')
             ]);
         }
 
@@ -146,7 +160,14 @@ class PointsSettingsController extends Controller
                 'subscription_id' => $subscriptionId,
                 'item_type' => 'subscription',
                 'points_price' => $request->points_price,
-                'is_active' => true,
+                'is_active' => $request->has('is_active') ? true : false,
+            ]);
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.pricing_updated_successfully')
             ]);
         }
 

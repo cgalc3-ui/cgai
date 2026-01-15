@@ -38,6 +38,10 @@
                             <i class="fas fa-money-bill-wave"></i>
                         @elseif($notification->type === 'new_booking')
                             <i class="fas fa-bell"></i>
+                        @elseif($notification->type === 'new_ai_service_order' || $notification->type === 'ai_service_order_created')
+                            <i class="fas fa-robot"></i>
+                        @elseif($notification->type === 'new_ready_app_order' || $notification->type === 'ready_app_order_created')
+                            <i class="fas fa-mobile-alt"></i>
                         @else
                             <i class="fas fa-info-circle"></i>
                         @endif
@@ -83,6 +87,20 @@
                                             $actionRoute = route('admin.tickets.show', $data['ticket_id']);
                                         } else {
                                             $actionRoute = route('tickets.show', $data['ticket_id']);
+                                        }
+                                    } elseif (isset($data['order_id']) && ($notification->type === 'new_ai_service_order' || $notification->type === 'ai_service_order_created')) {
+                                        $actionLabel = __('messages.view_ai_service_order');
+                                        if (auth()->user()->isAdmin()) {
+                                            $actionRoute = route('admin.ai-services.orders.show', $data['order_id']);
+                                        }
+                                    } elseif (isset($data['order_id']) && ($notification->type === 'new_ready_app_order' || $notification->type === 'ready_app_order_created')) {
+                                        $actionLabel = __('messages.view_order');
+                                        if (auth()->user()->isAdmin()) {
+                                            try {
+                                                $actionRoute = route('admin.ready-apps.orders.show', $data['order_id']);
+                                            } catch (\Exception $e) {
+                                                $actionRoute = null;
+                                            }
                                         }
                                     }
                                 @endphp

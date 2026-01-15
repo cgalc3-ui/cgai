@@ -65,12 +65,12 @@ class FaqController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'تم إضافة السؤال بنجاح',
+                'message' => __('messages.faq_added_success'),
                 'redirect' => route('admin.faqs.index')
             ]);
         }
 
-        return redirect()->route('admin.faqs.index')->with('success', 'تم إضافة السؤال بنجاح');
+        return redirect()->route('admin.faqs.index')->with('success', __('messages.faq_added_success'));
     }
 
     public function edit(Request $request, Faq $faq)
@@ -97,17 +97,17 @@ class FaqController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'تم تحديث السؤال بنجاح',
+                'message' => __('messages.faq_updated_success'),
                 'redirect' => route('admin.faqs.index')
             ]);
         }
 
-        return redirect()->route('admin.faqs.index')->with('success', 'تم تحديث السؤال بنجاح');
+        return redirect()->route('admin.faqs.index')->with('success', __('messages.faq_updated_success'));
     }
 
     public function destroy(Faq $faq)
     {
         $faq->delete();
-        return redirect()->route('admin.faqs.index')->with('success', 'تم حذف السؤال بنجاح');
+        return redirect()->route('admin.faqs.index')->with('success', __('messages.faq_deleted_success'));
     }
 }

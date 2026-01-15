@@ -103,6 +103,95 @@
                 </div>
             </div>
         </div>
+
+        <!-- Total Subscriptions -->
+        <a href="{{ route('admin.subscriptions.index') }}" class="stat-card stat-card-link" title="{{ __('messages.subscriptions') ?? 'الباقات' }}">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">{{ __('messages.subscriptions') ?? 'الباقات' }}</h3>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle purple">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ number_format($stats['total_subscriptions'] ?? 0) }}</h2>
+                        <span class="stat-card-trend up">
+                            <i class="fas fa-arrow-up"></i> {{ number_format($stats['active_subscriptions'] ?? 0) }}
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">{{ __('messages.active_subscriptions') ?? 'باقات نشطة' }}</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Active User Subscriptions -->
+        <div class="stat-card">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">{{ __('messages.total_active_user_subscriptions') ?? 'الاشتراكات النشطة' }}</h3>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle teal">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ number_format($stats['total_active_user_subscriptions'] ?? 0) }}</h2>
+                        <span class="stat-card-trend {{ ($stats['pending_subscription_requests'] ?? 0) > 0 ? 'down' : 'up' }}">
+                            <i class="fas fa-arrow-{{ ($stats['pending_subscription_requests'] ?? 0) > 0 ? 'down' : 'up' }}"></i> 
+                            {{ number_format($stats['pending_subscription_requests'] ?? 0) }}
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">{{ __('messages.pending_subscription_requests') ?? 'طلبات معلقة' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Services -->
+        <a href="{{ route('admin.ai-services.services.index') }}" class="stat-card stat-card-link" title="{{ __('messages.ai_services') ?? 'أدوات الذكاء الاصطناعي' }}">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">{{ __('messages.ai_services') ?? 'أدوات الذكاء الاصطناعي' }}</h3>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle orange">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ number_format($stats['total_ai_services'] ?? 0) }}</h2>
+                        <span class="stat-card-trend up">
+                            <i class="fas fa-arrow-up"></i> {{ number_format($stats['active_ai_services'] ?? 0) }}
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">{{ __('messages.active_ai_services') ?? 'أدوات نشطة' }}</span>
+                </div>
+            </div>
+        </a>
+
+        <!-- Ready Apps -->
+        <a href="{{ route('admin.ready-apps.apps.index') }}" class="stat-card stat-card-link" title="{{ __('messages.ready_apps') ?? 'التطبيقات الجاهزة' }}">
+            <div class="stat-card-title-row">
+                <h3 class="stat-card-title">{{ __('messages.ready_apps') ?? 'التطبيقات الجاهزة' }}</h3>
+                <i class="fas fa-ellipsis-v stat-card-more"></i>
+            </div>
+            <div class="stat-card-main">
+                <div class="stat-card-icon-circle green">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value-container">
+                        <h2 class="stat-card-value">{{ number_format($stats['total_ready_apps'] ?? 0) }}</h2>
+                        <span class="stat-card-trend up">
+                            <i class="fas fa-arrow-up"></i> {{ number_format($stats['active_ready_apps'] ?? 0) }}
+                        </span>
+                    </div>
+                    <span class="stat-card-subtitle">{{ __('messages.active_ready_apps') ?? 'تطبيقات نشطة' }}</span>
+                </div>
+            </div>
+        </a>
     </div>
 
     <!-- Middle Row: Statistics & Total Revenue -->
@@ -243,6 +332,72 @@
                     <div class="action-info">
                         <span class="action-name">{{ __('messages.tickets_support') }}</span>
                         <span class="action-desc">{{ __('messages.manage_tickets_desc') }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="{{ route('admin.subscriptions.index') }}" class="action-tile tile-purple">
+                    <div class="action-icon-box">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.subscriptions') ?? 'الباقات' }}</span>
+                        <span class="action-desc">{{ __('messages.manage_subscriptions_desc') ?? 'إدارة باقات الاشتراك' }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="{{ route('admin.customer-facing.subscriptions-section.index') }}" class="action-tile tile-cyan">
+                    <div class="action-icon-box">
+                        <i class="fas fa-window-maximize"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.subscriptions_section_management') ?? 'قسم الباقات' }}</span>
+                        <span class="action-desc">{{ __('messages.manage_subscriptions_section_desc') ?? 'إدارة قسم عرض الباقات' }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="{{ route('admin.ai-news.index') }}" class="action-tile tile-red">
+                    <div class="action-icon-box">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.latest_technologies') ?? 'أحدث التقنيات' }}</span>
+                        <span class="action-desc">{{ __('messages.manage_latest_technologies_desc') ?? 'إدارة أحدث وأفضل التقنيات' }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="{{ route('admin.ai-videos.index') }}" class="action-tile tile-purple">
+                    <div class="action-icon-box">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.ai_videos') ?? 'فيديوهات الذكاء الاصطناعي' }}</span>
+                        <span class="action-desc">{{ __('messages.manage_ai_videos_desc') ?? 'إدارة فيديوهات الذكاء الاصطناعي' }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="{{ route('admin.ai-articles.index') }}" class="action-tile tile-blue">
+                    <div class="action-icon-box">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.ai_articles') ?? 'مقالات الذكاء الاصطناعي' }}</span>
+                        <span class="action-desc">{{ __('messages.manage_ai_articles_desc') ?? 'إدارة مقالات الذكاء الاصطناعي' }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left action-arrow"></i>
+                </a>
+
+                <a href="{{ route('admin.ai-jobs.index') }}" class="action-tile tile-green">
+                    <div class="action-icon-box">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="action-info">
+                        <span class="action-name">{{ __('messages.ai_jobs') ?? 'وظائف الذكاء الاصطناعي' }}</span>
+                        <span class="action-desc">{{ __('messages.manage_ai_jobs_desc') ?? 'إدارة وظائف الذكاء الاصطناعي' }}</span>
                     </div>
                     <i class="fas fa-chevron-left action-arrow"></i>
                 </a>
@@ -870,6 +1025,21 @@
                 color: #3b82f6;
             }
 
+            .stat-card-icon-circle.orange {
+                background: rgba(249, 115, 22, 0.1);
+                color: #f97316;
+            }
+
+            .stat-card-icon-circle.green {
+                background: rgba(34, 197, 94, 0.1);
+                color: #22c55e;
+            }
+
+            .stat-card-icon-circle.purple {
+                background: rgba(168, 85, 247, 0.1);
+                color: #a855f7;
+            }
+
             .stat-card-trend.down {
                 color: #ef4444;
             }
@@ -944,6 +1114,26 @@
             .tile-pink .action-icon-box {
                 background: rgba(236, 72, 153, 0.1);
                 color: #ec4899;
+            }
+
+            .tile-purple .action-icon-box {
+                background: rgba(168, 85, 247, 0.1);
+                color: #a855f7;
+            }
+
+            [data-theme="dark"] .tile-purple .action-icon-box {
+                background: rgba(168, 85, 247, 0.2);
+                color: #c084fc;
+            }
+
+            .tile-cyan .action-icon-box {
+                background: rgba(6, 182, 212, 0.1);
+                color: #06b6d4;
+            }
+
+            [data-theme="dark"] .tile-cyan .action-icon-box {
+                background: rgba(6, 182, 212, 0.2);
+                color: #22d3ee;
             }
 
             .tile-green .action-icon-box {

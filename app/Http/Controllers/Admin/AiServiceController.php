@@ -80,12 +80,16 @@ class AiServiceController extends Controller
             'screenshots' => 'nullable|array',
             'screenshots.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
             'is_featured' => 'boolean',
+            'is_latest' => 'boolean',
+            'is_best_of_month' => 'boolean',
             'is_active' => 'boolean',
             'is_free' => 'boolean',
         ]);
 
         $data = $request->all();
         $data['is_featured'] = $request->has('is_featured') ? true : false;
+        $data['is_latest'] = $request->has('is_latest') ? true : false;
+        $data['is_best_of_month'] = $request->has('is_best_of_month') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
         $data['is_free'] = $request->has('is_free') ? true : false;
         $data['currency'] = $data['currency'] ?? 'SAR';
@@ -225,6 +229,8 @@ class AiServiceController extends Controller
                 'screenshots' => 'nullable|array',
                 'screenshots.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
                 'is_featured' => 'boolean',
+                'is_latest' => 'boolean',
+                'is_best_of_month' => 'boolean',
                 'is_active' => 'boolean',
                 'is_free' => 'boolean',
             ]);
@@ -243,6 +249,8 @@ class AiServiceController extends Controller
         try {
             $data = $request->all();
             $data['is_featured'] = $request->has('is_featured') ? true : false;
+            $data['is_latest'] = $request->has('is_latest') ? true : false;
+            $data['is_best_of_month'] = $request->has('is_best_of_month') ? true : false;
             $data['is_free'] = $request->has('is_free') ? true : false;
 
             if (empty($data['slug'])) {

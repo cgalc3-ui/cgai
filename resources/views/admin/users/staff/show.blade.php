@@ -83,7 +83,7 @@
                                 @if($user->employee->categories->count() > 0)
                                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                                         @foreach($user->employee->categories as $category)
-                                            <span class="badge badge-info status-pill active" style="background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; font-weight: 500; padding: 6px 12px;">{{ $category->name }}</span>
+                                            <span class="badge badge-info status-pill active" style="background: #e0e7ff; color: #4f46e5; border: 1px solid #c7d2fe; font-weight: 500; padding: 6px 12px;">{{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}</span>
                                         @endforeach
                                     </div>
                                 @else
@@ -97,7 +97,7 @@
                                 @if($user->employee->subCategories->count() > 0)
                                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                                         @foreach($user->employee->subCategories as $subCategory)
-                                            <span class="badge badge-info status-pill active" style="background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; font-weight: 500; padding: 6px 12px;">{{ $subCategory->name }}</span>
+                                            <span class="badge badge-info status-pill active" style="background: #d1fae5; color: #059669; border: 1px solid #a7f3d0; font-weight: 500; padding: 6px 12px;">{{ app()->getLocale() === 'en' && $subCategory->name_en ? $subCategory->name_en : $subCategory->name }}</span>
                                         @endforeach
                                     </div>
                                 @else

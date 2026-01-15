@@ -26,7 +26,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="name">{{ __('messages.name') }} *</label>
+                        <label for="name">{{ __('messages.name') }} <span class="required">*</span></label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" class="form-control" required>
                         @error('name')
                             <span class="error-message">{{ $message }}</span>
@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="email">{{ __('messages.email') }} *</label>
+                        <label for="email">{{ __('messages.email') }} <span class="required">*</span></label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" class="form-control"
                             required>
                         @error('email')
@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="phone">{{ __('messages.phone') }} *</label>
+                        <label for="phone">{{ __('messages.phone') }} <span class="required">*</span></label>
                         <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control" required>
                         @error('phone')
                             <span class="error-message">{{ $message }}</span>
@@ -51,7 +51,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="password">{{ __('messages.password') }} *</label>
+                        <label for="password">{{ __('messages.password') }} <span class="required">*</span></label>
                         <input type="password" id="password" name="password" class="form-control" required minlength="8">
                         @error('password')
                             <span class="error-message">{{ $message }}</span>
@@ -70,8 +70,8 @@
                         <select id="category_select" class="form-control">
                             <option value="">{{ __('messages.select_category_placeholder') }}</option>
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}" data-name="{{ $category->name }}">
-                                    {{ $category->name }}
+                                <option value="{{ $category->id }}" data-name="{{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}" data-name-ar="{{ $category->name }}" data-name-en="{{ $category->name_en ?? $category->name }}">
+                                    {{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}
                                 </option>
                             @endforeach
                         </select>

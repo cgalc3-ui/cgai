@@ -927,12 +927,89 @@
             border-color: var(--primary-color, #02c0ce) !important;
             box-shadow: 0 0 0 4px rgba(2, 192, 206, 0.08) !important;
         }
+
+        /* Dark Mode - Override inline styles for form elements */
+        [data-theme="dark"] #editPricingModal .form-group label {
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .form-group label i {
+            color: var(--primary-color, #02c0ce) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal #item_name {
+            background: var(--sidebar-active-bg, #15171d) !important;
+            border-color: var(--border-color, #2a2d3a) !important;
+            border-width: 2px !important;
+            color: var(--text-secondary, #94a3b8) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal #points_price {
+            background: var(--card-bg, #1e1f27) !important;
+            border-color: var(--border-color, #2a2d3a) !important;
+            border-width: 2px !important;
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal #points_price:focus {
+            background: var(--card-bg, #1e1f27) !important;
+            border-color: var(--primary-color, #02c0ce) !important;
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .form-text {
+            color: var(--text-secondary, #94a3b8) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .form-text i {
+            color: var(--text-secondary, #94a3b8) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .checkbox-label {
+            background: var(--sidebar-active-bg, #15171d) !important;
+            border: 2px solid var(--border-color, #2a2d3a) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .checkbox-label span {
+            color: var(--text-primary, #f1f5f9) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .checkbox-label span i {
+            color: var(--primary-color, #02c0ce) !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .required {
+            color: #ef4444 !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .btn-primary {
+            background: var(--primary-color, #02c0ce) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] #editPricingModal .btn-secondary {
+            background: var(--sidebar-active-bg, #15171d) !important;
+            color: var(--text-primary, #f1f5f9) !important;
+            border-color: var(--border-color, #2a2d3a) !important;
+        }
     </style>
     @endpush
 
     @push('scripts')
     <script>
         function openEditPricingModal(itemId, itemType, itemName, pointsPrice, isActive) {
+            const modal = document.getElementById('editPricingModal');
+            const form = document.getElementById('editPricingForm');
+            
+            if (!modal || !form) {
+                console.error('Modal or form not found');
+                return;
+            }
+            
+            // Reset form first
+            form.reset();
+            
+            // Set form values
             document.getElementById('item_id').value = itemId;
             document.getElementById('item_type').value = itemType;
             document.getElementById('item_name').value = itemName;
@@ -948,21 +1025,132 @@
             } else if (itemType === 'subscription') {
                 route = '{{ route("admin.points.subscriptions.pricing", ":id") }}'.replace(':id', itemId);
             }
-            document.getElementById('editPricingForm').action = route;
+            form.action = route;
             
-            document.getElementById('editPricingModal').classList.add('show');
+            // Show modal - set display first, then add show class
+            modal.style.display = 'flex';
+            // Force reflow
+            modal.offsetHeight;
+            // Add show class
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeEditPricingModal() {
-            document.getElementById('editPricingModal').classList.remove('show');
+            const modal = document.getElementById('editPricingModal');
+            const form = document.getElementById('editPricingForm');
+            
+            if (modal) {
+                modal.classList.remove('show');
+                // Hide modal after animation
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+                document.body.style.overflow = '';
+            }
+            
+            // Reset form after closing with delay
+            if (form) {
+                setTimeout(() => {
+                    form.reset();
+                    // Clear any error states
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-save"></i> {{ __('messages.save') ?? 'حفظ' }}';
+                    }
+                }, 300);
+            }
         }
 
-        // Close modal on outside click
-        document.getElementById('editPricingModal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        // Close modal on outside click - use event delegation to avoid multiple listeners
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('editPricingModal');
+            if (modal && e.target === modal) {
                 closeEditPricingModal();
             }
         });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('editPricingModal');
+                if (modal && modal.classList.contains('show')) {
+                    closeEditPricingModal();
+                }
+            }
+        });
+
+        // Handle form submission via AJAX
+        const editPricingForm = document.getElementById('editPricingForm');
+        if (editPricingForm) {
+            editPricingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn ? submitBtn.innerHTML : '';
+                
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') ?? 'جاري الحفظ' }}...';
+                }
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success || !data.errors) {
+                        // Show success message
+                        if (typeof Toast !== 'undefined') {
+                            Toast.success(data.message || '{{ __('messages.pricing_updated_successfully') ?? 'تم تحديث السعر بنجاح' }}');
+                        }
+                        // Close modal
+                        closeEditPricingModal();
+                        // Reload page after a short delay
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        // Handle validation errors
+                        if (data.errors) {
+                            let errorMessage = '';
+                            Object.keys(data.errors).forEach(key => {
+                                errorMessage += data.errors[key][0] + '\n';
+                            });
+                            if (typeof Toast !== 'undefined') {
+                                Toast.error(errorMessage);
+                            } else {
+                                alert(errorMessage);
+                            }
+                        }
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalText;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    if (typeof Toast !== 'undefined') {
+                        Toast.error('{{ __('messages.error_occurred') ?? 'حدث خطأ' }}');
+                    } else {
+                        alert('{{ __('messages.error_occurred') ?? 'حدث خطأ' }}');
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            });
+        }
     </script>
     @endpush
 @endsection

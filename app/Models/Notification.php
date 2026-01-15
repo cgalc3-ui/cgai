@@ -181,6 +181,14 @@ class Notification extends Model
             $text = str_replace(':service', $service, $text);
         }
 
+        // Replace service_name (for AI service orders)
+        if (isset($this->data['service_name'])) {
+            $serviceName = ($locale === 'en' && !empty($this->data['service_name_en']))
+                ? $this->data['service_name_en']
+                : $this->data['service_name'];
+            $text = str_replace(':service_name', $serviceName, $text);
+        }
+
         // Replace customer name
         if (isset($this->data['customer'])) {
             $text = str_replace(':customer', $this->data['customer'], $text);

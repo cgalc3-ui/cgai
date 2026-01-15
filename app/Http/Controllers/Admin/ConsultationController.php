@@ -72,7 +72,7 @@ class ConsultationController extends Controller
         }
         
         return redirect()->route('admin.consultations.index')
-            ->with('success', 'تم إنشاء الاستشارة بنجاح');
+            ->with('success', __('messages.consultation_created_success'));
     }
 
     public function edit(Request $request, Consultation $consultation)
@@ -105,7 +105,7 @@ class ConsultationController extends Controller
         }
         
         return redirect()->route('admin.consultations.index')
-            ->with('success', 'تم تحديث الاستشارة بنجاح');
+            ->with('success', __('messages.consultation_updated_success'));
     }
 
     public function destroy(Consultation $consultation)
@@ -113,6 +113,6 @@ class ConsultationController extends Controller
         $consultation->delete();
 
         return redirect()->route('admin.consultations.index')
-            ->with('success', 'تم حذف الاستشارة بنجاح');
+            ->with('success', __('messages.consultation_deleted_success'));
     }
 }

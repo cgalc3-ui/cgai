@@ -10,6 +10,12 @@ use App\Models\Booking;
 use App\Models\SubCategory;
 use App\Models\Service;
 use App\Models\EmployeeSchedule;
+use App\Models\Subscription;
+use App\Models\UserSubscription;
+use App\Models\SubscriptionRequest;
+use App\Models\SubscriptionsSection;
+use App\Models\AiService;
+use App\Models\ReadyApp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -67,6 +73,22 @@ class AdminController extends Controller
         // Time Slots Statistics
         $totalTimeSlots = TimeSlot::count();
         $availableTimeSlots = TimeSlot::where('is_available', true)->count();
+
+        // Subscriptions Statistics
+        $totalSubscriptions = Subscription::count();
+        $activeSubscriptions = Subscription::where('is_active', true)->count();
+        $proSubscriptions = Subscription::where('is_pro', true)->where('is_active', true)->count();
+        $totalActiveUserSubscriptions = UserSubscription::where('status', 'active')->count();
+        $pendingSubscriptionRequests = SubscriptionRequest::where('status', 'pending')->count();
+        $subscriptionsSection = SubscriptionsSection::where('is_active', true)->first();
+
+        // AI Services Statistics
+        $totalAiServices = AiService::count();
+        $activeAiServices = AiService::where('is_active', true)->count();
+
+        // Ready Apps Statistics
+        $totalReadyApps = ReadyApp::count();
+        $activeReadyApps = ReadyApp::where('is_active', true)->count();
 
         // Recent Data
         $recentBookings = Booking::query()
@@ -270,6 +292,22 @@ class AdminController extends Controller
             // Time Slots
             'total_time_slots' => $totalTimeSlots,
             'available_time_slots' => $availableTimeSlots,
+
+            // Subscriptions
+            'total_subscriptions' => $totalSubscriptions,
+            'active_subscriptions' => $activeSubscriptions,
+            'pro_subscriptions' => $proSubscriptions,
+            'total_active_user_subscriptions' => $totalActiveUserSubscriptions,
+            'pending_subscription_requests' => $pendingSubscriptionRequests,
+            'has_subscriptions_section' => $subscriptionsSection ? true : false,
+
+            // AI Services
+            'total_ai_services' => $totalAiServices,
+            'active_ai_services' => $activeAiServices,
+
+            // Ready Apps
+            'total_ready_apps' => $totalReadyApps,
+            'active_ready_apps' => $activeReadyApps,
 
             // Today
             'today_bookings' => $todayBookings,
@@ -546,7 +584,7 @@ class AdminController extends Controller
         $employee->subCategories()->sync($subCategories);
 
         return redirect()->route('admin.users.staff')
-            ->with('success', 'تم إنشاء الموظف بنجاح');
+            ->with('success', __('messages.staff_created_success') ?? 'تم إنشاء الموظف بنجاح');
     }
 
     /**
@@ -666,7 +704,7 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.users.staff.show', $user)
-            ->with('success', 'تم تحديث الموظف بنجاح');
+            ->with('success', __('messages.staff_updated_success') ?? 'تم تحديث الموظف بنجاح');
     }
 
     /**
@@ -681,7 +719,9 @@ class AdminController extends Controller
             'subcategories' => $subCategories->map(function ($subCat) {
                 return [
                     'id' => $subCat->id,
-                    'name' => app()->getLocale() === 'ar' ? $subCat->name : ($subCat->name_en ?? $subCat->name),
+                    'name' => app()->getLocale() === 'en' && $subCat->name_en ? $subCat->name_en : $subCat->name,
+                    'name_ar' => $subCat->name,
+                    'name_en' => $subCat->name_en ?? $subCat->name,
                 ];
             }),
         ]);
@@ -696,7 +736,9 @@ class AdminController extends Controller
             'success' => true,
             'subcategory' => [
                 'id' => $subcategory->id,
-                'name' => app()->getLocale() === 'ar' ? $subcategory->name : ($subcategory->name_en ?? $subcategory->name),
+                'name' => app()->getLocale() === 'en' && $subcategory->name_en ? $subcategory->name_en : $subcategory->name,
+                'name_ar' => $subcategory->name,
+                'name_en' => $subcategory->name_en ?? $subcategory->name,
             ],
         ]);
     }
@@ -713,7 +755,7 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users.staff')
-            ->with('success', 'تم حذف الموظف بنجاح');
+            ->with('success', __('messages.staff_deleted_success') ?? 'تم حذف الموظف بنجاح');
     }
 
     // ==================== Customers Management ====================
@@ -1073,6 +1115,47 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', 'تم تحديث حالة الدفع بنجاح');
+    }
+
+    /**
+     * Send reminder notification to customer
+     */
+    public function sendBookingReminder(Request $request, Booking $booking)
+    {
+        try {
+            // Load necessary relationships
+            if ($booking->booking_type === 'consultation') {
+                $booking->load(['customer', 'consultation', 'employee.user']);
+            } else {
+                $booking->load(['customer', 'service', 'employee.user']);
+            }
+
+            $service = $booking->service ?: $booking->consultation;
+            $notificationService = app(\App\Services\NotificationService::class);
+
+            // Send reminder notification to customer
+            $notificationService->notifyCustomer(
+                $booking->customer,
+                'booking_reminder',
+                'messages.booking_reminder',
+                'messages.booking_reminder_message',
+                [
+                    'booking_id' => $booking->id,
+                    'service_id' => $booking->service_id,
+                    'consultation_id' => $booking->consultation_id,
+                    'booking_date' => $booking->booking_date,
+                    'start_time' => $booking->start_time,
+                    'end_time' => $booking->end_time,
+                    'service' => $service ? $service->name : '',
+                    'service_en' => $service ? $service->name_en : '',
+                ]
+            );
+
+            return redirect()->back()->with('success', __('messages.reminder_sent_successfully') ?? 'تم إرسال التذكرة للعميل بنجاح');
+        } catch (\Exception $e) {
+            \Log::error('Failed to send booking reminder: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('messages.failed_to_send_reminder') ?? 'فشل إرسال التذكرة');
+        }
     }
 
     // ==================== Time Slots Management ====================

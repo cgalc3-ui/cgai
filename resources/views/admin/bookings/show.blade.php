@@ -202,9 +202,13 @@
                     <button type="button" class="tool-btn" onclick="window.print()">
                         <i class="fas fa-print"></i> {{ __('messages.print_invoice') }}
                     </button>
-                    <button type="button" class="tool-btn">
-                        <i class="fas fa-paper-plane"></i> {{ __('messages.send_reminder') }}
-                    </button>
+                    <form method="POST" action="{{ route('admin.bookings.send-reminder', $booking) }}" class="tool-btn-form" style="display: inline;" 
+                        onsubmit="event.preventDefault(); sendReminderConfirm(this); return false;">
+                        @csrf
+                        <button type="submit" class="tool-btn">
+                            <i class="fas fa-paper-plane"></i> {{ __('messages.send_reminder') }}
+                        </button>
+                    </form>
                 </div>
             </aside>
         </div>
@@ -815,5 +819,20 @@
                 color: var(--warning-color) !important;
             }
         </style>
+    @endpush
+
+    @push('scripts')
+        <script>
+            function sendReminderConfirm(form) {
+                const message = {!! json_encode(__('messages.send_reminder_confirm') ?? 'هل تريد إرسال تذكرة للعميل؟') !!};
+                const title = {!! json_encode(__('messages.send_reminder') ?? 'إرسال تذكرة') !!};
+                
+                Confirm.confirm(message, title).then(confirmed => {
+                    if (confirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        </script>
     @endpush
 @endsection

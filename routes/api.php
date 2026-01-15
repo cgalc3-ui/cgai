@@ -221,3 +221,27 @@ Route::get('/ready-apps-section', [\App\Http\Controllers\Api\HomeReadyAppsSectio
 Route::prefix('subscriptions')->group(function () {
         Route::get('/', [SubscriptionController::class, 'index']);
    });
+
+// Public Customer Facing Subscriptions API (for frontend)
+Route::prefix('customer/subscriptions')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\Customer\SubscriptionsController::class, 'index']);
+    Route::get('/{id}', [\App\Http\Controllers\Api\Customer\SubscriptionsController::class, 'show']);
+});
+
+// Public AI Content API routes (for frontend)
+Route::prefix('customer/ai-content')->group(function () {
+    // Latest Technologies & Best Technologies of the Month
+    Route::get('/technologies', [\App\Http\Controllers\Api\Customer\AiTechnologiesController::class, 'index']);
+    
+    // AI Videos
+    Route::get('/videos', [\App\Http\Controllers\Api\Customer\AiVideosController::class, 'index']);
+    Route::get('/videos/{slug}', [\App\Http\Controllers\Api\Customer\AiVideosController::class, 'show']);
+    
+    // AI Articles
+    Route::get('/articles', [\App\Http\Controllers\Api\Customer\AiArticlesController::class, 'index']);
+    Route::get('/articles/{slug}', [\App\Http\Controllers\Api\Customer\AiArticlesController::class, 'show']);
+    
+    // AI Jobs
+    Route::get('/jobs', [\App\Http\Controllers\Api\Customer\AiJobsController::class, 'index']);
+    Route::get('/jobs/{slug}', [\App\Http\Controllers\Api\Customer\AiJobsController::class, 'show']);
+});

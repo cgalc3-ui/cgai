@@ -237,6 +237,22 @@
 
     <div class="form-group">
         <label class="checkbox-label">
+            <input type="checkbox" name="is_latest" value="1" {{ old('is_latest', $service->is_latest) ? 'checked' : '' }}>
+            <span>{{ __('messages.is_latest') ?? 'أحدث التقنيات' }}</span>
+        </label>
+        <small class="form-text">{{ __('messages.is_latest_help') ?? 'سيظهر في قسم أحدث التقنيات' }}</small>
+    </div>
+
+    <div class="form-group">
+        <label class="checkbox-label">
+            <input type="checkbox" name="is_best_of_month" value="1" {{ old('is_best_of_month', $service->is_best_of_month) ? 'checked' : '' }}>
+            <span>{{ __('messages.is_best_of_month') ?? 'أفضل التقنيات خلال الشهر' }}</span>
+        </label>
+        <small class="form-text">{{ __('messages.is_best_of_month_help') ?? 'سيظهر في قسم أفضل التقنيات خلال الشهر' }}</small>
+    </div>
+
+    <div class="form-group">
+        <label class="checkbox-label">
             <input type="checkbox" name="is_active" value="1" {{ old('is_active', $service->is_active) ? 'checked' : '' }}>
             <span>{{ __('messages.active') }}</span>
         </label>

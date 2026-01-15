@@ -29,6 +29,7 @@ class CustomerFacingController extends Controller
             'technologies-section',
             'services-section',
             'ready-apps-section',
+            'subscriptions-section',
         ];
 
         if (!in_array($section, $allowedSections)) {
@@ -48,6 +49,7 @@ class CustomerFacingController extends Controller
             'technologies-section' => [\App\Http\Controllers\Admin\TechnologiesSectionController::class, 'index'],
             'services-section' => [\App\Http\Controllers\Admin\HomeServicesSectionController::class, 'index'],
             'ready-apps-section' => [\App\Http\Controllers\Admin\HomeReadyAppsSectionController::class, 'index'],
+            'subscriptions-section' => [\App\Http\Controllers\Admin\SubscriptionsSectionController::class, 'index'],
         ];
 
         if (!isset($controllerMap[$section])) {

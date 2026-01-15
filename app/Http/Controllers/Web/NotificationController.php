@@ -51,12 +51,12 @@ class NotificationController extends Controller
 
         // Check if notification belongs to user
         if ($notification->user_id !== $user->id) {
-            return back()->with('error', 'ليس لديك صلاحية للوصول لهذا الإشعار');
+            return back()->with('error', __('messages.notification_unauthorized_access'));
         }
 
         $notification->markAsRead();
 
-        return back()->with('success', 'تم تحديد الإشعار كمقروء');
+        return back()->with('success', __('messages.notification_marked_read'));
     }
 
     /**
@@ -73,7 +73,7 @@ class NotificationController extends Controller
                 'read_at' => now(),
             ]);
 
-        return back()->with('success', 'تم تحديد جميع الإشعارات كمقروءة');
+        return back()->with('success', __('messages.notification_all_marked_read'));
     }
 
     /**
@@ -85,11 +85,11 @@ class NotificationController extends Controller
 
         // Check if notification belongs to user
         if ($notification->user_id !== $user->id) {
-            return back()->with('error', 'ليس لديك صلاحية لحذف هذا الإشعار');
+            return back()->with('error', __('messages.notification_cannot_delete'));
         }
 
         $notification->delete();
 
-        return back()->with('success', 'تم حذف الإشعار بنجاح');
+        return back()->with('success', __('messages.notification_deleted_success'));
     }
 }

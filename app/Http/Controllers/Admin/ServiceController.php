@@ -131,6 +131,6 @@ class ServiceController extends Controller
         $service->delete();
 
         return redirect()->route('admin.services.index')
-            ->with('success', 'تم حذف الخدمة بنجاح');
+            ->with('success', __('messages.service_deleted_success'));
     }
 }

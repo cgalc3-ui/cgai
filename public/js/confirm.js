@@ -145,6 +145,20 @@ class Confirm {
         }, 300);
     }
 
+    static confirm(message = 'هل أنت متأكد؟', title = null) {
+        // Get translations from page if available
+        const okText = window.translations?.ok || 'موافق';
+        const cancelText = window.translations?.cancel || 'إلغاء';
+        const confirmTitle = title || window.translations?.confirm || 'تأكيد';
+        
+        return this.show(message, confirmTitle, {
+            type: 'info',
+            icon: 'question',
+            okText: okText,
+            cancelText: cancelText
+        });
+    }
+
     static delete(message = 'هل أنت متأكد من حذف هذا العنصر؟', title = null) {
         // Get translations from page if available
         const deleteText = window.translations?.delete || 'حذف';

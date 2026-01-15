@@ -57,7 +57,11 @@
                                        target="{{ $button['target'] ?? '_self' }}"
                                        class="btn"
                                        style="padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s; {{ $button['style'] === 'secondary' ? 'background: rgba(255,255,255,0.1); border: 2px solid #fbbf24; color: white;' : 'background: #fbbf24; color: #1f2937;' }}">
-                                        {{ $button['title'] ?? ($button['title_en'] ?? '') }}
+                                        @if(app()->getLocale() === 'en' && !empty($button['title_en']))
+                                            {{ $button['title_en'] }}
+                                        @else
+                                            {{ $button['title'] ?? ($button['title_en'] ?? '') }}
+                                        @endif
                                     </a>
                                 @endforeach
                             </div>

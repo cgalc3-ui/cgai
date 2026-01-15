@@ -38,6 +38,8 @@ class AiService extends Model
         'is_popular',
         'is_new',
         'is_featured',
+        'is_latest',
+        'is_best_of_month',
         'is_active',
         'is_free',
     ];
@@ -56,6 +58,8 @@ class AiService extends Model
         'is_popular' => 'boolean',
         'is_new' => 'boolean',
         'is_featured' => 'boolean',
+        'is_latest' => 'boolean',
+        'is_best_of_month' => 'boolean',
         'is_active' => 'boolean',
         'is_free' => 'boolean',
     ];

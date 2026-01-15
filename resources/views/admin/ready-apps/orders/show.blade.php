@@ -259,14 +259,6 @@
                     </div>
                     <div class="card-body">
                         <div class="quick-actions">
-                            <a href="mailto:{{ $order->user->email }}?subject={{ __('messages.ready_app_order') }} #{{ $order->id }}" class="action-btn">
-                                <i class="fas fa-envelope"></i> {{ __('messages.send_email') }}
-                            </a>
-                            @if($order->user->phone)
-                            <a href="tel:{{ $order->user->phone }}" class="action-btn">
-                                <i class="fas fa-phone"></i> {{ __('messages.call') }}
-                            </a>
-                            @endif
                             <a href="{{ route('admin.ready-apps.apps.show', $order->app) ?? '#' }}" class="action-btn" target="_blank">
                                 <i class="fas fa-eye"></i> {{ __('messages.view_app') }}
                             </a>

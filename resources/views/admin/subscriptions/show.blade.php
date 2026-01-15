@@ -15,9 +15,6 @@
             <a href="{{ route('admin.subscriptions.index') }}" class="m-btn-back">
                 <i class="fas fa-long-arrow-alt-right"></i> {{ __('messages.back') }}
             </a>
-            <a href="{{ route('admin.subscriptions.edit', $subscription) }}" class="m-btn-edit">
-                <i class="fas fa-edit"></i> {{ __('messages.edit') }}
-            </a>
         </div>
     </header>
 
@@ -121,24 +118,36 @@
 
             <!-- Features Card -->
             @php
-                $features = $subscription->features ?? null;
-                if (is_string($features)) {
-                    $features = json_decode($features, true) ?? [];
+                $locale = app()->getLocale();
+                // Get features based on locale
+                $sourceFeatures = ($locale === 'en' && !empty($subscription->features_en))
+                    ? $subscription->features_en
+                    : ($subscription->features ?? []);
+                
+                // Fallback to the other language if the preferred one is empty
+                if (empty($sourceFeatures) && $locale === 'en' && !empty($subscription->features)) {
+                    $sourceFeatures = $subscription->features;
+                } elseif (empty($sourceFeatures) && $locale === 'ar' && !empty($subscription->features_en)) {
+                    $sourceFeatures = $subscription->features_en;
                 }
-                if (!is_array($features)) {
-                    $features = [];
+                
+                if (is_string($sourceFeatures)) {
+                    $sourceFeatures = json_decode($sourceFeatures, true) ?? [];
+                }
+                if (!is_array($sourceFeatures)) {
+                    $sourceFeatures = [];
                 }
             @endphp
-            @if(!empty($features) && count($features) > 0)
+            @if(!empty($sourceFeatures) && count($sourceFeatures) > 0)
             <div class="m-card">
                 <div class="m-card-header">
                     <i class="fas fa-list-check"></i> {{ __('messages.features') }}
                 </div>
                 <div class="m-features-list">
-                    @foreach($features as $feature)
+                    @foreach($sourceFeatures as $feature)
                         <div class="m-feature-item">
                             <i class="fas fa-check-circle text-success"></i>
-                            <span>{{ is_array($feature) ? ($feature['name'] ?? $feature['title'] ?? '') : $feature }}</span>
+                            <span>{{ is_array($feature) ? ($feature['name'] ?? $feature['name_en'] ?? $feature['title'] ?? '') : $feature }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -184,22 +193,6 @@
                 </div>
             </div>
 
-            <!-- Quick Actions Card -->
-            <div class="m-sticky-card">
-                <div class="m-card-header">
-                    <i class="fas fa-bolt"></i> {{ __('messages.quick_actions') }}
-                </div>
-                <div class="m-actions-list">
-                    <a href="{{ route('admin.subscriptions.edit', $subscription) }}" class="m-action-btn primary">
-                        <i class="fas fa-edit"></i>
-                        <span>{{ __('messages.edit_subscription') }}</span>
-                    </a>
-                    <a href="{{ route('admin.subscription-requests.index', ['subscription_id' => $subscription->id]) }}" class="m-action-btn info">
-                        <i class="fas fa-list"></i>
-                        <span>{{ __('messages.view_requests') }}</span>
-                    </a>
-                </div>
-            </div>
         </aside>
     </div>
 </div>

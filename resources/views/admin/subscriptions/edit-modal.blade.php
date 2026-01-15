@@ -117,6 +117,13 @@
 
     <div class="form-group">
         <label class="checkbox-label">
+            <input type="checkbox" name="is_pro" value="1" {{ old('is_pro', $subscription->is_pro ?? false) ? 'checked' : '' }}>
+            <span>{{ __('messages.is_pro') ?? 'باقة Pro' }}</span>
+        </label>
+    </div>
+
+    <div class="form-group">
+        <label class="checkbox-label">
             <input type="checkbox" name="is_active" value="1" {{ old('is_active', $subscription->is_active) ? 'checked' : '' }}>
             <span>{{ __('messages.active') }}</span>
         </label>

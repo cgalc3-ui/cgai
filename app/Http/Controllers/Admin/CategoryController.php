@@ -118,6 +118,6 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'تم حذف الفئة بنجاح');
+            ->with('success', __('messages.category_deleted_success'));
     }
 }

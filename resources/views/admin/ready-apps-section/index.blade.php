@@ -12,8 +12,8 @@
         <div class="page-header-right">
             @if(!$section)
                 <button type="button" class="btn btn-primary"
-                    onclick="openCreateModal('{{ route('admin.customer-facing.ready-apps-section.create') }}', 'sectionModal', '{{ __('messages.add_ready_apps_section') ?? 'إضافة قسم التطبيقات الجاهزة' }}')">
-                    <i class="fas fa-plus"></i> {{ __('messages.add_ready_apps_section') ?? 'إضافة' }}
+                    onclick="openCreateModal('{{ route('admin.customer-facing.ready-apps-section.create') }}', 'sectionModal', '{{ __('messages.add_title_and_description') ?? 'إضافة عنوان ووصف' }}')">
+                    <i class="fas fa-plus"></i> {{ __('messages.add_title_and_description') ?? 'إضافة عنوان ووصف' }}
                 </button>
             @endif
         </div>
@@ -46,7 +46,7 @@
                 <div style="padding: 20px; text-align: center;">
                     <i class="fas fa-info-circle" style="font-size: 24px; color: var(--warning-color); margin-bottom: 10px;"></i>
                     <p style="color: var(--text-primary); margin: 0;">
-                        {{ __('messages.no_section_header_set') ?? 'لم يتم تعيين عنوان ووصف القسم بعد. اضغط على "إضافة قسم التطبيقات الجاهزة" لإنشاء القسم.' }}
+                        {{ __('messages.no_section_header_set') ?? 'لم يتم تعيين عنوان ووصف القسم بعد. اضغط على "إضافة عنوان ووصف" لإنشاء القسم.' }}
                     </p>
                 </div>
             </div>
@@ -119,7 +119,7 @@
     <div class="modal-overlay" id="sectionModal" style="display: none;">
         <div class="modal-container">
             <div class="modal-header">
-                <h3 class="modal-title" id="sectionModalTitle">{{ __('messages.add_ready_apps_section') ?? 'إضافة قسم التطبيقات الجاهزة' }}</h3>
+                <h3 class="modal-title" id="sectionModalTitle">{{ __('messages.add_title_and_description') ?? 'إضافة عنوان ووصف' }}</h3>
                 <button type="button" class="modal-close" onclick="closeModal('sectionModal')">
                     ×
                 </button>

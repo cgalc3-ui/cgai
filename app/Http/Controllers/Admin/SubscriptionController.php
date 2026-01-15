@@ -76,6 +76,7 @@ class SubscriptionController extends Controller
         $data = $request->validated();
         $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
+        $data['is_pro'] = $request->has('is_pro') ? true : false;
 
         // Ensure numeric values are properly cast
         if (isset($data['price'])) {
@@ -121,8 +122,8 @@ class SubscriptionController extends Controller
         // Notify all admins except the creator
         $this->notificationService->notifyAdmins(
             'subscription_created',
-            'تم إنشاء باقة جديدة',
-            "تم إنشاء باقة جديدة: {$subscription->name}",
+            __('messages.new_subscription_package_created'),
+            __('messages.new_subscription_package_created_with_name', ['name' => $subscription->name]),
             [
                 'subscription_id' => $subscription->id,
                 'name' => $subscription->name,
@@ -133,13 +134,13 @@ class SubscriptionController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'تم إنشاء الباقة بنجاح',
+                'message' => __('messages.subscription_created_success'),
                 'redirect' => route('admin.subscriptions.index')
             ]);
         }
 
         return redirect()->route('admin.subscriptions.index')
-            ->with('success', 'تم إنشاء الباقة بنجاح');
+            ->with('success', __('messages.subscription_created_success'));
     }
 
     /**
@@ -171,6 +172,7 @@ class SubscriptionController extends Controller
         $data = $request->validated();
         $data['ai_enabled'] = $request->has('ai_enabled') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
+        $data['is_pro'] = $request->has('is_pro') ? true : false;
 
         // Ensure numeric values are properly cast
         if (isset($data['price'])) {
@@ -221,8 +223,8 @@ class SubscriptionController extends Controller
         // Notify all admins except the updater
         $this->notificationService->notifyAdmins(
             'subscription_updated',
-            'messages.subscription_updated',
-            'messages.subscription_updated_with_name',
+            __('messages.subscription_updated'),
+            __('messages.subscription_updated_with_name', ['name' => $subscription->name]),
             [
                 'subscription_id' => $subscription->id,
                 'name' => $subscription->name,
@@ -233,13 +235,13 @@ class SubscriptionController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'تم تحديث الباقة بنجاح',
-                'redirect' => route('admin.subscriptions.index')
+                'message' => __('messages.subscription_updated_success'),
+                'redirect' => null
             ]);
         }
 
         return redirect()->route('admin.subscriptions.index')
-            ->with('success', 'تم تحديث الباقة بنجاح');
+            ->with('success', __('messages.subscription_updated_success'));
     }
 
     /**
@@ -249,17 +251,17 @@ class SubscriptionController extends Controller
     {
         // Check if there are any requests
         if ($subscription->requests()->count() > 0) {
-            return back()->with('error', 'لا يمكن حذف الباقة لأنها مرتبطة بطلبات اشتراك');
+            return back()->with('error', __('messages.subscription_cannot_delete_requests'));
         }
 
         // Check if there are any active subscriptions
         if ($subscription->userSubscriptions()->where('status', 'active')->count() > 0) {
-            return back()->with('error', 'لا يمكن حذف الباقة لأنها مرتبطة باشتراكات نشطة');
+            return back()->with('error', __('messages.subscription_cannot_delete_active'));
         }
 
         $subscription->delete();
 
         return redirect()->route('admin.subscriptions.index')
-            ->with('success', 'تم حذف الباقة بنجاح');
+            ->with('success', __('messages.subscription_deleted_success'));
     }
 }

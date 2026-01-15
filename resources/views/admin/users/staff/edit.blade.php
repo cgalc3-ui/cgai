@@ -27,7 +27,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="name">{{ __('messages.name') }} *</label>
+                        <label for="name">{{ __('messages.name') }} <span class="required">*</span></label>
                         <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" class="form-control"
                             required>
                         @error('name')
@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="email">{{ __('messages.email') }} *</label>
+                        <label for="email">{{ __('messages.email') }} <span class="required">*</span></label>
                         <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
                             class="form-control" required>
                         @error('email')
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="phone">{{ __('messages.phone') }} *</label>
+                        <label for="phone">{{ __('messages.phone') }} <span class="required">*</span></label>
                         <input type="text" id="phone" name="phone" value="{{ old('phone', $user->phone) }}"
                             class="form-control" required>
                         @error('phone')
@@ -70,44 +70,65 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="specialization_select">{{ __('messages.specializations') }}</label>
-                        <select id="specialization_select" class="form-control">
+                        <label for="category_select">{{ __('messages.categories_specializations') }}</label>
+                        <select id="category_select" class="form-control">
                             <option value="">{{ __('messages.select_category_placeholder') }}</option>
-                            @foreach($specializations as $specialization)
-                                <option value="{{ $specialization->id }}" data-name="{{ $specialization->name }}">
-                                    {{ $specialization->name }}
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" data-name="{{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}" data-name-ar="{{ $category->name }}" data-name-en="{{ $category->name_en ?? $category->name }}">
+                                    {{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}
                                 </option>
                             @endforeach
                         </select>
-                        <div id="selected_specializations"
+                        <div id="selected_categories"
                             style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
-                            @if($user->employee && $user->employee->specializations->count() > 0)
-                                @foreach($user->employee->specializations as $spec)
-                                    <div class="specialization-tag" data-id="{{ $spec->id }}">
-                                        <input type="hidden" name="employee[specializations][]" value="{{ $spec->id }}">
-                                        <span>{{ $spec->name }}</span>
-                                        <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                @endforeach
+                            @if($user->employee && $user->employee->categories->count() > 0)
+                                    @foreach($user->employee->categories as $category)
+                                        <div class="category-tag" data-id="{{ $category->id }}">
+                                            <input type="hidden" name="employee[categories][]" value="{{ $category->id }}">
+                                            <span>{{ app()->getLocale() === 'en' && $category->name_en ? $category->name_en : $category->name }}</span>
+                                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    @endforeach
                             @endif
-                            @if(old('employee.specializations'))
-                                @foreach(old('employee.specializations') as $specId)
+                            @if(old('employee.categories'))
+                                @foreach(old('employee.categories') as $catId)
                                     @php
-                                        $spec = $specializations->firstWhere('id', $specId);
-                                        $alreadyAdded = $user->employee && $user->employee->specializations->contains($specId);
+                                        $cat = $categories->firstWhere('id', $catId);
+                                        $alreadyAdded = $user->employee && $user->employee->categories->contains($catId);
                                     @endphp
-                                    @if($spec && !$alreadyAdded)
-                                        <div class="specialization-tag" data-id="{{ $spec->id }}">
-                                            <input type="hidden" name="employee[specializations][]" value="{{ $spec->id }}">
-                                            <span>{{ $spec->name }}</span>
-                                            <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
+                                    @if($cat && !$alreadyAdded)
+                                        <div class="category-tag" data-id="{{ $cat->id }}">
+                                            <input type="hidden" name="employee[categories][]" value="{{ $cat->id }}">
+                                            <span>{{ app()->getLocale() === 'en' && $cat->name_en ? $cat->name_en : $cat->name }}</span>
+                                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
                                                 <i class="fas fa-times"></i>
                                             </button>
                                         </div>
                                     @endif
                                 @endforeach
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="subcategories_group" style="display: none;">
+                        <label for="subcategory_select">{{ __('messages.sub_categories') }}</label>
+                        <select id="subcategory_select" class="form-control">
+                            <option value="">{{ __('messages.select_subcategory_placeholder') }}</option>
+                        </select>
+                        <div id="selected_subcategories"
+                            style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                            @if($user->employee && $user->employee->subCategories->count() > 0)
+                                    @foreach($user->employee->subCategories as $subCategory)
+                                        <div class="category-tag" data-id="{{ $subCategory->id }}">
+                                            <input type="hidden" name="employee[sub_categories][]" value="{{ $subCategory->id }}">
+                                            <span>{{ app()->getLocale() === 'en' && $subCategory->name_en ? $subCategory->name_en : $subCategory->name }}</span>
+                                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    @endforeach
                             @endif
                         </div>
                     </div>
@@ -147,7 +168,7 @@
 
     @push('styles')
         <style>
-            .specialization-tag {
+            .category-tag {
                 display: inline-flex;
                 align-items: center;
                 gap: 6px;
@@ -158,7 +179,7 @@
                 font-size: 14px;
             }
 
-            .specialization-tag .remove-spec {
+            .category-tag .remove-cat {
                 background: none;
                 border: none;
                 color: white;
@@ -175,7 +196,7 @@
                 transition: background-color 0.2s;
             }
 
-            .specialization-tag .remove-spec:hover {
+            .category-tag .remove-cat:hover {
                 background-color: rgba(255, 255, 255, 0.2);
             }
         </style>
@@ -183,44 +204,134 @@
 
     @push('scripts')
         <script>
-            document.getElementById('specialization_select').addEventListener('change', function () {
-                const select = this;
-                const selectedId = select.value;
-                const selectedOption = select.options[select.selectedIndex];
-
-                if (!selectedId) return;
-
-                const selectedName = selectedOption.getAttribute('data-name');
-                const container = document.getElementById('selected_specializations');
-
-                // Check if already selected
-                const existingTags = container.querySelectorAll('.specialization-tag');
-                for (let tag of existingTags) {
-                    if (tag.getAttribute('data-id') === selectedId) {
-                        select.value = '';
-                        return;
-                    }
+            // Load subcategories when category is selected
+            function loadSubCategories(categoryId) {
+                if (!categoryId) {
+                    document.getElementById('subcategory_select').innerHTML = '<option value="">{{ __('messages.select_subcategory_placeholder') }}</option>';
+                    document.getElementById('subcategories_group').style.display = 'none';
+                    return;
                 }
 
-                // Create new tag
-                const tagDiv = document.createElement('div');
-                tagDiv.className = 'specialization-tag';
-                tagDiv.setAttribute('data-id', selectedId);
-                tagDiv.innerHTML = `
-                    <input type="hidden" name="employee[specializations][]" value="${selectedId}">
-                    <span>${selectedName}</span>
-                    <button type="button" class="remove-spec" onclick="removeSpecialization(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
+                fetch(`/admin/api/categories/${categoryId}/subcategories`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const select = document.getElementById('subcategory_select');
+                        select.innerHTML = '<option value="">{{ __('messages.select_subcategory_placeholder') }}</option>';
 
-                container.appendChild(tagDiv);
-                select.value = '';
+                        if (data.subcategories && data.subcategories.length > 0) {
+                            document.getElementById('subcategories_group').style.display = 'block';
+                            data.subcategories.forEach(subCat => {
+                                const option = document.createElement('option');
+                                option.value = subCat.id;
+                                option.textContent = subCat.name;
+                                option.setAttribute('data-name', subCat.name);
+                                select.appendChild(option);
+                            });
+                        } else {
+                            document.getElementById('subcategories_group').style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading subcategories:', error);
+                    });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                // Categories
+                const categorySelect = document.getElementById('category_select');
+                if (categorySelect) {
+                    categorySelect.addEventListener('change', function () {
+                        const selectedId = this.value;
+                        const selectedOption = this.options[this.selectedIndex];
+
+                        if (!selectedId) {
+                            document.getElementById('subcategories_group').style.display = 'none';
+                            return;
+                        }
+
+                        // Show subcategories group and load subcategories
+                        loadSubCategories(selectedId);
+
+                        const selectedName = selectedOption.getAttribute('data-name');
+                        const container = document.getElementById('selected_categories');
+
+                        // Check if already selected
+                        const existingTags = container.querySelectorAll('.category-tag');
+                        for (let tag of existingTags) {
+                            if (tag.getAttribute('data-id') === selectedId) {
+                                this.value = '';
+                                return;
+                            }
+                        }
+
+                        // Create new tag
+                        const tagDiv = document.createElement('div');
+                        tagDiv.className = 'category-tag';
+                        tagDiv.setAttribute('data-id', selectedId);
+                        tagDiv.innerHTML = `
+                            <input type="hidden" name="employee[categories][]" value="${selectedId}">
+                            <span>${selectedName}</span>
+                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+
+                        container.appendChild(tagDiv);
+                        this.value = '';
+                    });
+                }
+
+                // SubCategories
+                const subcategorySelect = document.getElementById('subcategory_select');
+                if (subcategorySelect) {
+                    subcategorySelect.addEventListener('change', function () {
+                        const selectedId = this.value;
+                        const selectedOption = this.options[this.selectedIndex];
+
+                        if (!selectedId) return;
+
+                        const selectedName = selectedOption.getAttribute('data-name');
+                        const container = document.getElementById('selected_subcategories');
+
+                        // Check if already selected
+                        const existingTags = container.querySelectorAll('.category-tag');
+                        for (let tag of existingTags) {
+                            if (tag.getAttribute('data-id') === selectedId) {
+                                this.value = '';
+                                return;
+                            }
+                        }
+
+                        // Create new tag
+                        const tagDiv = document.createElement('div');
+                        tagDiv.className = 'category-tag';
+                        tagDiv.setAttribute('data-id', selectedId);
+                        tagDiv.innerHTML = `
+                            <input type="hidden" name="employee[sub_categories][]" value="${selectedId}">
+                            <span>${selectedName}</span>
+                            <button type="button" class="remove-cat" onclick="removeCategory(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+
+                        container.appendChild(tagDiv);
+                        this.value = '';
+                    });
+                }
+
+                // Load subcategories for existing categories
+                const existingCategories = document.querySelectorAll('#selected_categories .category-tag');
+                if (existingCategories.length > 0) {
+                    const firstCategoryId = existingCategories[0].getAttribute('data-id');
+                    loadSubCategories(firstCategoryId);
+                }
             });
 
-            function removeSpecialization(button) {
-                const tag = button.closest('.specialization-tag');
-                tag.remove();
+            function removeCategory(button) {
+                const tag = button.closest('.category-tag');
+                if (tag) {
+                    tag.remove();
+                }
             }
         </script>
     @endpush

@@ -67,7 +67,11 @@
                                     @foreach($footer->quick_links as $link)
                                         <li style="margin-bottom: 10px;">
                                             <a href="{{ $link['link'] ?? '#' }}" style="color: white; text-decoration: none; font-size: 14px; opacity: 0.9;">
-                                                {{ $link['title'] ?? ($link['title_en'] ?? '') }}
+                                                @if(app()->getLocale() === 'en' && !empty($link['title_en']))
+                                                    {{ $link['title_en'] }}
+                                                @else
+                                                    {{ $link['title'] ?? ($link['title_en'] ?? '') }}
+                                                @endif
                                             </a>
                                         </li>
                                     @endforeach
@@ -83,7 +87,11 @@
                                     @foreach($footer->content_links as $link)
                                         <li style="margin-bottom: 10px;">
                                             <a href="{{ $link['link'] ?? '#' }}" style="color: white; text-decoration: none; font-size: 14px; opacity: 0.9;">
-                                                {{ $link['title'] ?? ($link['title_en'] ?? '') }}
+                                                @if(app()->getLocale() === 'en' && !empty($link['title_en']))
+                                                    {{ $link['title_en'] }}
+                                                @else
+                                                    {{ $link['title'] ?? ($link['title_en'] ?? '') }}
+                                                @endif
                                             </a>
                                         </li>
                                     @endforeach
@@ -99,7 +107,11 @@
                                     @foreach($footer->support_links as $link)
                                         <li style="margin-bottom: 10px;">
                                             <a href="{{ $link['link'] ?? '#' }}" style="color: white; text-decoration: none; font-size: 14px; opacity: 0.9;">
-                                                {{ $link['title'] ?? ($link['title_en'] ?? '') }}
+                                                @if(app()->getLocale() === 'en' && !empty($link['title_en']))
+                                                    {{ $link['title_en'] }}
+                                                @else
+                                                    {{ $link['title'] ?? ($link['title_en'] ?? '') }}
+                                                @endif
                                             </a>
                                         </li>
                                     @endforeach

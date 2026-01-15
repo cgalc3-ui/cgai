@@ -23,6 +23,7 @@ class Subscription extends Model
         'max_messages',
         'ai_enabled',
         'is_active',
+        'is_pro',
     ];
 
     protected $casts = [
@@ -31,6 +32,7 @@ class Subscription extends Model
         'max_messages' => 'integer',
         'ai_enabled' => 'boolean',
         'is_active' => 'boolean',
+        'is_pro' => 'boolean',
         'features' => 'array',
         'features_en' => 'array',
         'duration_type' => 'string',
@@ -71,15 +73,25 @@ class Subscription extends Model
     }
 
     /**
-     * Get duration text in Arabic
+     * Get duration text based on current locale
      */
     public function getDurationTextAttribute(): string
     {
-        return match($this->duration_type) {
-            'month' => 'شهري',
-            'year' => 'سنوي',
-            'lifetime' => 'دائم',
-            default => $this->duration_type,
-        };
+        $locale = app()->getLocale();
+        
+        $texts = [
+            'ar' => [
+                'month' => 'شهري',
+                'year' => 'سنوي',
+                'lifetime' => 'دائم',
+            ],
+            'en' => [
+                'month' => 'Monthly',
+                'year' => 'Yearly',
+                'lifetime' => 'Lifetime',
+            ],
+        ];
+
+        return $texts[$locale][$this->duration_type] ?? $this->duration_type;
     }
 }

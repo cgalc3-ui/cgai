@@ -85,6 +85,15 @@
                 <h3>{{ __('messages.ready_apps_section_management') ?? 'قسم التطبيقات الجاهزة' }}</h3>
                 <p>{{ __('messages.manage_ready_apps_section') ?? 'إدارة قسم التطبيقات الجاهزة' }}</p>
             </div>
+
+            <!-- Subscriptions Section -->
+            <div class="section-card" data-section="subscriptions-section" onclick="loadSection('subscriptions-section')">
+                <div class="section-icon">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <h3>{{ __('messages.subscriptions_section_management') ?? 'قسم الباقات' }}</h3>
+                <p>{{ __('messages.manage_subscriptions_section') ?? 'إدارة قسم الباقات' }}</p>
+            </div>
         </div>
 
         <!-- Content Area -->
@@ -226,6 +235,7 @@
                 'technologies-section': '{{ route("admin.customer-facing.technologies-section.index") }}',
                 'services-section': '{{ route("admin.customer-facing.services-section.index") }}',
                 'ready-apps-section': '{{ route("admin.customer-facing.ready-apps-section.index") }}',
+                'subscriptions-section': '{{ route("admin.customer-facing.subscriptions-section.index") }}',
             };
             
             const url = routeMap[section];

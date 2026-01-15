@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "subscriptions-api-collection",
+		"name": "Subscriptions API - Frontend",
+		"description": "API endpoints for subscriptions section in frontend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Subscriptions",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Locale",
+						"value": "ar",
+						"type": "text",
+						"description": "ar or en"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/customer/subscriptions?locale=ar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"customer",
+						"subscriptions"
+					],
+					"query": [
+						{
+							"key": "locale",
+							"value": "ar",
+							"description": "ar or en"
+						}
+					]
+				},
+				"description": "Get all active subscriptions with section header for frontend display"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Single Subscription",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Locale",
+						"value": "ar",
+						"type": "text",
+						"description": "ar or en"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/customer/subscriptions/1?locale=ar",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"customer",
+						"subscriptions",
+						"1"
+					],
+					"query": [
+						{
+							"key": "locale",
+							"value": "ar",
+							"description": "ar or en"
+						}
+					]
+				},
+				"description": "Get single subscription details by ID"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}
+

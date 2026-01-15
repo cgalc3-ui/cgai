@@ -17,8 +17,8 @@
                 </button>
             @else
                 <button type="button" class="btn btn-primary"
-                    onclick="openCreateModal('{{ route('admin.customer-facing.consultation-booking-section.create') }}', 'sectionModal', '{{ __('messages.add_consultation_booking_section') ?? 'إضافة قسم حجز الاستشارة' }}')">
-                    <i class="fas fa-plus"></i> {{ __('messages.add_consultation_booking_section') ?? 'إضافة' }}
+                    onclick="openCreateModal('{{ route('admin.customer-facing.consultation-booking-section.create') }}', 'sectionModal', '{{ __('messages.add_title_and_description') ?? 'إضافة عنوان ووصف' }}')">
+                    <i class="fas fa-plus"></i> {{ __('messages.add_title_and_description') ?? 'إضافة عنوان ووصف' }}
                 </button>
             @endif
         </div>
@@ -50,7 +50,11 @@
                                        target="{{ $button['target'] ?? '_self' }}"
                                        class="btn"
                                        style="padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.3s; {{ $button['style'] === 'secondary' ? 'background: transparent; border: 2px solid #fbbf24; color: white;' : 'background: #fbbf24; color: #1f2937;' }}">
-                                        {{ $button['title'] ?? ($button['title_en'] ?? '') }}
+                                        @if(app()->getLocale() === 'en' && !empty($button['title_en']))
+                                            {{ $button['title_en'] }}
+                                        @else
+                                            {{ $button['title'] ?? ($button['title_en'] ?? '') }}
+                                        @endif
                                         @if($button['style'] === 'primary')
                                             <i class="fas fa-arrow-left" style="margin-right: 6px;"></i>
                                         @endif
@@ -87,7 +91,7 @@
     <div class="modal-overlay" id="sectionModal" style="display: none;">
         <div class="modal-container">
             <div class="modal-header">
-                <h3 class="modal-title" id="sectionModalTitle">{{ __('messages.add_consultation_booking_section') ?? 'إضافة قسم حجز الاستشارة' }}</h3>
+                <h3 class="modal-title" id="sectionModalTitle">{{ __('messages.add_title_and_description') ?? 'إضافة عنوان ووصف' }}</h3>
                 <button type="button" class="modal-close" onclick="closeModal('sectionModal')">
                     ×
                 </button>

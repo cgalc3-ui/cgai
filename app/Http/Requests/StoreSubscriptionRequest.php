@@ -26,6 +26,7 @@ class StoreSubscriptionRequest extends FormRequest
             'duration_type' => 'required|string|in:month,year,lifetime',
             'ai_enabled' => 'nullable|boolean',
             'is_active' => 'nullable|boolean',
+            'is_pro' => 'nullable|boolean',
         ];
     }
 
